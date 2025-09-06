@@ -1,24 +1,25 @@
 <template>
     <main class="login-container">
-        
-        <h1 class="login-container__title">¡Bienvenido a <span class="emphasis">SyP app</span>!</h1>
-        <p class="login-container__parag">Inicia sesión y armá tus pedidos.</p>
-        <Fieldset legend="Acceso a la plataforma" class="fieldset_classic">
+        <div class="entry-heading">
+            <h1 class="entry-title">¡Bienvenido a <span class="emphasis">SyP app</span>!</h1>
+            <p class="entry-parag">Inicia sesión y armá tus pedidos.</p>
+        </div>
+        <Fieldset legend="Acceso a la plataforma" class="entry-fieldset">
             <Form class="form_classic" v-slot="$form" :initialValues="{ email: '', password: '' }" :resolver="resolver" @submit="onFormSubmit">
-                <div class="form-group">
+                <FloatLabel variant="in">
                     <label class="label_classic" for="email">Correo electrónico</label>
                     <InputText class="input_txt-classic" type="email" id="email" name="email" required />
                     <Message v-if="$form.email?.invalid" severity="error" size="small" variant="simple">{{ $form.email.error?.message }}</Message>
-                </div>
-                <div class="form-group">
-                    <label class="label_classic" for="password">Contraseña</label>
+                </FloatLabel>
+                <FloatLabel variant="in">
                     <InputText class="input_txt-classic" type="password" id="password" name="password" required/>
-                </div>
+                    <label class="label_classic" for="password">Contraseña</label>
+                </FloatLabel>
 
                 <Button type="submit" label="Iniciar sesión" />
-                <div class="form-group">
-                    <router-link class="link_classic" to="/resetear-contraseña">¿Olvidaste tu contraseña?</router-link>
-                </div>
+                <!-- <div class="form-group">
+                    <router-link class="link_classic" to="/recuperar-contraseña">¿Olvidaste tu contraseña?</router-link>
+                </div> -->
             </Form>
         </Fieldset>
     </main>
@@ -64,18 +65,5 @@
     flex-direction: column;
     align-items: center;
     gap: 1dvh;
-}
-.login-container__title {
-    text-align: center;
-    font-size: var(--heading-md-fs);
-}
-.login-container__parag {
-    text-align: center;
-    font-size: var(--body-lg-fs);
-}
-.login-form {
-    
-}
-.form-group {
 }
 </style>
