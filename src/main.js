@@ -39,7 +39,6 @@ const MyPreset = definePreset(Aura, {
                 },
                 // primary: {},
                 // highlight: {}
-                
             },
         }
     },
@@ -47,6 +46,11 @@ const MyPreset = definePreset(Aura, {
         fieldset: {
             legend: {    
                 background: '{primary.200}',
+            }
+        },
+        inputtext: {
+            root: {
+                background: '{surface.100}',
             }
         },
     },

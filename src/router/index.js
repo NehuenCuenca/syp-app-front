@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 // Rutas no autenticadas
 import Login from '../views/auth/Login.vue'
 import PasswordRecovery from '../views/auth/PasswordRecovery.vue'
+import ResetPassword from '../views/auth/ResetPassword.vue'
 
 // Layout o componentes para autenticados
 import Orders from '../views/dashboard/Orders.vue'
@@ -18,12 +19,30 @@ const routes = [
     component: Login,
     meta: { requiresAuth: false }
   },
-  {
-    path: '/resetear-contraseña',
+  /* {
+    path: '/recuperar-contraseña',
     name: 'PasswordRecovery',
     component: PasswordRecovery,
     meta: { requiresAuth: false }
-  },
+  }, */
+
+  /* {
+    path: '/resetear-password',
+    name: 'ResetPassword',
+    component: ResetPassword,
+    meta: { requiresAuth: false },
+    props: route => ({
+      token: route.query.token,
+      email: route.query.email
+    }),
+    beforeEnter: (to, from, next) => {
+      if (!to.query.token) {
+        // Redirigir al login si no hay token
+        return next({ name: 'Login' })
+      }
+      next()
+    }
+  }, */
 
   // 📌 Rutas protegidas (requieren login)
   {
@@ -53,11 +72,11 @@ const routes = [
       }
     ]
   },
-
-  // 📌 Si la ruta no existe → redirige a Login
+ 
+  // 📌 Si la ruta no existe → redirige a Pedidos
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/login'
+    redirect: '/pedidos'
   }
 ]
 
