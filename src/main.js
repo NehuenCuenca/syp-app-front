@@ -1,10 +1,15 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config';
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
+import ToastService from 'primevue/toastservice';
 import './style.css'
 import App from './App.vue'
 import router from './router'
+import './plugins/axios'
+import { useAuthStore } from './stores/auth'
+
 
 const MyPreset = definePreset(Aura, {
     semantic: {
@@ -57,7 +62,11 @@ const MyPreset = definePreset(Aura, {
 });
 
 const app = createApp(App)
+const pinia = createPinia()
+
+app.use(pinia)
 app.use(router)
+app.use(ToastService)
 app.use(PrimeVue, {
     theme: {
         preset: MyPreset,
@@ -68,4 +77,8 @@ app.use(PrimeVue, {
 
     }
 })
+
+const authStore = useAuthStore()
+authStore.initAuth()
+
 app.mount('#app')

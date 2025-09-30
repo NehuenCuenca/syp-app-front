@@ -1,8 +1,10 @@
 <script setup>
+import Toast from 'primevue/toast';
 </script>
 
 <template>
   <div>
+    <Toast position="bottom-right"/>
     <router-view />
   </div>
 </template>
