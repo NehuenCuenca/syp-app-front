@@ -1,19 +1,6 @@
 <template>
   <nav class="navbar">
-    <!-- <div class="navbar-content">
-      <div class="navbar-brand">
-        <h1>SyP App</h1>
-      </div>
-      
-      <div class="navbar-user">
-        <button @click="handleLogout" class="logout-button">
-          Cerrar sesión
-        </button>
-      </div>
-    </div> -->
-    <Menubar :model="items">
-
-    </MenuBar>
+    <Menubar :model="items" />
   </nav>
 </template>
 
@@ -34,35 +21,36 @@ const showMessage = (success, message) => {
 const items = ref([
     {
         label: 'Pedidos',
-        icon: 'pi pi-link',
+        icon: 'pi pi-receipt',
         command: () => {
-            router.push('/pedidos');
+          router.push({name: 'Pedidos'})
         }
     },
     {
         label: 'Movimientos',
-        icon: 'pi pi-link',
+        icon: 'pi pi-arrow-right-arrow-left',
         command: () => {
-            router.push('/movimientos');
+          router.push({name: 'Movimientos de stock'})
         }
     },
     {
         label: 'Productos',
-        icon: 'pi pi-link',
+        icon: 'pi pi-th-large',
         command: () => {
-            router.push('/productos');
+          router.push({name: 'Productos'})
         }
     },
     {
         label: 'Contactos',
-        icon: 'pi pi-link',
+        icon: 'pi pi-users',
         command: () => {
-            router.push('/contactos');
+          router.push({name: 'Contactos'})
         }
     },
     {
         label: 'Cerrar sesión',
-        icon: 'pi pi-link',
+        icon: 'pi pi-sign-out',
+        class: 'logout-button',
         command: () => {
           handleLogout()
         },
@@ -74,7 +62,7 @@ const authStore = useAuthStore();
 const handleLogout = async() => {
   const { success, message } = await authStore.logout();
   showMessage(success, message);
-  router.push('/login');
+  router.push({name: 'Login'});
 };
 </script>
 
@@ -110,19 +98,8 @@ const handleLogout = async() => {
   font-size: 0.9rem;
 }
 
-.logout-button {
-  padding: 0.5rem 1rem;
-  background: transparent;
-  color: #B8CFCE;
-  border: 1px solid #B8CFCE;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.875rem;
+.logout-button .p-menubar-end	{
+  color: var(--error-color-900) !important;
 }
 
-.logout-button:hover {
-  background: #B8CFCE;
-  color: #333446;
-}
 </style>

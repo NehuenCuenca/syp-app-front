@@ -17,7 +17,7 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: false },
   },
 
   // 📌 Rutas protegidas (requieren login)
@@ -28,22 +28,22 @@ const routes = [
     children: [
       {
         path: 'pedidos',
-        name: 'Orders',
+        name: 'Pedidos',
         component: Orders
       },
       {
         path: 'movimientos',
-        name: 'StockMovements',
+        name: 'Movimientos de stock',
         component: StockMovements
       },
       {
         path: 'productos',
-        name: 'Products',
+        name: 'Productos',
         component: Products
       },
       {
         path: 'contactos',
-        name: 'Contacts',
+        name: 'Contactos',
         component: Contacts
       }
     ]
