@@ -1,6 +1,6 @@
 <template>
-  <nav class="navbar">
-    <Menubar :model="items" />
+  <nav>
+    <Menubar class="navbar" :model="items" />
   </nav>
 </template>
 
@@ -66,40 +66,20 @@ const handleLogout = async() => {
 };
 </script>
 
-<style scoped>
+<style>
 .navbar {
-  background: #333446;
-  padding: 1rem 2rem;
+  background: var(--bg-color-3);
+  padding: 1rem 1.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.navbar-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
+.p-menubar-item.logout-button .p-menubar-item-label{
+  color: var(--p-red-200);
 }
-
-.navbar-brand h1 {
-  color: #B8CFCE;
-  font-size: 1.5rem;
-  margin: 0;
+.p-menubar-item.logout-button:not(.p-disabled) > .p-menubar-item-content:hover .p-menubar-item-icon{
+  color: var(--p-red-400);
 }
-
-.navbar-user {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+.p-menubar-item.logout-button:hover .p-menubar-item-label{
+  color: var(--p-red-200);
 }
-
-.user-name {
-  color: white;
-  font-size: 0.9rem;
-}
-
-.logout-button .p-menubar-end	{
-  color: var(--error-color-900) !important;
-}
-
 </style>

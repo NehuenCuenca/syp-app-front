@@ -8,9 +8,13 @@ const authStore = useAuthStore()
 
 <template>
   <div>
-    <Navbar v-if="authStore.isLoggedIn"/>
-    <router-view />
-    <Toast position="bottom-right"/>
+    <header>
+      <Navbar v-if="authStore.isLoggedIn"/>
+    </header>
+    <main>
+      <router-view />
+      <Toast position="bottom-right"/>
+    </main>
   </div>
 </template>
 
