@@ -3,6 +3,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import vue from '@vitejs/plugin-vue'
 import Components from 'unplugin-vue-components/vite';
 import {PrimeVueResolver} from '@primevue/auto-import-resolver';
+import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -28,4 +29,9 @@ export default defineConfig({
       }
     })
   ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src')
+    }
+  }
 })
