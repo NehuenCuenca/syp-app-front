@@ -1,48 +1,40 @@
 <template>
   <TabLayout
+    :loading="loading"
+    :error="error"
+    :filters="filters"
     title="Productos"
     icon-class="pi-box"
-    :total-pages="totalPages"
-    :total-items="products.length"
+    :total-pages="pagination?.total_pages"
+    :total-items="pagination?.total"
     :items-per-page="9"
     @create="handleCreate"
     @search="handleSearch"
     @page-change="handlePageChange"
+    ref="tabLayoutRef"
   >
     <!-- Filtros personalizados -->
     <template #filter-1>
-      <select v-model="filters.category" @change="applyFilters" class="filter-select">
-        <option value="">Filtro 1</option>
-        <option value="electronics">Electrónica</option>
-        <option value="clothing">Ropa</option>
-        <option value="food">Alimentos</option>
-      </select>
+      <div class="flex items-center gap-2">
+        <Checkbox v-model="localFilters.low_stock" @change="applyFilters" inputId="isLowStock" name="is_low_stock" binary/>
+        <label for="isLowStock">Stock bajo</label>
+      </div>
     </template>
 
     <template #filter-2>
-      <select v-model="filters.status" @change="applyFilters" class="filter-select">
-        <option value="">Filtro 2</option>
-        <option value="active">Activos</option>
-        <option value="inactive">Inactivos</option>
-      </select>
+      <Select v-model="localFilters.id_category" @change="applyFilters" :options="filters.categories" optionLabel="name" optionValue="id" placeholder="Categoria" showClear />
     </template>
 
-    <template #filter-3>
-      <select v-model="filters.stock" @change="applyFilters" class="filter-select">
-        <option value="">Filtro 3</option>
-        <option value="in_stock">En stock</option>
-        <option value="low_stock">Stock bajo</option>
-        <option value="out_of_stock">Sin stock</option>
-      </select>
-    </template>
+    <!-- <template #filter-3></template> -->
 
     <!-- Tarjetas de productos -->
     <template #cards>
       <UniversalCard
-        v-for="product in products"
+        v-for="product in data"
         :primary-text="product.name"
-        :secondary-text="product.status"
-        :tertiary-text="product.price"
+        :secondary-text="product.current_stock + ' disponibles'"
+        :tertiary-text="'ID '+product.id"
+        :secondary-color="(product.is_low_stock) ? 'var(--error-color-900)':'var(--success-color-900)'"
         card-type="producto"
         @view="() => handleViewProduct(product)"
       />
@@ -54,48 +46,35 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import TabLayout from '../../components/TabLayout.vue';
-// import axios from 'axios';
+import { useCrudApi } from '../../composables/useCrudApi';
 
 const route = useRoute();
 
-const products = ref([]);
-const totalPages = ref(68);
-const filters = ref({
-  category: '',
-  status: '',
-  stock: ''
+const localFilters = ref({
+  id_category: null,
+  low_stock: false,
 });
 
-// Cargar productos
-const loadProducts = async () => {
-  try {
-    // Ejemplo de cómo se haría la petición
-    // const params = {
-    //   search: route.query.search,
-    //   page: route.query.page || 1,
-    //   sort_by: route.query.sort_by,
-    //   sort_direction: route.query.sort_direction,
-    //   category: filters.value.category,
-    //   status: filters.value.status,
-    //   stock: filters.value.stock
-    // };
-    
-    // const response = await axios.get('/api/products', { params });
-    // products.value = response.data.items;
-    // totalPages.value = response.data.totalPages;
-    
-    // Datos de ejemplo
-    products.value = Array.from({ length: 29 }, (_, i) => ({
-      id: i + 1,
-      name: `Producto ${i + 1}`,
-      price: (Math.random() * 100).toFixed(2),
-      status: Math.random() > 0.5 ? 'activo' : 'inactivo',
-      image: `https://via.placeholder.com/200x150?text=Producto+${i + 1}`
-    }));
-  } catch (error) {
-    console.error('Error cargando productos:', error);
-  }
-};
+const {
+  data,
+  filters,
+  pagination,
+  loading,
+  error,
+  fetchFilters,
+  fetchData,
+  fetchById,
+  createItem,
+  updateItem,
+  deleteItem
+} = useCrudApi();
+
+// Cargar filtros al montar
+onMounted(async () => {
+  await fetchFilters();
+  await fetchData();
+  console.log({data, filters, pagination, loading, error  });
+});
 
 const handleViewProduct = (e) => { 
   console.log('handleViewProduct', e);
@@ -107,29 +86,29 @@ const handleCreate = () => {
   // Navegar a formulario de creación o abrir modal
 };
 
-const handleSearch = (searchTerm) => {
+const handleSearch = async(searchTerm) => {
   console.log('Buscando:', searchTerm);
-  loadProducts();
+  await fetchData();
 };
 
-const handlePageChange = (page) => {
+const handlePageChange = async(page) => {
   console.log('Cambiar a página:', page);
-  loadProducts();
+  await fetchData();
 };
 
-const applyFilters = () => {
-  console.log('Aplicar filtros:', filters.value);
-  loadProducts();
+const applyFilters = async() => {
+  console.log('Aplicar filtros:', localFilters.value);
+  tabLayoutRef.value.updateQueryParams({ ...localFilters.value, page: 1 });
+  await fetchData(localFilters.value);
 };
 
 // Observar cambios en query params
-watch(() => route.query, () => {
-  loadProducts();
+watch(() => route.query, async() => {
+    await fetchData();
 }, { deep: true });
 
-onMounted(() => {
-  loadProducts();
-});
+const tabLayoutRef = ref(null);
+
 </script>
 
 <style scoped>
