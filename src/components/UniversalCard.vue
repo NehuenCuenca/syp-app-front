@@ -53,7 +53,7 @@ const props = defineProps({
     default: ''
   },
   tertiaryText: {
-    type: String,
+    type: [String, Number],
     default: ''
   },
   
