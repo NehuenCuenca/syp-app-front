@@ -7,55 +7,62 @@
     </header>
 
     <!-- Sección de filtros -->
-    <div class="filters-section">
-      <div class="filters-left">
-        <!-- Botón crear nuevo -->
-        <Button label="Nuevo" size="large" icon="pi pi-plus" v-if="showCreateButton" @click="$emit('create')" class="btn-create"/>
+    <template v-if="!loading && error === null">
+      <div class="filters-section">
+        <div class="filters-left">
+          <!-- Botón crear nuevo -->
+          <Button label="Nuevo" size="large" icon="pi pi-plus" v-if="showCreateButton" @click="$emit('create')" class="btn-create"/>
 
-        <!-- Buscador -->
-        <IconField>
-           <InputIcon class="pi pi-search" />
-           <InputText placeholder="Buscador" :value="searchValue" @input="handleSearchInput"/>
-        </IconField>
-      </div>
-
-      <!-- Filtros personalizados (slots) -->
-      <div class="filters-right">
-        <slot name="filter-1"></slot>
-        <slot name="filter-2"></slot>
-        <slot name="filter-3"></slot>
-      </div>
-    </div>
-
-    <!-- Grid de tarjetas -->
-    <div class="cards-grid">
-      <slot name="cards">
-        <!-- Placeholder si no hay contenido -->
-        <div v-for="i in 9" :key="i" class="card-placeholder">
-          <span>card</span>
+          <!-- Buscador -->
+          <IconField>
+            <InputIcon class="pi pi-search" />
+            <InputText placeholder="Buscador" showClear v-model.trim="searchValue" @input="handleSearchInput"/>
+          </IconField>
         </div>
-      </slot>
-    </div>
 
-    <!-- Paginación -->
-    <Paginator
-      v-model:first="offset"
-      @page="onPageChange"
-      :template="{
+        <!-- Filtros personalizados (slots) -->
+        <div class="filters-right" v-if="filters && !loading">
+          <slot name="filter-1"></slot>
+          <slot name="filter-2"></slot>
+          <slot name="filter-3"></slot>
+        </div>
+      </div>
+
+      <!-- Grid de tarjetas -->
+      <div class="cards-grid">
+        <slot name="cards" v-if="totalItems > 0"></slot>
+        <Message v-else severity="error" style="text-align: center;">No se encontraron registros.</Message>
+      </div>
+
+      <!-- Paginación -->
+      <Paginator
+        :first="first"
+        :rows="props.itemsPerPage"
+        :totalRecords="props.totalItems"
+        @page="onPageChange"
+        :template="{
           '640px': 'FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink',
           '1300px': 'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink',
           default: 'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink'
-      }"
-      currentPageReportTemplate="Página {currentPage}"
-      :rows="props.itemsPerPage" 
-      :totalRecords="props.totalItems"
-      >
-    </Paginator>
+        }"
+        currentPageReportTemplate="Página {currentPage}"
+      />
+    </template>
+
+    <div v-else-if="!loading && error !== null" class="error-when-loading">
+      <Message severity="error" style="text-align: center;">{{error}}. <br> Inténtalo de nuevo más tarde.</Message>
+      <Button label="Recargar" severity="contrast" icon="pi pi-refresh" iconPos="bottom" @click="() => this.$router.go()"/>
+    </div>
+    <div v-else class="loader">
+       <ProgressSpinner style="width: 100px; height: 100px" strokeWidth="2" fill="transparent"
+            animationDuration="1s" aria-label="Custom ProgressSpinner" />
+      <span>Cargando {{ title.toLocaleLowerCase() }}...</span>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const props = defineProps({
@@ -83,6 +90,18 @@ const props = defineProps({
     type: Number,
     default: 0
   },
+  loading: {
+    type: Boolean,
+    default: false
+  },
+  error: {
+    type: [String, Object, null],
+    default: null
+  },
+  filters: {
+    type: Object,
+    default: () => ({})
+  }
 });
 
 const emit = defineEmits(['create', 'filter-change', 'page-change', 'search']);
@@ -91,9 +110,10 @@ const route = useRoute();
 const router = useRouter();
 
 const searchValue = ref('');
-const currentPage = ref(1);
 const sortBy = ref('');
 const sortDirection = ref('');
+const currentPage = ref(1);
+const first = computed(() => (currentPage.value - 1) * props.itemsPerPage);
 
 // Inicializar valores desde query params
 onMounted(() => {
@@ -111,30 +131,28 @@ watch(() => route.query, (newQuery) => {
   sortDirection.value = newQuery.sort_direction || '';
 }, { deep: true });
 
+
 // Manejo del buscador con debounce
 let searchTimeout;
-const handleSearchInput = (event) => {
-  const value = event.target.value;
-  searchValue.value = value;
-  
+const handleSearchInput = () => {  
+  if(searchValue.value.length === 0) return
+
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(() => {
-    updateQueryParams({ search: value, page: 1 });
-    emit('search', value);
-  }, 500);
+    updateQueryParams({ search: searchValue.value, page: 1 });
+    emit('search', searchValue.value);
+  }, 1000);
 };
-
-const offset = ref(0);
 
 // Cambiar página
 const onPageChange = (event) => {
-  const newPage = event.page + 1; // Convert to 1-indexed            
-  if (newPage < 1 || newPage > props.totalPages) return;
+  const newPage = event.page + 1; // Paginator usa base 0
+  if (newPage < 1 || newPage > props.totalPages ||currentPage.value === newPage ) return;
+
   currentPage.value = newPage;
   updateQueryParams({ page: newPage });
   emit('page-change', newPage);
-  
-  // Scroll to top
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 } 
 
@@ -202,6 +220,8 @@ defineExpose({
 
 .filters-left {
   display: flex;
+  align-items: center;
+
   flex-wrap: wrap;
   gap: 0.75rem;
   width: 100%;
@@ -255,6 +275,7 @@ defineExpose({
 
 .filters-right {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 0.75rem;
   width: 100%;
@@ -269,15 +290,26 @@ defineExpose({
   margin-bottom: 2rem;
 }
 
-.card-placeholder {
-  background: #cbd5e1;
+.loader {
   border-radius: 0.5rem;
   padding: 3rem 1rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #1e293b;
-  font-weight: 500;
+  color: var(--txt-color-1);
+  font: normal normal 600 clamp(var(--subtitle-fs), 2.5vw, var(--heading-sm-fs)) 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 150px;
+}
+
+.error-when-loading{
+  /* border-radius: 0.5rem; */
+  padding: 3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
   min-height: 150px;
 }
 
