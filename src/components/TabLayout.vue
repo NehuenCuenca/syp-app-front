@@ -135,8 +135,6 @@ watch(() => route.query, (newQuery) => {
 // Manejo del buscador con debounce
 let searchTimeout;
 const handleSearchInput = () => {  
-  if(searchValue.value.length === 0) return
-
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(() => {
     updateQueryParams({ search: searchValue.value, page: 1 });

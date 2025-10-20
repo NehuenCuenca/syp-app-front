@@ -2,7 +2,8 @@
   <div class="universal-card">
     <!-- Texto terciario -->
     <div v-if="tertiaryText" class="card-tertiary">
-      {{ tertiaryText }}
+      <slot name="firstTertiaryText"></slot>
+      <slot name="secondTertiaryText"></slot>
     </div>
 
     <!-- Contenedor del texto primario y menú -->
@@ -149,6 +150,8 @@ const getViewLabel = () => {
   font-size: clamp(14px, 1.5vw, 16px);
   font-weight: bold;
   color: var(--bg-color-1);
+  display: flex;
+  gap: 15px;
 }
 
 .card-header {
