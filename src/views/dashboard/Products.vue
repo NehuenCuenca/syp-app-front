@@ -4,7 +4,7 @@
     :error="productsError"
     :filters="productsFilters"
     title="Productos"
-    icon-class="pi-box"
+    icon-class="pi-th-large"
     :total-pages="productsPagination?.total_pages"
     :total-items="productsPagination?.total"
     :items-per-page="9"
@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import TabLayout from '~components/TabLayout.vue';
 import { useCrudApi } from '~composables/useCrudApi';
@@ -110,6 +110,8 @@ const {
 
 // Cargar filtros al montar
 onMounted(async () => {
+  console.log(Object.keys(route.query));
+  // if(){}
   await fetchProductFilters();
   await fetchProducts();
 });
@@ -159,11 +161,6 @@ const applyFilters = async() => {
   tabLayoutRef.value.updateQueryParams({ ...localFilters.value, page: 1 });
   await fetchProducts(localFilters.value);
 };
-
-// Observar cambios en query params
-watch(() => route.query, async() => {
-    await fetchProducts();
-}, { deep: true });
 
 const tabLayoutRef = ref(null);
 
