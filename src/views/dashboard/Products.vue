@@ -1,14 +1,14 @@
 <template>
   <TabLayout
-    :loading="loading"
-    :error="error"
-    :filters="filters"
+    :loading="productsLoading"
+    :error="productsError"
+    :filters="productsFilters"
     title="Productos"
     icon-class="pi-box"
-    :total-pages="pagination?.total_pages"
-    :total-items="pagination?.total"
+    :total-pages="productsPagination?.total_pages"
+    :total-items="productsPagination?.total"
     :items-per-page="9"
-    @create="handleCreate"
+    @create="() => openModal('create')"
     @search="handleSearch"
     @page-change="handlePageChange"
     ref="tabLayoutRef"
@@ -22,7 +22,7 @@
     </template>
 
     <template #filter-2>
-      <Select v-model="localFilters.id_category" @change="applyFilters" :options="filters.categories" optionLabel="name" optionValue="id" placeholder="Categoria" showClear />
+      <Select v-model="localFilters.id_category" @change="applyFilters" :options="productsFilters.categories" optionLabel="name" optionValue="id" placeholder="Categoria" showClear />
     </template>
 
     <!-- <template #filter-3></template> -->
@@ -30,16 +30,36 @@
     <!-- Tarjetas de productos -->
     <template #cards>
       <UniversalCard
-        v-for="product in data"
+        v-for="product in productsData"
         :primary-text="product.name"
         :secondary-text="product.current_stock + ' disponibles'"
         :tertiary-text="'ID '+product.id"
         :secondary-color="(product.is_low_stock) ? 'var(--error-color-900)':'var(--success-color-900)'"
         card-type="producto"
         @view="() => handleViewProduct(product)"
-      />
+        @edit="() => handleEditProduct(product)"
+        @delete="() => handleDeleteProduct(product)"
+      >
+        <template #firstTertiaryText>
+          <p>C: {{ formatCurrency(product.buy_price)}}</p>
+        </template>
+        <template #secondTertiaryText>
+          <p>V: {{ formatCurrency(product.sale_price)}}</p>
+        </template>
+    </UniversalCard>
     </template>
   </TabLayout>
+
+  <!-- Modal CRUD Genérico -->
+  <ModalCRUDRegister
+    :visible="showModal"
+    :action="currentAction"
+    :modelName="'producto'"
+    :recordData="selectedProduct"
+    :componentMap="productComponentMap"
+    @close="closeModal"
+    @finish="handleFinishAction"
+  />
 </template>
 
 <script setup>
@@ -47,68 +67,181 @@ import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import TabLayout from '../../components/TabLayout.vue';
 import { useCrudApi } from '../../composables/useCrudApi';
+import { useToast } from 'primevue/usetoast';
+import ModalCRUDRegister from '../../components/ModalCRUDRegister.vue';
+import ProductCreateForm from '../products/ProductCreateForm.vue';
+import ProductEditForm from '../products/ProductEditForm.vue';
+import ProductReadDetails from '../products/ProductReadDetails.vue';
+import ProductDeleteConfirm from '../products/ProductDeleteConfirm.vue';
+
+const formatCurrency = (value) => {
+  if (!value) return '--';
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+  }).format(value);
+};
+
+const toast = useToast();
 
 const route = useRoute();
 
 const localFilters = ref({
-  id_category: null,
-  low_stock: false,
+  id_category: route.query?.id_category || null,
+  low_stock: route.query?.low_stock==='true' || false,
 });
 
 const {
-  data,
-  filters,
-  pagination,
-  loading,
-  error,
-  fetchFilters,
-  fetchData,
-  fetchById,
-  createItem,
-  updateItem,
-  deleteItem
+  data: productsData,
+  loading: productsLoading,
+  error: productsError,
+  filters: productsFilters,
+  pagination: productsPagination,
+  fetchData: fetchProducts,
+  fetchFilters: fetchProductFilters
+} = useCrudApi();
+
+const {
+  data: singleProductData,
+  // loading: singleProductLoading,
+  error: singleProductError,
+  fetchById
 } = useCrudApi();
 
 // Cargar filtros al montar
 onMounted(async () => {
-  await fetchFilters();
-  await fetchData();
-  console.log({data, filters, pagination, loading, error  });
+  await fetchProductFilters();
+  await fetchProducts();
 });
 
-const handleViewProduct = (e) => { 
-  console.log('handleViewProduct', e);
+const handleViewProduct = async(e) => { 
+  const product = await fetchById(e.id)
+  if(!singleProductError.value && singleProductData.value){
+    openModal('read', product);
+  } else {
+    toast.add({ severity: 'error', closable: true, summary: 'Error al obtener el producto:'  + singleProductError.value });  
+    return;
+  }
  }
 
-// Handlers
-const handleCreate = () => {
-  console.log('Crear nuevo producto');
-  // Navegar a formulario de creación o abrir modal
-};
+const handleEditProduct = async(e) => { 
+  const product = await fetchById(e.id)
+  if(!singleProductError.value && singleProductData.value){
+    openModal('edit', product);
+  } else {
+    toast.add({ severity: 'error', closable: true, summary: 'Error al obtener el producto:'  + singleProductError.value });  
+    return;
+  }
+ }
+
+const handleDeleteProduct = async(e) => { 
+  const product = await fetchById(e.id)
+  if(!singleProductError.value && singleProductData.value){
+    openModal('delete', product);
+  } else {
+    toast.add({ severity: 'error', closable: true, summary: 'Error al obtener el producto:'  + singleProductError.value });  
+    return;
+  }
+ }
 
 const handleSearch = async(searchTerm) => {
   console.log('Buscando:', searchTerm);
-  await fetchData();
+  await fetchProducts();
 };
 
 const handlePageChange = async(page) => {
   console.log('Cambiar a página:', page);
-  await fetchData();
+  await fetchProducts();
 };
 
 const applyFilters = async() => {
   console.log('Aplicar filtros:', localFilters.value);
   tabLayoutRef.value.updateQueryParams({ ...localFilters.value, page: 1 });
-  await fetchData(localFilters.value);
+  await fetchProducts(localFilters.value);
 };
 
 // Observar cambios en query params
 watch(() => route.query, async() => {
-    await fetchData();
+    await fetchProducts();
 }, { deep: true });
 
 const tabLayoutRef = ref(null);
 
+// Mapa de componentes CRUD para productos
+const productComponentMap = {
+  create: ProductCreateForm,
+  edit: ProductEditForm,
+  read: ProductReadDetails,
+  delete: ProductDeleteConfirm
+};
+
+// Estado de la aplicación
+const showModal = ref(false);
+const currentAction = ref('create');
+const selectedProduct = ref({});
+
+// Abrir modal con la acción y datos específicos
+const openModal = (action, product = {}) => {
+  currentAction.value = action;
+  selectedProduct.value = product;
+  showModal.value = true;
+};
+
+// Cerrar modal y limpiar estado
+const closeModal = () => {
+  showModal.value = false;
+  setTimeout(() => {
+    selectedProduct.value = {};
+    currentAction.value = 'create';
+  }, 300);
+};
+
+// Manejar el submit del formulario según la acción
+// ! CAMBIAR ESTO: no manejar el submit aca, manejar la logica en cada formulario individual (validaciones de back), y de ahi si, handlear la logica luego de creacion, actualizacion, eliminacion 
+const handleFinishAction = (modalData) => {
+  console.log('📦 Datos recibidos desde el modal:', modalData);
+  console.log('🔧 Acción ejecutada:', currentAction.value);
+
+  switch (currentAction.value) {
+    case 'create':
+      handleCreate(modalData);
+      break;
+    case 'edit':
+      handleUpdate(modalData);
+      break;
+    case 'delete':
+      handleDelete(modalData);
+      break;
+  }
+  
+};
+
+// Crear nuevo producto
+const handleCreate = async(modalData) => {
+  if(modalData){
+    closeModal()
+    toast.add({ severity: 'success', life: 3000, summary: 'Producto creado exitosamente' });  
+    await fetchProducts({ page: 1});
+  }
+}; 
+
+// Actualizar producto existente
+const handleUpdate = async(modalData) => {
+  if(modalData){
+    closeModal()
+    toast.add({ severity: 'success', life: 3000, summary: 'Producto actualizado exitosamente' });  
+    await fetchProducts({ page: 1});
+  }
+};
+
+// Eliminar producto
+const handleDelete = async(modalData) => {
+  if(modalData){
+    closeModal()
+    toast.add({ severity: 'success', life: 3000, summary: 'Producto eliminado exitosamente' });  
+    await fetchProducts({ page: 1});
+  }
+};
 </script>
 
 <style scoped>
