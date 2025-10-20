@@ -28,6 +28,12 @@
 		--heading-lg-fs: 48px;
 		--display-sm-fs: 60px;
 		--display-lg-fs: 72px;
+
+		--p-toast-width: 22rem !important;
+		--p-toast-error-background: color-mix(in srgb,var(--p-red-500),transparent 30%) !important;
+		--p-toast-error-color: black !important;
+		--p-toast-success-background: color-mix(in srgb,var(--p-green-500),transparent 30%) !important;
+		--p-toast-success-color: black !important;
 	}
  
 
@@ -154,3 +160,5 @@ html {
 }
 
 .input_txt-classic{ font-size: 3rem}
+
+

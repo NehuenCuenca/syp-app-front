@@ -73,8 +73,8 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
   document.title = to.meta.title 
-    ? `${to.meta.title} - Mi App` 
-    : 'Mi App';
+    ? `${to.meta.title} - SyP app` 
+    : 'SyP app';
   
   // Verificar si la ruta requiere autenticación
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth !== false)
