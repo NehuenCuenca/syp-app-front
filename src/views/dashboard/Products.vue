@@ -65,14 +65,14 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import TabLayout from '../../components/TabLayout.vue';
-import { useCrudApi } from '../../composables/useCrudApi';
+import TabLayout from '~components/TabLayout.vue';
+import { useCrudApi } from '~composables/useCrudApi';
 import { useToast } from 'primevue/usetoast';
-import ModalCRUDRegister from '../../components/ModalCRUDRegister.vue';
-import ProductCreateForm from '../products/ProductCreateForm.vue';
-import ProductEditForm from '../products/ProductEditForm.vue';
-import ProductReadDetails from '../products/ProductReadDetails.vue';
-import ProductDeleteConfirm from '../products/ProductDeleteConfirm.vue';
+import ModalCRUDRegister from '~components/ModalCRUDRegister.vue';
+import ProductCreateForm from '~views/products/ProductCreateForm.vue';
+import ProductEditForm from '~views/products/ProductEditForm.vue';
+import ProductReadDetails from '~views/products/ProductReadDetails.vue';
+import ProductDeleteConfirm from '~views/products/ProductDeleteConfirm.vue';
 
 const formatCurrency = (value) => {
   if (!value) return '--';

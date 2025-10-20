@@ -5,11 +5,10 @@
 </template>
 
 <script setup>
+import { useToast } from 'primevue/usetoast';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
-import Menubar from 'primevue/menubar';
-import { ref } from 'vue'
-import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
 

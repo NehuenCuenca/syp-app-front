@@ -40,8 +40,6 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import Menu from 'primevue/menu';
-import Button from 'primevue/button';
 
 const props = defineProps({
   // Textos

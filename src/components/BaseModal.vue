@@ -15,7 +15,6 @@
 </template>
 
 <script setup>
-import Dialog from 'primevue/dialog';
 
 // Props del componente
 const props = defineProps({
