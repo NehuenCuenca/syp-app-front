@@ -110,10 +110,8 @@ const {
 
 // Cargar filtros al montar
 onMounted(async () => {
-  console.log(Object.keys(route.query));
-  // if(){}
   await fetchProductFilters();
-  await fetchProducts();
+  await fetchProducts({ ...route.query, page: route.query?.page || 1 });
 });
 
 const handleViewProduct = async(e) => { 
@@ -148,18 +146,18 @@ const handleDeleteProduct = async(e) => {
 
 const handleSearch = async(searchTerm) => {
   console.log('Buscando:', searchTerm);
-  await fetchProducts();
+  await fetchProducts({ search: searchTerm, page: 1 });
 };
 
 const handlePageChange = async(page) => {
   console.log('Cambiar a página:', page);
-  await fetchProducts();
+  await fetchProducts({ ...route.query, page });
 };
 
 const applyFilters = async() => {
   console.log('Aplicar filtros:', localFilters.value);
   tabLayoutRef.value.updateQueryParams({ ...localFilters.value, page: 1 });
-  await fetchProducts(localFilters.value);
+  await fetchProducts({ ...route.query, ...localFilters.value, page: 1});
 };
 
 const tabLayoutRef = ref(null);
@@ -218,7 +216,7 @@ const handleCreate = async(modalData) => {
   if(modalData){
     closeModal()
     toast.add({ severity: 'success', life: 3000, summary: 'Producto creado exitosamente' });  
-    await fetchProducts({ page: 1});
+    await fetchProducts({ page: 1 });
   }
 }; 
 
@@ -227,7 +225,7 @@ const handleUpdate = async(modalData) => {
   if(modalData){
     closeModal()
     toast.add({ severity: 'success', life: 3000, summary: 'Producto actualizado exitosamente' });  
-    await fetchProducts({ page: 1});
+    await fetchProducts({ page: 1 });
   }
 };
 
@@ -236,7 +234,7 @@ const handleDelete = async(modalData) => {
   if(modalData){
     closeModal()
     toast.add({ severity: 'success', life: 3000, summary: 'Producto eliminado exitosamente' });  
-    await fetchProducts({ page: 1});
+    await fetchProducts({ page: 1 });
   }
 };
 </script>
