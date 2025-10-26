@@ -8,7 +8,7 @@
 
     <!-- Contenedor del texto primario y menú -->
     <div class="card-header">
-      <div class="card-primary" :style="{ color: primaryColor }">
+      <div class="card-primary" :style="{ color: primaryColor }" :title="primaryText">
         {{ truncateText(primaryText, 20) }}
       </div>
 
@@ -177,7 +177,7 @@ const getViewLabel = () => {
 }
 
 .card-secondary {
-  font-size: clamp(18px, 2vw, 24px);
+  font-size: clamp(18px, 1.5vw, 24px);
   font-weight: normal;
   color: var(--bg-color-1);
 }

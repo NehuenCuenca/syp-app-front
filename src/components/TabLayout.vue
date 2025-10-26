@@ -30,7 +30,7 @@
 
       <!-- Grid de tarjetas -->
       <div class="cards-grid">
-        <slot name="cards" v-if="totalItems > 0"></slot>
+        <slot name="cards" v-if="(totalItems > 0) && (currentPage <= totalPages)"></slot>
         <Message v-else severity="error" style="text-align: center;">No se encontraron registros.</Message>
       </div>
 
