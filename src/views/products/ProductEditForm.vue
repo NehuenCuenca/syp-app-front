@@ -77,7 +77,7 @@
           v-model="formData.current_stock"
           locale="es-AR"
           placeholder="1, 10, 1.000"
-          min="0"
+          :min="0"
           :class="{ 'p-invalid': errors.current_stock }"
         />
         <small v-if="errors.current_stock" class="p-error">{{ errors.current_stock }}</small>
@@ -91,7 +91,7 @@
           v-model="formData.min_stock_alert"
           locale="es-AR"
           placeholder="1, 5, 15"
-          min="1"
+          :min="2"
           :class="{ 'p-invalid': errors.min_stock_alert }"
         />
         <small v-if="errors.min_stock_alert" class="p-error">{{ errors.min_stock_alert }}</small>
@@ -156,9 +156,9 @@ onMounted(async() => {
 const formData = reactive({
   id: props.recordData.id || null,
   name: props.recordData.name || '',
-  buy_price: props.recordData.buy_price || 0.00,
+  buy_price: parseFloat(props.recordData.buy_price) || 0.00,
   profit_percentage: parseFloat(props.recordData.profit_percentage).toFixed(2) || 1.4,
-  sale_price: props.recordData.sale_price || 0.00,
+  sale_price: parseFloat(props.recordData.sale_price) || 0.00,
   current_stock: props.recordData.current_stock || 0,
   min_stock_alert: props.recordData.min_stock_alert || 10,
   category: props.recordData.category.name || ''
