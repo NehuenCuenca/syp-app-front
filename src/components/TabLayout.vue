@@ -37,8 +37,8 @@
       <!-- Paginación -->
       <Paginator
         :first="first"
-        :rows="props.itemsPerPage"
-        :totalRecords="props.totalItems"
+        :rows="itemsPerPage"
+        :totalRecords="totalItems"
         @page="onPageChange"
         :template="{
           '640px': 'FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink',
@@ -78,6 +78,10 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
+  currentPage: {
+    type: Number,
+    default: 1
+  },
   totalPages: {
     type: Number,
     default: 68
@@ -112,13 +116,13 @@ const router = useRouter();
 const searchValue = ref('');
 const sortBy = ref('');
 const sortDirection = ref('');
-const currentPage = ref(1);
-const first = computed(() => (currentPage.value - 1) * props.itemsPerPage);
+// const currentPage = ref(1);
+const first = computed(() => (props.currentPage - 1) * props.itemsPerPage);
 
 // Inicializar valores desde query params
 onMounted(() => {
   searchValue.value = route.query.search || '';
-  currentPage.value = parseInt(route.query.page) || 1;
+  // currentPage.value = parseInt(route.query.page) || 1;
   sortBy.value = route.query.sort_by || '';
   sortDirection.value = route.query.sort_direction || '';
 });
@@ -126,7 +130,7 @@ onMounted(() => {
 // Observar cambios en la ruta
 watch(() => route.query, (newQuery) => {
   searchValue.value = newQuery.search || '';
-  currentPage.value = parseInt(newQuery.page) || 1;
+  // currentPage.value = parseInt(newQuery.page) || 1;
   sortBy.value = newQuery.sort_by || '';
   sortDirection.value = newQuery.sort_direction || '';
 }, { deep: true });
@@ -145,9 +149,9 @@ const handleSearchInput = () => {
 // Cambiar página
 const onPageChange = (event) => {
   const newPage = event.page + 1; // Paginator usa base 0
-  if (newPage < 1 || newPage > props.totalPages ||currentPage.value === newPage ) return;
+  if (newPage < 1 || newPage > props.totalPages || props.currentPage === newPage ) return;
 
-  currentPage.value = newPage;
+  // currentPage.value = newPage;
   updateQueryParams({ page: newPage });
   emit('page-change', newPage);
 
@@ -172,7 +176,7 @@ const updateQueryParams = (params) => {
 // Exponer funciones para uso externo
 defineExpose({
   updateQueryParams,
-  currentPage,
+  // currentPage,
   searchValue
 });
 </script>
