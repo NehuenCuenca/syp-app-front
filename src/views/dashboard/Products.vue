@@ -7,6 +7,7 @@
     icon-class="pi-th-large"
     :total-pages="productsPagination?.total_pages"
     :total-items="productsPagination?.total"
+    :current-page="productsPagination?.current_page"
     :items-per-page="9"
     @create="() => openModal('create')"
     @search="handleSearch"
@@ -146,7 +147,7 @@ const handleDeleteProduct = async(e) => {
 
 const handleSearch = async(searchTerm) => {
   console.log('Buscando:', searchTerm);
-  await fetchProducts({ search: searchTerm, page: 1 });
+  await fetchProducts({ ...route.query, ...localFilters.value, search: searchTerm, page: 1 });
 };
 
 const handlePageChange = async(page) => {
@@ -156,7 +157,7 @@ const handlePageChange = async(page) => {
 
 const applyFilters = async() => {
   console.log('Aplicar filtros:', localFilters.value);
-  tabLayoutRef.value.updateQueryParams({ ...localFilters.value, page: 1 });
+  tabLayoutRef.value.updateQueryParams({ ...route.query, ...localFilters.value, page: 1 });
   await fetchProducts({ ...route.query, ...localFilters.value, page: 1});
 };
 
@@ -208,7 +209,6 @@ const handleFinishAction = (modalData) => {
       handleDelete(modalData);
       break;
   }
-  
 };
 
 // Crear nuevo producto
@@ -216,7 +216,7 @@ const handleCreate = async(modalData) => {
   if(modalData){
     closeModal()
     toast.add({ severity: 'success', life: 3000, summary: 'Producto creado exitosamente' });  
-    await fetchProducts({ page: 1 });
+    await fetchProducts({ ...route.query, ...localFilters.value });
   }
 }; 
 
@@ -225,7 +225,7 @@ const handleUpdate = async(modalData) => {
   if(modalData){
     closeModal()
     toast.add({ severity: 'success', life: 3000, summary: 'Producto actualizado exitosamente' });  
-    await fetchProducts({ page: 1 });
+    await fetchProducts({ ...route.query, ...localFilters.value });
   }
 };
 
@@ -234,7 +234,7 @@ const handleDelete = async(modalData) => {
   if(modalData){
     closeModal()
     toast.add({ severity: 'success', life: 3000, summary: 'Producto eliminado exitosamente' });  
-    await fetchProducts({ page: 1 });
+    await fetchProducts({ ...route.query, ...localFilters.value });
   }
 };
 </script>
