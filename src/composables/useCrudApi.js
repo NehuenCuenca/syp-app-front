@@ -1,6 +1,6 @@
 // composables/useCrudApi.js
 import { ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 
 /**
@@ -11,6 +11,7 @@ import axios from 'axios';
  */
 export function useCrudApi() {
   const route = useRoute();
+  const router = useRouter();
 
   // Estados reactivos
   const data = ref(null);
@@ -28,6 +29,21 @@ export function useCrudApi() {
       throw new Error('route.meta.apiRoute no está definido');
     }
     return route.meta.apiRoute;
+  };
+
+  // Actualizar query params en la URL
+  const updateQueryParams = (params) => {
+    const query = { ...route.query };
+    
+    Object.keys(params).forEach(key => {
+      if (params[key] === '' || params[key] === null || params[key] === undefined) {
+        delete query[key];
+      } else {
+        query[key] = params[key];
+      }
+    });
+    
+    router.push({ query });
   };
 
   /**
@@ -123,6 +139,8 @@ export function useCrudApi() {
         if (response.data.meta?.pagination) {
           pagination.value = response.data.meta.pagination;
         }
+
+        updateQueryParams(params);
         
         return {
           data: response.data.data,
