@@ -1,7 +1,7 @@
 <template>
   <div class="universal-card">
     <!-- Texto terciario -->
-    <div v-if="tertiaryText" class="card-tertiary">
+    <div class="card-tertiary">
       <slot name="firstTertiaryText"></slot>
       <slot name="secondTertiaryText"></slot>
     </div>
@@ -9,7 +9,7 @@
     <!-- Contenedor del texto primario y menú -->
     <div class="card-header">
       <div class="card-primary" :style="{ color: primaryColor }" :title="primaryText">
-        {{ truncateText(primaryText, 20) }}
+        {{ truncateText(primaryText, 25) }}
       </div>
 
       <!-- Botón del menú -->
@@ -51,10 +51,10 @@ const props = defineProps({
     type: String,
     default: ''
   },
-  tertiaryText: {
+  /* tertiaryText: {
     type: [String, Number],
     default: ''
-  },
+  }, */
   
   // Colores personalizados
   primaryColor: {
