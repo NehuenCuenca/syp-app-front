@@ -4,7 +4,7 @@
     :error="contactsError"
     :filters="contactsFilters"
     title="Contactos"
-    icon-class="pi-box"
+    icon-class="pi-users"
     :total-pages="contactsPagination?.total_pages"
     :total-items="contactsPagination?.total"
     :current-page="contactsPagination?.current_page"
@@ -25,16 +25,15 @@
     <template #cards>
       <UniversalCard
         v-for="contact in contactsData"
-        :primary-text="contact.company_name"
+        :primary-text="`${contact.id}| ${contact.company_name}`"
         :secondary-text="contact.last_order"
-        :tertiary-text="'ID '+contact.id"
         card-type="contacto"
         @view="() => handleViewContact(contact)"
         @edit="() => handleEditContact(contact)"
         @delete="() => handleDeleteContact(contact)"
       >
         <template #firstTertiaryText>
-          <p>{{ contact.phone ?? 'NA' }}</p>
+          <p>{{ contact.phone ?? 'VACÍO' }}</p>
         </template>
     </UniversalCard>
     </template>
