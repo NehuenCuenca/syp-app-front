@@ -14,6 +14,8 @@ axios.interceptors.response.use(
       // Token expirado o inválido
       // Puedes hacer logout automático aquí si lo deseas
       console.error('No autorizado. Redirigiendo al login...')
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
     }
     return Promise.reject(error)
   }
