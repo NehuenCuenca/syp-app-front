@@ -23,7 +23,7 @@
     </template>
 
     <template #filter-2>
-      <Select v-model="localFilters.id_category" @change="applyFilters" :options="productsFilters.categories" optionLabel="name" optionValue="id" placeholder="Categoria" showClear />
+      <Select v-model="localFilters.id_category" @change="applyFilters" :options="productsFilters.categories" optionLabel="alias" optionValue="id" placeholder="Categoria" showClear />
     </template>
 
     <!-- <template #filter-3></template> -->
@@ -32,9 +32,8 @@
     <template #cards>
       <UniversalCard
         v-for="product in productsData"
-        :primary-text="product.name"
+        :primary-text="`${product.code}| ${product.name}`"
         :secondary-text="product.current_stock + ' disponibles'"
-        :tertiary-text="'ID '+product.id"
         :secondary-color="(product.is_low_stock) ? 'var(--error-color-900)':'var(--success-color-900)'"
         card-type="producto"
         @view="() => handleViewProduct(product)"
