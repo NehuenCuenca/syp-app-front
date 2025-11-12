@@ -17,7 +17,7 @@
 
       <!-- Campo: Nombre titular -->
       <div class="field">
-        <label for="contact_name" class="required">Titular</label>
+        <label for="contact_name">Titular</label>
         <InputText
           id="contact_name"
           v-model="formData.contact_name"
@@ -149,10 +149,7 @@ const validateForm = () => {
     errors.value.company_name = 'El nombre del negocio es requerido';
     isValid = false;
   }
-  if (!formData.contact_name || formData.contact_name.trim() === '') {
-    errors.value.contact_name = 'El nombre del contacto es requerido';
-    isValid = false;
-  }
+  
   if (!formData.contact_type || formData.contact_type.trim() === '') {
     errors.value.contact_type = 'El tipo de contacto es requerido';
     isValid = false;
