@@ -3,6 +3,12 @@
 <template>
   <div class="contact-read-details">
     <div class="details-content">
+      <!-- Detalle: COD -->
+      <div v-if="recordData.id" class="detail-row">
+        <span class="detail-label">COD:</span>
+        <span class="detail-value detail-id">{{ recordData.code }}</span>
+      </div>
+      
       <!-- Detalle: Nombre -->
       <div class="detail-row">
         <span class="detail-label">Negocio:</span>
@@ -44,13 +50,6 @@
         <span class="detail-value">
           {{ recordData.contact_type }}
         </span>
-      </div>
-
-
-      <!-- Detalle: ID (si existe) -->
-      <div v-if="recordData.id" class="detail-row">
-        <span class="detail-label">ID:</span>
-        <span class="detail-value detail-id">{{ recordData.id }}</span>
       </div>
     </div>
 
