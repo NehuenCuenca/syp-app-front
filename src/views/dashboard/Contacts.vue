@@ -25,15 +25,15 @@
     <template #cards>
       <UniversalCard
         v-for="contact in contactsData"
-        :primary-text="`${contact.id}| ${contact.company_name}`"
-        :secondary-text="contact.last_order"
+        :primary-text="`${contact.search_alias}`"
+        :secondary-text="contact.phone ?? 'Sin telefono'"
         card-type="contacto"
         @view="() => handleViewContact(contact)"
         @edit="() => handleEditContact(contact)"
         @delete="() => handleDeleteContact(contact)"
       >
         <template #firstTertiaryText>
-          <p>{{ contact.phone ?? 'VACÍO' }}</p>
+          <p>{{ contact.contact_type }}</p>
         </template>
     </UniversalCard>
     </template>
