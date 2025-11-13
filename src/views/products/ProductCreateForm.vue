@@ -17,8 +17,8 @@
 
       <!-- Campo: categoria -->
       <div class="field">
-        <label for="category">Categoria</label>
-        <AutoComplete id="category" v-model="formData.category" dropdown :suggestions="categories" placeholder="Escribi o buscala"/>
+        <label for="category" class="required">Categoria</label>
+        <AutoComplete id="category" v-model="formData.category" dropdown :suggestions="categories"  placeholder="Creala o buscala"/>
         <small v-if="errors.category" class="p-error">{{ errors.category }}</small>
       </div>
 
@@ -28,10 +28,7 @@
         <InputNumber
           id="buy_price"
           v-model="formData.buy_price"
-          mode="currency"
-          currency="ARS"
-          locale="es-AR"
-          placeholder="0.00"
+          prefix="$"
           :class="{ 'p-invalid': errors.buy_price }"
         />
         <small v-if="errors.buy_price" class="p-error">{{ errors.buy_price }}</small>
@@ -39,16 +36,13 @@
 
       <!-- Campo: ganancia -->
       <div class="field">
-        <label for="profit_percentage">Ganancia (%)</label>
+        <label for="profit_percentage" class="required">Ganancia (%)</label>
         <InputNumber
           id="profit_percentage"
           v-model="formData.profit_percentage"
-          mode="decimal"
           suffix="%"
-          locale="es-AR"
-          placeholder="Minimo 1.1 (10%)"
-          :min="1.1"
-          :maxFractionDigits="2"
+          placeholder="1%, 10%, 50%..."
+          :min="1"
           :class="{ 'p-invalid': errors.profit_percentage }"
         />
         <small v-if="errors.profit_percentage" class="p-error">{{ errors.profit_percentage }}</small>
@@ -56,14 +50,11 @@
 
       <!-- Campo: precio de venta -->
       <div class="field">
-        <label for="sale_price" class="required">Precio de VENTA</label>
+        <label for="sale_price">Precio de VENTA</label>
         <InputNumber
           id="sale_price"
           v-model="formData.sale_price"
-          mode="currency"
-          currency="ARS"
-          locale="es-AR"
-          placeholder="0.00"
+          prefix="$"
           :class="{ 'p-invalid': errors.sale_price }"
         />
         <small v-if="errors.sale_price" class="p-error">{{ errors.sale_price }}</small>
@@ -75,8 +66,7 @@
         <InputNumber
           id="current_stock"
           v-model="formData.current_stock"
-          locale="es-AR"
-          placeholder="1, 10, 1.000"
+          placeholder="1, 10, 1.000 unidades"
           :class="{ 'p-invalid': errors.current_stock }"
         />
         <small v-if="errors.current_stock" class="p-error">{{ errors.current_stock }}</small>
@@ -84,12 +74,11 @@
 
       <!-- Campo: Alerta minimo de stock -->
       <div class="field">
-        <label for="min_stock_alert">Alerta minimo de stock</label>
+        <label for="min_stock_alert" class="required">Alerta minimo de stock</label>
         <InputNumber
           id="min_stock_alert"
           v-model="formData.min_stock_alert"
-          locale="es-AR"
-          placeholder="1, 5, 15"
+          placeholder="1, 5, 15 unidades"
           :class="{ 'p-invalid': errors.min_stock_alert }"
         />
         <small v-if="errors.min_stock_alert" class="p-error">{{ errors.min_stock_alert }}</small>
@@ -136,7 +125,7 @@ onMounted(async() => {
   await fetchFilters();
 
   if(!error.value && filters.value.categories.length > 0){
-    categories.value = filters.value.categories.map(({name}) => name);
+    categories.value = filters.value.categories.map(({ name }) => name);
   } else {
     categories.value = [];
   }
@@ -145,9 +134,9 @@ onMounted(async() => {
 // Estado del formulario
 const formData = reactive({
   name: '',
-  buy_price: 0.00,
-  profit_percentage: 1.4,
-  sale_price: 0.00,
+  buy_price: 0,
+  profit_percentage: 10,
+  sale_price: 0,
   current_stock: 1,
   min_stock_alert: 10,
   category: ''
@@ -219,7 +208,7 @@ const handleCancel = () => {
 };
 
 const calculateSalePrice = () => {
-    formData.sale_price = parseFloat((formData.buy_price * formData.profit_percentage).toFixed(2));
+    formData.sale_price = parseInt((formData.buy_price * (formData.profit_percentage/100 + 1)).toFixed(0));
 }
 
 watch( () => formData.buy_price, calculateSalePrice );
