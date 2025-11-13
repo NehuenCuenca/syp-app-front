@@ -2,29 +2,23 @@
 <!-- Vista de solo lectura de los detalles de un contacto -->
 <template>
   <div class="contact-read-details">
-    <div class="details-content">
-      <!-- Detalle: COD -->
-      <div v-if="recordData.id" class="detail-row">
-        <span class="detail-label">COD:</span>
-        <span class="detail-value detail-id">{{ recordData.code }}</span>
-      </div>
-      
+    <div class="details-content">      
       <!-- Detalle: Nombre -->
       <div class="detail-row">
         <span class="detail-label">Negocio:</span>
-        <span class="detail-value">{{ recordData.company_name }}</span>
+        <span class="detail-value">{{ recordData.search_alias }}</span>
       </div>
 
       <div class="detail-row">
         <span class="detail-label">Titular:</span>
-        <span class="detail-value">{{ recordData.contact_name }}</span>
+        <span class="detail-value">{{ recordData.contact_name || '---'}}</span>
       </div>
 
       <!-- Detalle: Telefono -->
       <div class="detail-row">
         <span class="detail-label">Telefono:</span>
         <span class="detail-value">
-          {{ recordData.phone }}
+          {{ recordData.phone || '---'}}
         </span>
       </div>
 
@@ -32,7 +26,7 @@
       <div class="detail-row">
         <span class="detail-label">Email:</span>
         <span class="detail-value">
-          {{ recordData.email }}
+          {{ recordData.email || '---'}}
         </span>
       </div>
 
@@ -40,7 +34,7 @@
       <div class="detail-row">
         <span class="detail-label">Direccion:</span>
         <span class="detail-value">
-          {{ recordData.address }}
+          {{ recordData.address || '---'}}
         </span>
       </div>
 
