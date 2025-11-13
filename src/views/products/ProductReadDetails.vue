@@ -6,14 +6,14 @@
       <!-- Detalle: Nombre -->
       <div class="detail-row">
         <span class="detail-label">Nombre:</span>
-        <span class="detail-value">{{ recordData.name }}</span>
+        <span class="detail-value">{{ recordData.search_alias || '---'}}</span>
       </div>
 
-      <!-- Detalle: Stock actual -->
+      <!-- Detalle: Categoria -->
       <div class="detail-row">
-        <span class="detail-label">Stock actual:</span>
+        <span class="detail-label">Categoria:</span>
         <span class="detail-value">
-          {{ recordData.current_stock }}
+          {{ recordData.category.search_alias || '---'}}
         </span>
       </div>
 
@@ -21,7 +21,7 @@
       <div class="detail-row">
         <span class="detail-label">Precio COMPRA:</span>
         <span class="detail-value">
-          {{ formatCurrency(recordData.buy_price) }}
+          ${{ recordData.buy_price || '---'}}
         </span>
       </div>
 
@@ -29,7 +29,7 @@
       <div class="detail-row">
         <span class="detail-label">Ganancia (%):</span>
         <span class="detail-value">
-          {{ recordData.profit_percentage }}%
+          {{ `${recordData.profit_percentage}%` || '---' }}
         </span>
       </div>
 
@@ -37,22 +37,16 @@
       <div class="detail-row">
         <span class="detail-label">Precio VENTA:</span>
         <span class="detail-value">
-          {{ formatCurrency(recordData.sale_price) }}
+          ${{ recordData.sale_price || '---'}}
         </span>
       </div>
-
-      <!-- Detalle: Categoria -->
+      
+      <!-- Detalle: Stock actual -->
       <div class="detail-row">
-        <span class="detail-label">Categoria:</span>
+        <span class="detail-label">Stock actual:</span>
         <span class="detail-value">
-          {{ recordData.category.name }}
+          {{ recordData.current_stock || '0'}}
         </span>
-      </div>
-
-      <!-- Detalle: ID (si existe) -->
-      <div v-if="recordData.id" class="detail-row">
-        <span class="detail-label">ID:</span>
-        <span class="detail-value detail-id">{{ recordData.id }}</span>
       </div>
     </div>
 
