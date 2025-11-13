@@ -23,7 +23,7 @@
     </template>
 
     <template #filter-2>
-      <Select v-model="localFilters.id_category" @change="applyFilters" :options="productsFilters.categories" optionLabel="alias" optionValue="id" placeholder="Categoria" showClear />
+      <Select v-model="localFilters.id_category" @change="applyFilters" :options="productsFilters.categories" optionLabel="search_alias" optionValue="id" placeholder="Categoria" showClear />
     </template>
 
     <!-- <template #filter-3></template> -->
@@ -41,10 +41,7 @@
         @delete="() => handleDeleteProduct(product)"
       >
         <template #firstTertiaryText>
-          <p>C: {{ formatCurrency(product.buy_price)}}</p>
-        </template>
-        <template #secondTertiaryText>
-          <p>V: {{ formatCurrency(product.sale_price)}}</p>
+          <p>{{ product.category.search_alias }}</p>
         </template>
     </UniversalCard>
     </template>
