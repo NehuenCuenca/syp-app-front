@@ -1,8 +1,10 @@
 // src/plugins/axios.js
 import axios from 'axios'
 
+const backendUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://127.0.0.1:8000'
+
 // Configuración base de axios
-axios.defaults.baseURL = 'http://127.0.0.1:8000/api'
+axios.defaults.baseURL = `${backendUrl}/api`
 axios.defaults.headers.common['Content-Type'] = 'application/json'
 axios.defaults.headers.common['Accept'] = 'application/json'
 

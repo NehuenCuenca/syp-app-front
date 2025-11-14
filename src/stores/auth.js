@@ -2,6 +2,8 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
+const backendUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://127.0.0.1:8000'
+
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -38,7 +40,7 @@ export const useAuthStore = defineStore('auth', {
         axios.defaults.headers.common['Accept'] = `application/json`
         axios.defaults.headers.common['Content-Type'] = `application/json`
         
-        const response = await axios.post('http://127.0.0.1:8000/api/login', credentials)
+        const response = await axios.post(`${backendUrl}/api/login`, credentials)
         
         // Suponiendo que el backend devuelve: { token, user: { id, name, email, ... } }
         const { token, user } = response.data.data
@@ -80,7 +82,7 @@ export const useAuthStore = defineStore('auth', {
           errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión.'
         }
         
-        return { success: false, error: errorMessage }
+        return { success: false, error: errorMessage, completedError: error  }
       }
     },
 
@@ -90,7 +92,7 @@ export const useAuthStore = defineStore('auth', {
         axios.defaults.headers.common['Accept'] = `application/json`
         axios.defaults.headers.common['Content-Type'] = `application/json`
         
-        const response = await axios.post('http://127.0.0.1:8000/api/logout')
+        const response = await axios.post(`${backendUrl}/api/logout`)
         const { message } = response.data
         console.info(`${message}`)
 
@@ -117,7 +119,7 @@ export const useAuthStore = defineStore('auth', {
     async checkAuth() {
       try {
         // Puedes hacer una petición a un endpoint para verificar el token
-        await axios.get('http://127.0.0.1:8000/api/user')
+        await axios.get(`${backendUrl}/api/user`)
         return true
       } catch (error) {
         // Si el token es inválido, hacer logout
