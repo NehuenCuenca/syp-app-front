@@ -33,9 +33,9 @@ export function useCrudApi() {
 
   // Actualizar query params en la URL
   const updateQueryParams = (params) => {
-    const query = { ...route.query };
+    let query = { ...params };
     
-    Object.keys(params).forEach(key => {
+    Object.keys(query).forEach(key => {
       if (params[key] === '' || params[key] === null || params[key] === undefined) {
         delete query[key];
       } else {
@@ -128,7 +128,7 @@ export function useCrudApi() {
       const apiRoute = getApiRoute();
       
       // Usar queryParams proporcionados o los del route.query
-      const params = queryParams || route.query;
+      const params = queryParams;
       
       const response = await axios.get(`/${apiRoute}/filtered`, { params });
       
