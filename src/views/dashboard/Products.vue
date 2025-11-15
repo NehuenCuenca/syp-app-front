@@ -12,6 +12,7 @@
     @create="() => openModal('create')"
     @search="handleSearch"
     @page-change="handlePageChange"
+    @clear-filters="handleClearFilters"
     ref="tabLayoutRef"
   >
     <!-- Filtros personalizados -->
@@ -70,14 +71,6 @@ import ProductCreateForm from '~views/products/ProductCreateForm.vue';
 import ProductEditForm from '~views/products/ProductEditForm.vue';
 import ProductReadDetails from '~views/products/ProductReadDetails.vue';
 import ProductDeleteConfirm from '~views/products/ProductDeleteConfirm.vue';
-
-const formatCurrency = (value) => {
-  if (!value) return '--';
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-  }).format(value);
-};
 
 const toast = useToast();
 
@@ -152,8 +145,6 @@ const handlePageChange = async(page) => {
 };
 
 const applyFilters = async() => {
-  console.log('Aplicar filtros:', localFilters.value);
-  tabLayoutRef.value.updateQueryParams({ ...route.query, ...localFilters.value, page: 1 });
   await fetchProducts({ ...route.query, ...localFilters.value, page: 1});
 };
 
@@ -189,7 +180,6 @@ const closeModal = () => {
 };
 
 // Manejar el submit del formulario según la acción
-// ! CAMBIAR ESTO: no manejar el submit aca, manejar la logica en cada formulario individual (validaciones de back), y de ahi si, handlear la logica luego de creacion, actualizacion, eliminacion 
 const handleFinishAction = (modalData) => {
   console.log('📦 Datos recibidos desde el modal:', modalData);
   console.log('🔧 Acción ejecutada:', currentAction.value);
@@ -233,6 +223,13 @@ const handleDelete = async(modalData) => {
     await fetchProducts({ ...route.query, ...localFilters.value });
   }
 };
+
+const handleClearFilters = async(newFilters) => { 
+  localFilters.value.id_category = null;
+  localFilters.value.low_stock = false;
+
+  await fetchProducts(newFilters);
+}
 </script>
 
 <style scoped>

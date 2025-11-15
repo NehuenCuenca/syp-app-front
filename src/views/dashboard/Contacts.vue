@@ -12,6 +12,7 @@
     @create="() => openModal('create')"
     @search="handleSearch"
     @page-change="handlePageChange"
+    @clear-filters="handleClearFilters"
     ref="tabLayoutRef"
   >
     <!-- Filtros personalizados -->
@@ -136,7 +137,6 @@ const handlePageChange = async(page) => {
 
 const applyFilters = async() => {
   console.log('Aplicar filtros:', localFilters.value);
-  tabLayoutRef.value.updateQueryParams({ ...route.query, ...localFilters.value, page: 1 });
   await fetchContacts({ ...route.query, ...localFilters.value, page: 1 });
 };
 
@@ -172,7 +172,6 @@ const closeModal = () => {
 };
 
 // Manejar el submit del formulario según la acción
-// ! CAMBIAR ESTO: no manejar el submit aca, manejar la logica en cada formulario individual (validaciones de back), y de ahi si, handlear la logica luego de creacion, actualizacion, eliminacion 
 const handleFinishAction = (modalData) => {
   console.log('📦 Datos recibidos desde el modal:', modalData);
   console.log('🔧 Acción ejecutada:', currentAction.value);
@@ -216,6 +215,12 @@ const handleDelete = async(modalData) => {
     await fetchContacts({ ...route.query, ...localFilters.value });
   }
 };
+
+const handleClearFilters = async(newFilters) => { 
+  localFilters.value.contact_type = null;
+
+  await fetchContacts(newFilters);
+}
 </script>
 
 <style scoped>

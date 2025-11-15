@@ -25,6 +25,7 @@
           <slot name="filter-1"></slot>
           <slot name="filter-2"></slot>
           <slot name="filter-3"></slot>
+          <Button label="Limpiar" severity="secondary" :disabled="!canClearFilters" icon="pi pi-delete-left" @click="handleClearFilters"/>
         </div>
       </div>
 
@@ -108,7 +109,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['create', 'filter-change', 'page-change', 'search']);
+const emit = defineEmits(['create', 'clear-filters', 'page-change', 'search']);
 
 const route = useRoute();
 const router = useRouter();
@@ -121,19 +122,20 @@ const first = computed(() => (props.currentPage - 1) * props.itemsPerPage);
 
 // Inicializar valores desde query params
 onMounted(() => {
-  searchValue.value = route.query.search || '';
+  searchValue.value = route.query?.search || '';
   // currentPage.value = parseInt(route.query.page) || 1;
   sortBy.value = route.query.sort_by || '';
   sortDirection.value = route.query.sort_direction || '';
 });
 
 // Observar cambios en la ruta
-watch(() => route.query, (newQuery) => {
-  searchValue.value = newQuery.search || '';
-  // currentPage.value = parseInt(newQuery.page) || 1;
-  sortBy.value = newQuery.sort_by || '';
-  sortDirection.value = newQuery.sort_direction || '';
-}, { deep: true });
+// watch(() => route.query, (newQuery) => {
+//   console.log({newQuery});
+//   // searchValue.value = newQuery.search || '';
+//   // currentPage.value = parseInt(newQuery.page) || 1;
+//   sortBy.value = newQuery.sort_by || '';
+//   sortDirection.value = newQuery.sort_direction || '';
+// }, { deep: true });
 
 
 // Manejo del buscador con debounce
@@ -160,9 +162,9 @@ const onPageChange = (event) => {
 
 // Actualizar query params en la URL
 const updateQueryParams = (params) => {
-  const query = { ...route.query };
+  let query = { ...params };
   
-  Object.keys(params).forEach(key => {
+  Object.keys(query).forEach(key => {
     if (params[key] === '' || params[key] === null || params[key] === undefined) {
       delete query[key];
     } else {
@@ -172,6 +174,25 @@ const updateQueryParams = (params) => {
   
   router.push({ query });
 };
+
+const handleClearFilters = () => { 
+  let clearedParams = { search: '', page: 1 };
+  searchValue.value = '';
+
+  if(route.name === 'Contactos'){
+    clearedParams = { ...clearedParams, contact_type: null };
+  } else if(route.name === 'Productos'){
+    clearedParams = { ...clearedParams, id_category: null, low_stock: false };
+  }
+
+  updateQueryParams(clearedParams);
+  emit('clear-filters', clearedParams);
+}
+
+const canClearFilters = computed(() => {
+  return !!route.query?.search || !!route.query?.id_category 
+  || route.query?.low_stock==='true' || !!route.query?.contact_type;
+});
 
 // Exponer funciones para uso externo
 defineExpose({
