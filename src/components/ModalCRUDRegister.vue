@@ -48,7 +48,8 @@ const props = defineProps({
     type: Object,
     required: true,
     validator: (value) => {
-      return value.create && value.read && value.edit && value.delete;
+      // return value.create && value.read && value.edit && value.delete;
+      return Object.keys(value).every(key => ['create', 'read', 'edit', 'delete'].includes(key));
     }
   }
 });
