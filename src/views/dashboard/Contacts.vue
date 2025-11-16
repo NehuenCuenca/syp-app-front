@@ -4,7 +4,7 @@
     :error="contactsError"
     :filters="contactsFilters"
     title="Contactos"
-    icon-class="pi-users"
+    :icon-class=" route.meta?.icon || 'pi pi-users'"
     :total-pages="contactsPagination?.total_pages"
     :total-items="contactsPagination?.total"
     :current-page="contactsPagination?.current_page"

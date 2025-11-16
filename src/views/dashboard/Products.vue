@@ -4,7 +4,7 @@
     :error="productsError"
     :filters="productsFilters"
     title="Productos"
-    icon-class="pi-th-large"
+    :icon-class="route.meta?.icon || 'pi pi-th-large'"
     :total-pages="productsPagination?.total_pages"
     :total-items="productsPagination?.total"
     :current-page="productsPagination?.current_page"

@@ -2,9 +2,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
-// Rutas no autenticadas
-import Login from '../views/auth/Login.vue'
-
 const routes = [
   // 📌 Rutas públicas (sin autenticación)
   {
@@ -22,7 +19,7 @@ const routes = [
     meta: {
       apiRoute: 'products',
       title: 'Productos',
-      icon: 'pi-box'
+      icon: 'pi-th-large'
     }
   },
   {
@@ -52,7 +49,7 @@ const routes = [
     meta: {
       apiRoute: 'stock-movements',
       title: 'Movimientos de stock',
-      icon: 'pi-sync'
+      icon: 'pi-arrow-right-arrow-left'
     }
   },
  
