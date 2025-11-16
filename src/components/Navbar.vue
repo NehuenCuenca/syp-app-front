@@ -1,16 +1,19 @@
 <template>
   <nav>
     <Menubar class="navbar" :model="items" />
+    <ConfirmDialog></ConfirmDialog>
   </nav>
 </template>
 
 <script setup>
 import { useToast } from 'primevue/usetoast';
+import { useConfirm } from "primevue/useconfirm";
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 
 const toast = useToast();
+const confirm = useConfirm();
 
 const showMessage = (success, message) => {
   const severity = success ? 'success' : 'error';
@@ -59,9 +62,28 @@ const items = ref([
 const router = useRouter();
 const authStore = useAuthStore();
 const handleLogout = async() => {
-  const { success, message } = await authStore.logout();
-  showMessage(success, message);
-  router.push({name: 'Login'});
+  confirm.require({
+      message: '¿Estas seguro de cerrar la sesión?',
+      header: 'Cerrando sesión',
+      icon: 'pi pi-info-circle',
+      rejectLabel: 'No, cancelar',
+      rejectProps: {
+          label: 'No, cancelar',
+          severity: 'secondary',
+          outlined: true
+      },
+      acceptProps: {
+          label: 'Si, cerrar',
+          severity: 'danger'
+      },
+      accept: async() => {
+        const { success, message } = await authStore.logout();
+        showMessage(success, message);
+        router.push({name: 'Login'});
+      },
+      reject: () => null
+  });
+  
 };
 </script>
 
