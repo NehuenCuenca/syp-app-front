@@ -33,18 +33,15 @@
     <template #cards>
       <UniversalCard
         v-for="product in productsData"
-        :primary-text="`${product.code}| ${product.name}`"
-        :secondary-text="product.current_stock + ' disponibles'"
+        :primary-text="`${product.search_alias}`"
+        :secondary-text="product.stock_availability"
         :secondary-color="(product.is_low_stock) ? 'var(--error-color-900)':'var(--success-color-900)'"
+        :tertiary-text="product.category.search_alias"
         card-type="producto"
         @view="() => handleViewProduct(product)"
         @edit="() => handleEditProduct(product)"
         @delete="() => handleDeleteProduct(product)"
-      >
-        <template #firstTertiaryText>
-          <p>{{ product.category.search_alias }}</p>
-        </template>
-    </UniversalCard>
+      />
     </template>
   </TabLayout>
 
