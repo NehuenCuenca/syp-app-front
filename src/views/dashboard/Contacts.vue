@@ -27,16 +27,13 @@
       <UniversalCard
         v-for="contact in contactsData"
         :primary-text="`${contact.search_alias}`"
-        :secondary-text="contact.phone ?? 'Sin telefono'"
+        :secondary-text="contact.last_order"
+        :tertiary-text="contact.phone_number_info"
         card-type="contacto"
         @view="() => handleViewContact(contact)"
         @edit="() => handleEditContact(contact)"
         @delete="() => handleDeleteContact(contact)"
-      >
-        <template #firstTertiaryText>
-          <p>{{ contact.contact_type }}</p>
-        </template>
-    </UniversalCard>
+      />
     </template>
   </TabLayout>
 
