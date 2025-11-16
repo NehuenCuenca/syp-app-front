@@ -2,8 +2,7 @@
   <div class="universal-card">
     <!-- Texto terciario -->
     <div class="card-tertiary">
-      <slot name="firstTertiaryText"></slot>
-      <slot name="secondTertiaryText"></slot>
+      {{ tertiaryText }}
     </div>
 
     <!-- Contenedor del texto primario y menú -->
@@ -32,8 +31,8 @@
     </div>
 
     <!-- Texto secundario -->
-    <div v-if="secondaryText" class="card-secondary" :style="{ color: secondaryColor }">
-      {{ secondaryText }}
+    <div v-if="secondaryText" class="card-secondary" :style="{ color: secondaryColor }" :title="secondaryText">
+      {{ truncateText(secondaryText, 35) }}
     </div>
   </div>
 </template>
@@ -51,10 +50,10 @@ const props = defineProps({
     type: String,
     default: ''
   },
-  /* tertiaryText: {
+  tertiaryText: {
     type: [String, Number],
     default: ''
-  }, */
+  },
   
   // Colores personalizados
   primaryColor: {
@@ -78,11 +77,10 @@ const emit = defineEmits(['view', 'edit', 'delete', 'download']);
 
 const menu = ref();
 
-// Función para truncar texto
 const truncateText = (text, maxLength) => {
   if (!text) return '';
   if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
+  return text.substring(0, maxLength).trim() + '...';
 };
 
 // Toggle del menú
@@ -177,7 +175,7 @@ const getViewLabel = () => {
 }
 
 .card-secondary {
-  font-size: clamp(18px, 1.5vw, 24px);
+  font-size: clamp(18px, 1.4vw, 24px);
   font-weight: normal;
   color: var(--bg-color-1);
 }
