@@ -14,7 +14,7 @@
           <Button label="Nuevo" size="large" icon="pi pi-plus" v-if="showCreateButton" @click="$emit('create')" class="btn-create"/>
 
           <!-- Buscador -->
-          <IconField>
+          <IconField v-if="showSearchInput">
             <InputIcon class="pi pi-search" />
             <InputText placeholder="Buscador" showClear v-model.trim="searchValue" @input="handleSearchInput"/>
           </IconField>
@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const props = defineProps({
@@ -76,6 +76,10 @@ const props = defineProps({
     default: 'pi-list'
   },
   showCreateButton: {
+    type: Boolean,
+    default: true
+  },
+  showSearchInput: {
     type: Boolean,
     default: true
   },
