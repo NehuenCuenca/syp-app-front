@@ -73,7 +73,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['view', 'edit', 'delete', 'download']);
+const emit = defineEmits(['view', 'edit', 'delete', 'download', 'openOrder']);
 
 const menu = ref();
 
@@ -90,6 +90,21 @@ const toggleMenu = (event) => {
 
 // Configuración del menú según el tipo de card
 const menuItems = computed(() => {
+  if (props.cardType === 'movimiento') {
+    return [
+      {
+        label: 'Ver movimiento',
+        icon: 'pi pi-eye',
+        command: () => emit('view')
+      },
+      // {
+      //   label: 'Abrir pedido',
+      //   icon: 'pi pi-receipt',
+      //   command: () => emit('openOrder')
+      // }
+    ];
+  }
+
   const baseItems = [
     {
       label: getViewLabel(),

@@ -28,6 +28,7 @@
         :tertiary-text="stockMovement.created_at"
         card-type="movimiento"
         @view="() => handleViewStockMovement(stockMovement)"
+        @openOrder="() => handleOpenOrder(stockMovement.order)"
       />
     </template>
   </TabLayout>
@@ -189,6 +190,10 @@ const handleClearFilters = async(newFilters) => {
   localFilters.value.low_stock = false;
 
   await fetchStockMovements(newFilters);
+}
+
+const handleOpenOrder = (order) => { 
+  alert('EN DESARROLLO: Abrir pedido con ID ' + order?.id); 
 }
 </script>
 
