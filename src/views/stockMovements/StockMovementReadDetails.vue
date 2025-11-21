@@ -1,7 +1,7 @@
-<!-- ProductReadDetails.vue -->
-<!-- Vista de solo lectura de los detalles de un producto -->
+<!-- StockMovementReadDetails.vue -->
+<!-- Vista de solo lectura de los detalles de un movemento -->
 <template>
-  <div class="product-read-details">
+  <div class="movement-read-details">
     <div class="details-content">
       <!-- Detalle: Producto -->
       <div class="detail-row">
@@ -29,7 +29,7 @@
       <div class="detail-row">
         <span class="detail-label">Pedido:</span>
         <span class="detail-value">
-          {{ `${recordData.order?.code}` || '---' }}
+          {{ recordData.order?.code || '---' }}
         </span>
       </div>
 
@@ -73,7 +73,7 @@ const handleClose = () => {
 </script>
 
 <style scoped>
-.product-read-details {
+.movement-read-details {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
