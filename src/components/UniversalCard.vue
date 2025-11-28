@@ -70,7 +70,12 @@ const props = defineProps({
     type: String,
     default: 'default', // 'producto', 'contacto', 'pedido', 'movimiento'
     validator: (value) => ['default', 'producto', 'contacto', 'pedido', 'movimiento'].includes(value)
-  }
+  },
+
+  isExportable: {
+    type: Boolean,
+    default: false
+  },
 });
 
 const emit = defineEmits(['view', 'edit', 'delete', 'download', 'openOrder']);
@@ -124,9 +129,9 @@ const menuItems = computed(() => {
   ];
 
   // Agregar opción de descarga solo para pedidos
-  if (props.cardType === 'pedido') {
+  if (props.cardType === 'pedido' && props.isExportable) {
     baseItems.push({
-      label: 'Descargar boleta',
+      label: 'Descargar',
       icon: 'pi pi-download',
       command: () => emit('download')
     });

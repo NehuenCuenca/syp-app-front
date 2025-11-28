@@ -29,7 +29,7 @@ const routes = [
     meta: {
       apiRoute: 'orders',
       title: 'Pedidos',
-      icon: 'pi-shopping-cart'
+      icon: 'pi-receipt'
     }
   },
   {
