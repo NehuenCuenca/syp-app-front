@@ -60,10 +60,11 @@ import ContactCreateForm from '~views/contacts/ContactCreateForm.vue';
 import ContactEditForm from '~views/contacts/ContactEditForm.vue';
 import ContactReadDetails from '~views/contacts/ContactReadDetails.vue';
 import ContactDeleteConfirm from '~views/contacts/ContactDeleteConfirm.vue';
+import { useConfirm } from 'primevue';
 
 const toast = useToast();
-
 const route = useRoute();
+const confirm = useConfirm();
 
 const localFilters = ref({
   contact_type: route.query?.contact_type || null,
@@ -83,7 +84,8 @@ const {
   data: singleContactData,
   // loading: singleContactLoading,
   error: singleContactError,
-  fetchById
+  fetchById,
+  deleteItem
 } = useCrudApi();
 
 // Cargar filtros al montar
@@ -114,13 +116,55 @@ const handleEditContact = async(e) => {
 
 const handleDeleteContact = async(e) => { 
   const contact = await fetchById(e.id)
+  showModal.value = false
+  currentAction.value = 'delete' 
+  selectedContact.value = contact 
+
+  const resetModalData = () => { 
+    currentAction.value = 'create' 
+    selectedContact.value = {}
+  }
+
+  confirm.require({
+      message: `¿Estas seguro de borrar "${contact.search_alias}"?`,
+      header: 'Borrar contacto',
+      icon: 'pi pi-exclamation-triangle',
+      rejectLabel: 'No, cancelar',
+      rejectProps: {
+          label: 'No, cancelar',
+          severity: 'secondary',
+          outlined: true
+      },
+      acceptProps: {
+          label: 'Si, borrar',
+          severity: 'danger'
+      },
+      accept: async() => {
+        const deletedContact = await deleteItem(contact.id)
+          if(!singleContactError.value && deletedContact){
+            toast.add({ severity: 'success', closable: true, summary: `Contacto eliminado exitosamente`, life: 3500 });  
+            resetModalData()
+            await fetchContacts({ ...route.query, ...localFilters.value });
+          } else {
+            console.error('Error al eliminar el contacto:', error.value);
+            toast.add({ severity: 'error', closable: true, summary: `Error al eliminar el contacto: ${contact.search_alias}`, life: 3500});  
+            resetModalData()
+            return
+          }
+      },
+      reject: () => resetModalData()
+  });
+}
+
+/* const handleDeleteContact = async(e) => { 
+  const contact = await fetchById(e.id)
   if(!singleContactError.value && singleContactData.value){
     openModal('delete', contact);
   } else {
     toast.add({ severity: 'error', closable: true, summary: 'Error al obtener el contacto:'  + singleContactError.value });  
     return;
   }
- }
+ } */
 
 const handleSearch = async(searchTerm) => {
   console.log('Buscando:', searchTerm);
