@@ -31,11 +31,9 @@
         <template #toggleicon="data">
           <i :class="['pi', data.collapsed ? 'pi-chevron-down' : 'pi-chevron-up']"></i>
         </template>
-        <template #header>
-            <span class="font-bold">Detalle #{{ idx+1 }}</span>
-        </template> 
-        <template #footer>
-            <Button icon="pi pi-trash" severity="danger" variant="outlined" text @click="() => removeTemporalDetail(idx)" label="Eliminar detalle"/>
+        <template #header="data">
+          <span class="font-bold">Detalle #{{ idx+1 }}</span>
+          <Button v-if="!data.collapsed" icon="pi pi-trash" severity="danger" variant="outlined" text @click="() => removeTemporalDetail(idx)"/>
         </template>
 
       <!-- Campo: DETALLE_PRODUCTO -->
@@ -80,7 +78,7 @@
             <Message v-if="errors[`detail${idx}_price`]" severity="error" variant="simple" size="small" class="p-error">{{ errors[`detail${idx}_price`] }}</Message>
           </InputGroup>
 
-          <!-- Campo: DETALLE_PRECIO_PRODUCTO -->
+          <!-- Campo: DETALLE_PORCENTAJE_PRODUCTO -->
           <InputGroup>
             <FloatLabel variant="in">
               <InputNumber id="selected_percentage" v-model="detail.percentage"
@@ -119,6 +117,9 @@
       
       <!-- Campo: Ajuste (+/-)-->
       <InputGroup>
+        <InputGroupAddon>
+            <i class="pi pi-sliders-h"></i>
+        </InputGroupAddon>
         <FloatLabel variant="in"> 
           <InputNumber id="adjustment_amount" v-model="formData.adjustment_amount"
             prefix="$" :class="{ 'p-invalid': errors.adjustment_amount }"/>
@@ -137,9 +138,12 @@
 
       <!-- Campo: Notas -->
       <InputGroup>
+        <InputGroupAddon>
+            <i class="pi pi-clipboard"></i>
+        </InputGroupAddon>
         <FloatLabel variant="in">
           <Textarea id="notes" v-model="formData.notes"
-            :class="{ 'p-invalid': errors.notes }" rows="3" cols="50"
+            :class="{ 'p-invalid': errors.notes }" rows="3" cols="30"
             style="resize: none"
           />
           <label for="notes">NOTAS (opcional)</label>
