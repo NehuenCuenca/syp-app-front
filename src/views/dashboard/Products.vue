@@ -15,6 +15,10 @@
     @clear-filters="handleClearFilters"
     ref="tabLayoutRef"
   >
+    <template #second-button>
+      <Button icon="pi pi-download" label="Descargar catalogo" severity="secondary" @click="handleDownloadCatalog" />
+    </template>
+
     <!-- Filtros personalizados -->
     <template #filter-1>
       <div class="flex items-center gap-2">
@@ -68,10 +72,14 @@ import ProductCreateForm from '~views/products/ProductCreateForm.vue';
 import ProductEditForm from '~views/products/ProductEditForm.vue';
 import ProductReadDetails from '~views/products/ProductReadDetails.vue';
 import ProductDeleteConfirm from '~views/products/ProductDeleteConfirm.vue';
+import { useConfirm } from "primevue/useconfirm";
+import axios from 'axios';
+import { useAuthStore } from '@/stores/auth';
+
 
 const toast = useToast();
-
 const route = useRoute();
+const confirm = useConfirm();
 
 const localFilters = ref({
   id_category: route.query?.id_category || null,
@@ -92,7 +100,8 @@ const {
   data: singleProductData,
   // loading: singleProductLoading,
   error: singleProductError,
-  fetchById
+  fetchById,
+  deleteItem
 } = useCrudApi();
 
 // Cargar filtros al montar
@@ -123,13 +132,46 @@ const handleEditProduct = async(e) => {
 
 const handleDeleteProduct = async(e) => { 
   const product = await fetchById(e.id)
-  if(!singleProductError.value && singleProductData.value){
-    openModal('delete', product);
-  } else {
-    toast.add({ severity: 'error', closable: true, summary: 'Error al obtener el producto:'  + singleProductError.value });  
-    return;
+  showModal.value = false
+  currentAction.value = 'delete' 
+  selectedProduct.value = product 
+
+  const resetModalData = () => { 
+    currentAction.value = 'create' 
+    selectedProduct.value = {}
   }
- }
+
+  confirm.require({
+      message: `¿Estas seguro de borrar "${product.search_alias}"?`,
+      header: 'Borrar producto',
+      icon: 'pi pi-exclamation-triangle',
+      rejectLabel: 'No, cancelar',
+      rejectProps: {
+          label: 'No, cancelar',
+          severity: 'secondary',
+          outlined: true
+      },
+      acceptProps: {
+          label: 'Si, borrar',
+          severity: 'danger'
+      },
+      accept: async() => {
+        const deletedProduct = await deleteItem(product.id)
+          if(!singleProductError.value && deletedProduct){
+            toast.add({ severity: 'success', closable: true, summary: `Producto eliminado exitosamente`, life: 3500 });  
+            resetModalData()
+            await fetchProducts({ ...route.query, ...localFilters.value });
+
+          } else {
+            console.error('Error al eliminar el producto:', error.value);
+            toast.add({ severity: 'error', closable: true, summary: `Error al eliminar el producto: ${product.search_alias}`, life: 3500});  
+            resetModalData()
+            return
+          }
+      },
+      reject: () => resetModalData()
+  });
+}
 
 const handleSearch = async(searchTerm) => {
   console.log('Buscando:', searchTerm);
@@ -226,6 +268,41 @@ const handleClearFilters = async(newFilters) => {
   localFilters.value.low_stock = false;
 
   await fetchProducts(newFilters);
+}
+
+const authStore = useAuthStore()
+
+const handleDownloadCatalog = async() => { 
+  try {
+    const { VITE_BACKEND_LOCAL_API_URL, VITE_BACKEND_SHARED_NETWORK_API_URL } = import.meta.env
+    const linkToApi = new URL(`${VITE_BACKEND_SHARED_NETWORK_API_URL}/api/products/export-catalog`);
+    const response = await axios.get(linkToApi, {
+      responseType: 'blob', // Importante para manejar archivos binarios
+      headers: {
+        'Authorization': `Bearer ${authStore.token}`,
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      },
+    }); 
+
+    const filename = response.headers.get('x-filename');
+
+    // Crear un enlace para descargar el archivo
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    // get filename from content-disposition header if exists
+    (filename.length>0)
+      ? link.setAttribute('download', filename)
+      : link.setAttribute('download', `catalogo_productos_${Date.now()}.xlsx`);
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.log('la descarga del catalogo falló', error);
+    toast.add({ severity: 'error', closable: true, summary: 'Error al descargar el catalogo:'  + error });
+  }
 }
 </script>
 
