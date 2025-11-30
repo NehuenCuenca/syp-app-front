@@ -65,14 +65,15 @@ import { useToast } from 'primevue/usetoast';
 import ModalCRUDRegister from '~components/ModalCRUDRegister.vue';
 import OrderCreateForm from '~views/orders/OrderCreateForm.vue';
 import OrderReadDetails from '~views/orders/OrderReadDetails.vue';
+import OrderEditForm from '~views/orders/OrderEditForm.vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
-// import OrderEditForm from '~views/orders/OrderEditForm.vue';
+import { useConfirm } from 'primevue';
 // import OrderDeleteConfirm from '~views/orders/OrderDeleteConfirm.vue';
 
 const toast = useToast();
-
 const route = useRoute();
+const confirm = useConfirm();
 
 const localFilters = ref({
   before_equal_date: route.query?.before_equal_date || null,
@@ -92,7 +93,8 @@ const {
   data: singleOrderData,
   // loading: singleOrderLoading,
   error: singleOrderError,
-  fetchById
+  fetchById,
+  deleteItem
 } = useCrudApi();
 
 // Cargar filtros al montar
@@ -121,7 +123,49 @@ const handleEditOrder = async(e) => {
   }
  }
 
-const handleDeleteOrder = async(e) => { 
+ const handleDeleteOrder = async(e) => {
+  const order = await fetchById(e.id)
+  showModal.value = false
+  currentAction.value = 'delete' 
+  selectedOrder.value = order 
+
+  const resetModalData = () => { 
+    currentAction.value = 'create' 
+    selectedOrder.value = {}
+  }
+
+  confirm.require({
+      message: `¿Estas seguro de borrar "${order.search_alias}"?`,
+      header: 'Borrar pedido',
+      icon: 'pi pi-exclamation-triangle',
+      rejectLabel: 'No, cancelar',
+      rejectProps: {
+          label: 'No, cancelar',
+          severity: 'secondary',
+          outlined: true
+      },
+      acceptProps: {
+          label: 'Si, borrar',
+          severity: 'danger'
+      },
+      accept: async() => {
+        const deletedOrder = await deleteItem(order.id)
+          if(!singleOrderError.value && deletedOrder){
+            toast.add({ severity: 'success', closable: true, summary: `Pedido eliminado exitosamente`, life: 3500 });  
+            resetModalData()
+            await fetchOrders({ ...route.query, ...localFilters.value });
+          } else {
+            console.error('Error al eliminar el pedido:', error.value);
+            toast.add({ severity: 'error', closable: true, summary: `Error al eliminar el pedido: ${order.search_alias}`, life: 3500});  
+            resetModalData()
+            return
+          }
+      },
+      reject: () => resetModalData()
+  });
+}
+
+/* const handleDeleteOrder = async(e) => { 
   const order = await fetchById(e.id)
   if(!singleOrderError.value && singleOrderData.value){
     openModal('delete', order);
@@ -129,7 +173,7 @@ const handleDeleteOrder = async(e) => {
     toast.add({ severity: 'error', closable: true, summary: 'Error al obtener el pedido:'  + singleOrderError.value });  
     return;
   }
- }
+ } */
 
 const handleSearch = async(searchTerm) => {
   console.log('Buscando:', searchTerm);
@@ -151,7 +195,7 @@ const tabLayoutRef = ref(null);
 const orderComponentMap = {
   read: OrderReadDetails,
   create: OrderCreateForm,
-  // edit: OrderEditForm,
+  edit: OrderEditForm,
   // delete: OrderDeleteConfirm
 };
 
@@ -232,7 +276,7 @@ const authStore = useAuthStore()
 
 const handleDownloadOrder = async(order) => { 
   try {
-    const { VITE_BACKEND_LOCAL_API_URL } = import.meta.env
+    const { VITE_BACKEND_LOCAL_API_URL, VITE_BACKEND_SHARED_NETWORK_API_URL } = import.meta.env
     const linkToApi = new URL(`${VITE_BACKEND_LOCAL_API_URL}/api/orders/${order.id}/export-excel`);
     linkToApi.searchParams.append("include_header", 1);
     const response = await axios.get(linkToApi, {
@@ -244,11 +288,8 @@ const handleDownloadOrder = async(order) => {
       },
     }); 
 
-    console.log(response);
-    console.log(response.headers['X-Filename']);
     const filename = response.headers.get('x-filename');
 
-    
     // Crear un enlace para descargar el archivo
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
@@ -265,15 +306,7 @@ const handleDownloadOrder = async(order) => {
     console.log('la descarga de boleta falló', error);
     toast.add({ severity: 'error', closable: true, summary: 'Error al descargar el pedido:'  + error });
   }
- }
-
-const genaratePathToFile = (id) => { 
-  const { VITE_BACKEND_LOCAL_API_URL } = import.meta.env
-  const linkToApi = new URL(`${VITE_BACKEND_LOCAL_API_URL}/api/orders/${id}/export-excel`);
-  linkToApi.searchParams.append("include_header", 1123);
-
-  return linkToApi.href
- }
+}
 </script>
 
 <style scoped>
