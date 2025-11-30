@@ -8,6 +8,8 @@
     :draggable="false"
     :style="{ width: '80vw' }"
     @update:visible="handleClose"
+    maximizable 
+    ref="dialog" 
   >
     <!-- Slot para inyectar contenido dinámico -->
     <slot></slot>
@@ -15,6 +17,7 @@
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue';
 
 // Props del componente
 const props = defineProps({
@@ -41,6 +44,15 @@ const handleClose = (value) => {
     emit('close');
   }
 };
+
+const dialog = ref();
+
+onMounted(() => {
+  // init dialog maximizable
+  if (!dialog.value.maximized) {
+    dialog.value.maximize();
+  }
+})
 </script>
 
 <style scoped>
