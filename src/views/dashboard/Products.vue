@@ -15,8 +15,15 @@
     @clear-filters="handleClearFilters"
     ref="tabLayoutRef"
   >
-    <template #second-button>
-      <Button icon="pi pi-download" label="Descargar catalogo" severity="secondary" @click="handleDownloadCatalog" />
+    <template #download-btn>
+      <Button type="button" icon="pi pi-download" label="Descargar" severity="secondary" @click="togglePopover" />
+      <Popover ref="op">
+        <Message size="small" severity="secondary">Tipo de catálogo</Message>
+        <ButtonGroup>
+          <Button label="Público" severity="primary" @click="() => handleDownloadCatalog(false)" />
+          <Button label="Privado" severity="secondary" @click="() => handleDownloadCatalog(true)" />
+        </ButtonGroup>
+      </Popover>
     </template>
 
     <!-- Filtros personalizados -->
@@ -272,10 +279,17 @@ const handleClearFilters = async(newFilters) => {
 
 const authStore = useAuthStore()
 
-const handleDownloadCatalog = async() => { 
+const op = ref();
+const togglePopover = (event) => {
+  op.value.toggle(event);
+}
+
+const handleDownloadCatalog = async(exclude_special_category=false) => { 
   try {
     const { VITE_BACKEND_LOCAL_API_URL, VITE_BACKEND_SHARED_NETWORK_API_URL } = import.meta.env
-    const linkToApi = new URL(`${VITE_BACKEND_SHARED_NETWORK_API_URL}/api/products/export-catalog`);
+    const linkToApi = new URL(`${VITE_BACKEND_LOCAL_API_URL}/api/products/export-catalog`);
+    if(exclude_special_category) linkToApi.searchParams.append("exclude_category", 28);
+
     const response = await axios.get(linkToApi, {
       responseType: 'blob', // Importante para manejar archivos binarios
       headers: {
