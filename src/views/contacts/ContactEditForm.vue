@@ -4,71 +4,76 @@
   <div class="contact-update-form">
     <div class="form-content">
       <!-- Campo: Nombre negocio -->
-      <div class="field">
-        <label for="company_name" class="required">Negocio</label>
-        <InputText
-          id="company_name"
-          v-model="formData.company_name"
-          placeholder="Ej: Kiosquito La tortuga"
-          :class="{ 'p-invalid': errors.company_name }"
-        />
-        <small v-if="errors.company_name" class="p-error">{{ errors.company_name }}</small>
-      </div>
+      <InputGroup>
+        <InputGroupAddon>
+            <i class="pi pi-shop"></i>
+        </InputGroupAddon>
+        <FloatLabel variant="in">
+          <InputText id="company_name" v-model="formData.company_name" :class="{ 'p-invalid': errors.company_name }"/>
+          <label for="company_name">NEGOCIO</label>
+        </FloatLabel>
+        <Message v-if="errors.company_name" severity="error" variant="simple" size="small" class="p-error">{{ errors.company_name }}</Message>
+      </InputGroup>
 
       <!-- Campo: Nombre titular -->
-      <div class="field">
-        <label for="contact_name">Titular</label>
-        <InputText
-          id="contact_name"
-          v-model="formData.contact_name"
-          placeholder="Ej: Juan Perez"
-          :class="{ 'p-invalid': errors.contact_name }"
-        />
-        <small v-if="errors.contact_name" class="p-error">{{ errors.contact_name }}</small>
-      </div>
+      <InputGroup>
+        <InputGroupAddon>
+            <i class="pi pi-user"></i>
+        </InputGroupAddon>
+        <FloatLabel variant="in">
+          <InputText id="contact_name" v-model="formData.contact_name" :class="{ 'p-invalid': errors.contact_name }"/>
+          <label for="contact_name">PROPIETARIO</label>
+        </FloatLabel>
+        <Message v-if="errors.contact_name" severity="error" variant="simple" size="small" class="p-error">{{ errors.contact_name }}</Message>
+      </InputGroup>
 
       <!-- Campo: Telefono: -->
-      <div class="field">
-        <label for="phone">Telefono</label>
-        <InputText
-          id="phone"
-          v-model="formData.phone"
-          placeholder="Ej: 3446..."
-          :class="{ 'p-invalid': errors.phone }"
-        />
-        <small v-if="errors.phone" class="p-error">{{ errors.phone }}</small>
-      </div>
+      <InputGroup>
+        <InputGroupAddon>
+            <i class="pi pi-phone"></i>
+        </InputGroupAddon>
+        <FloatLabel variant="in">
+          <InputText id="phone" v-model="formData.phone" :class="{ 'p-invalid': errors.phone }"/>
+          <label for="phone">TELEFONO</label>
+        </FloatLabel>
+        <Message v-if="errors.phone" severity="error" variant="simple" size="small" class="p-error">{{ errors.phone }}</Message>
+      </InputGroup>
 
       <!-- Campo: Email: -->
-      <div class="field">
-        <label for="email">Email</label>
-        <InputText
-          id="email"
-          v-model="formData.email"
-          placeholder="Ej: juan.perez123@gmail.com"
-          :class="{ 'p-invalid': errors.email }"
-        />
-        <small v-if="errors.email" class="p-error">{{ errors.email }}</small>
-      </div>
+      <InputGroup>
+        <InputGroupAddon>
+            <i class="pi pi-at"></i>
+        </InputGroupAddon>
+        <FloatLabel variant="in">
+          <InputText id="email" v-model="formData.email" :class="{ 'p-invalid': errors.email }"/>
+          <label for="email">EMAIL</label>
+        </FloatLabel>
+        <Message v-if="errors.email" severity="error" variant="simple" size="small" class="p-error">{{ errors.email }}</Message>
+      </InputGroup>
 
       <!-- Campo: Direccion: -->
-      <div class="field">
-        <label for="address">Direccion</label>
-        <InputText
-          id="address"
-          v-model="formData.address"
-          placeholder="Ej: Calle Falsa 123"
-          :class="{ 'p-invalid': errors.address }"
-        />
-        <small v-if="errors.address" class="p-error">{{ errors.address }}</small>
-      </div>
+      <InputGroup>
+        <InputGroupAddon>
+            <i class="pi pi-map-marker"></i>
+        </InputGroupAddon>
+        <FloatLabel variant="in">
+          <InputText id="address" v-model="formData.address" :class="{ 'p-invalid': errors.address }"/>
+          <label for="address">DIRECCION</label>
+        </FloatLabel>
+        <Message v-if="errors.address" severity="error" variant="simple" size="small" class="p-error">{{ errors.address }}</Message>
+      </InputGroup>
 
       <!-- Campo: Tipo de contacto -->
-      <div class="field">
-        <label for="contact_type" class="required">Tipo de contacto</label>
-        <Select v-model="formData.contact_type" :options="contactTypes" placeholder="Cliente o Proveedor" showClear />
-        <small v-if="errors.contact_type" class="p-error">{{ errors.contact_type }}</small>
-      </div>
+      <InputGroup>
+        <InputGroupAddon>
+            <i class="pi pi-users"></i>
+        </InputGroupAddon>
+        <FloatLabel variant="in">
+          <Select v-model="formData.contact_type" :options="contactTypes" showClear />
+          <label for="contact_type">TIPO DE CONTACTO</label>
+        </FloatLabel>
+        <Message v-if="errors.contact_type" severity="error" variant="simple" size="small" class="p-error">{{ errors.contact_type }}</Message>
+      </InputGroup>
 
       <Message severity="error" v-if="error">{{ error }}</Message>
     </div>
