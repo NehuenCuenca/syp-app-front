@@ -8,26 +8,27 @@
 
     <!-- Sección de filtros -->
     <template v-if="!loading && error === null">
-      <div class="filters-section">
-        <div class="filters-left">
-          <!-- Botón crear nuevo -->
-          <Button label="Nuevo" size="large" icon="pi pi-plus" v-if="showCreateButton" @click="$emit('create')" class="btn-create"/>
+      <Toolbar>
+        <template #start>
+            <Button size="large" label="Nuevo" icon="pi pi-plus" v-if="showCreateButton" @click="$emit('create')" severity="primary" />
+            <slot name="download-btn"></slot>
+        </template>
 
+        <template #center>
           <!-- Buscador -->
           <IconField v-if="showSearchInput">
             <InputIcon class="pi pi-search" />
-            <InputText placeholder="Buscador" showClear v-model.trim="searchValue" @input="handleSearchInput"/>
+            <InputText type="search" placeholder="Buscador" v-model.trim="searchValue" @input="handleSearchInput"/>
           </IconField>
-        </div>
+        </template>
 
-        <!-- Filtros personalizados (slots) -->
-        <div class="filters-right" v-if="filters && !loading">
+        <template #end v-if="filters && !loading">
           <slot name="filter-1"></slot>
           <slot name="filter-2"></slot>
           <slot name="filter-3"></slot>
-          <Button label="Limpiar" severity="secondary" :disabled="!canClearFilters" icon="pi pi-delete-left" @click="handleClearFilters"/>
-        </div>
-      </div>
+          <Button label="Limpiar" severity="secondary" v-if="canClearFilters" icon="pi pi-delete-left" @click="handleClearFilters"/>
+        </template>
+      </Toolbar>
 
       <!-- Grid de tarjetas -->
       <div class="cards-grid">
@@ -212,6 +213,9 @@ defineExpose({
   max-width: 1400px;
   margin: 0 auto;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 /* Header */
@@ -219,7 +223,6 @@ defineExpose({
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1.5rem;
 }
 
 .tab-header i {
@@ -290,7 +293,7 @@ defineExpose({
 }
 
 
-.btn-create {
+/* .btn-create {
   background-color: var(--txt-color-2);
   border-color: transparent;
 }
@@ -299,7 +302,7 @@ defineExpose({
   background-color: var(--txt-color-1);
   border-color: transparent;
 }
-
+ */
 .filters-right {
   display: flex;
   align-items: center;
@@ -314,7 +317,6 @@ defineExpose({
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
-  margin-bottom: 2rem;
 }
 
 .loader {
