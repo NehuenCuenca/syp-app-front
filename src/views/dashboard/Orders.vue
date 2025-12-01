@@ -67,8 +67,8 @@ import OrderCreateForm from '~views/orders/OrderCreateForm.vue';
 import OrderReadDetails from '~views/orders/OrderReadDetails.vue';
 import OrderEditForm from '~views/orders/OrderEditForm.vue';
 import axios from 'axios';
-import { useAuthStore } from '@/stores/auth';
 import { useConfirm } from 'primevue';
+import { createTemporalLink, getAxiosConfigForBlobResponse } from '@/helpers/downloads';
 // import OrderDeleteConfirm from '~views/orders/OrderDeleteConfirm.vue';
 
 const toast = useToast();
@@ -272,38 +272,17 @@ const handleClearFilters = async(newFilters) => {
   await fetchOrders(newFilters);
 }
 
-const authStore = useAuthStore()
-
 const handleDownloadOrder = async(order) => { 
   try {
-    const { VITE_BACKEND_LOCAL_API_URL, VITE_BACKEND_SHARED_NETWORK_API_URL } = import.meta.env
-    const linkToApi = new URL(`${VITE_BACKEND_LOCAL_API_URL}/api/orders/${order.id}/export-excel`);
+    const linkToApi = new URL(`${axios.defaults.baseURL}/orders/${order.id}/export-ticket`);
     linkToApi.searchParams.append("include_header", 1);
-    const response = await axios.get(linkToApi, {
-      responseType: 'blob', // Importante para manejar archivos binarios
-      headers: {
-        'Authorization': `Bearer ${authStore.token}`,
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      },
-    }); 
 
-    const filename = response.headers.get('x-filename');
+    const response = await axios.get(linkToApi, { ...getAxiosConfigForBlobResponse() }); 
+    const filename = response.headers.get('x-filename') || `boleta_${Date.now()}_${order.code}.xlsx`;
 
-    // Crear un enlace para descargar el archivo
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    // get filename from content-disposition header if exists
-    (filename.length>0)
-      ? link.setAttribute('download', filename)
-      : link.setAttribute('download', `pedido_${order.code}.xlsx`);
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    createTemporalLink({ blob: response.data, filename })
   } catch (error) {
-    console.log('la descarga de boleta falló', error);
+    console.error('la descarga de boleta falló', error);
     toast.add({ severity: 'error', closable: true, summary: 'Error al descargar el pedido:'  + error });
   }
 }
