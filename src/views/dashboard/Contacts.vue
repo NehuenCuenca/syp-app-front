@@ -15,6 +15,10 @@
     @clear-filters="handleClearFilters"
     ref="tabLayoutRef"
   >
+    <template #download-btn>
+      <Button type="button" icon="pi pi-download" label="Descargar" severity="secondary" @click="handleDownloadContactsList" />
+    </template>
+
     <!-- Filtros personalizados -->
     <template #filter-1>
       <Select v-model="localFilters.contact_type" @change="applyFilters" :options="contactsFilters.contact_types"  placeholder="Tipo" showClear />
@@ -61,6 +65,8 @@ import ContactEditForm from '~views/contacts/ContactEditForm.vue';
 import ContactReadDetails from '~views/contacts/ContactReadDetails.vue';
 import ContactDeleteConfirm from '~views/contacts/ContactDeleteConfirm.vue';
 import { useConfirm } from 'primevue';
+import { createTemporalLink, getAxiosConfigForBlobResponse } from '@/helpers/downloads';
+import axios from 'axios';
 
 const toast = useToast();
 const route = useRoute();
@@ -261,6 +267,20 @@ const handleClearFilters = async(newFilters) => {
   localFilters.value.contact_type = null;
 
   await fetchContacts(newFilters);
+}
+
+const handleDownloadContactsList = async() => {
+  try {
+    const linkToApi = new URL(`${axios.defaults.baseURL}/contacts/export-list`);
+    
+    const response = await axios.get(linkToApi, { ...getAxiosConfigForBlobResponse() }); 
+    const filename = response.headers.get('x-filename') || `listado_contactos_${Date.now()}.xlsx`;
+
+    createTemporalLink({ blob: response.data, filename })
+  } catch (error) {
+    console.error('la descarga de listado contactos falló', error);
+    toast.add({ severity: 'error', closable: true, summary: 'Error al descargar el listado contactos:'  + error });
+  }
 }
 </script>
 
