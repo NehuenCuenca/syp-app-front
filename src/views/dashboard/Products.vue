@@ -18,7 +18,7 @@
     <template #download-btn>
       <Button type="button" icon="pi pi-download" label="Descargar" severity="secondary" @click="togglePopover" />
       <Popover ref="op">
-        <Message size="small" severity="secondary">Tipo de catálogo</Message>
+        <Message size="small" severity="secondary">Tipo de catálogo...</Message>
         <ButtonGroup>
           <Button label="Público" severity="primary" @click="() => handleDownloadCatalog(false)" />
           <Button label="Privado" severity="secondary" @click="() => handleDownloadCatalog(true)" />
@@ -81,7 +81,7 @@ import ProductReadDetails from '~views/products/ProductReadDetails.vue';
 import ProductDeleteConfirm from '~views/products/ProductDeleteConfirm.vue';
 import { useConfirm } from "primevue/useconfirm";
 import axios from 'axios';
-import { useAuthStore } from '@/stores/auth';
+import { createTemporalLink, getAxiosConfigForBlobResponse } from '@/helpers/downloads';
 
 
 const toast = useToast();
@@ -277,8 +277,6 @@ const handleClearFilters = async(newFilters) => {
   await fetchProducts(newFilters);
 }
 
-const authStore = useAuthStore()
-
 const op = ref();
 const togglePopover = (event) => {
   op.value.toggle(event);
@@ -286,35 +284,15 @@ const togglePopover = (event) => {
 
 const handleDownloadCatalog = async(exclude_special_category=false) => { 
   try {
-    const { VITE_BACKEND_LOCAL_API_URL, VITE_BACKEND_SHARED_NETWORK_API_URL } = import.meta.env
-    const linkToApi = new URL(`${VITE_BACKEND_LOCAL_API_URL}/api/products/export-catalog`);
+    const linkToApi = new URL(`${axios.defaults.baseURL}/products/export-catalog`);
     if(exclude_special_category) linkToApi.searchParams.append("exclude_category", 28);
 
-    const response = await axios.get(linkToApi, {
-      responseType: 'blob', // Importante para manejar archivos binarios
-      headers: {
-        'Authorization': `Bearer ${authStore.token}`,
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      },
-    }); 
+    const response = await axios.get(linkToApi, { ...getAxiosConfigForBlobResponse() }); 
+    const filename = response.headers.get('x-filename') || `catalogo_productos_${Date.now()}.xlsx`;
 
-    const filename = response.headers.get('x-filename');
-
-    // Crear un enlace para descargar el archivo
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    // get filename from content-disposition header if exists
-    (filename.length>0)
-      ? link.setAttribute('download', filename)
-      : link.setAttribute('download', `catalogo_productos_${Date.now()}.xlsx`);
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    createTemporalLink({ blob: response.data, filename })
   } catch (error) {
-    console.log('la descarga del catalogo falló', error);
+    console.error('la descarga del catalogo falló', error);
     toast.add({ severity: 'error', closable: true, summary: 'Error al descargar el catalogo:'  + error });
   }
 }
