@@ -34,9 +34,11 @@
         :secondary-text="contact.last_order"
         :tertiary-text="contact.phone_number_info"
         card-type="contacto"
+        :is-deleted="!!contact.deleted_at"
         @view="() => handleViewContact(contact)"
         @edit="() => handleEditContact(contact)"
         @delete="() => handleDeleteContact(contact)"
+        @restore="() => handleRestoreContact(contact)"
       />
     </template>
   </TabLayout>
@@ -91,7 +93,8 @@ const {
   // loading: singleContactLoading,
   error: singleContactError,
   fetchById,
-  deleteItem
+  deleteItem,
+  restoreItem
 } = useCrudApi();
 
 // Cargar filtros al montar
@@ -146,17 +149,20 @@ const handleDeleteContact = async(e) => {
           severity: 'danger'
       },
       accept: async() => {
-        const deletedContact = await deleteItem(contact.id)
+        try {
+          const deletedContact = await deleteItem(contact.id)
+          
           if(!singleContactError.value && deletedContact){
             toast.add({ severity: 'success', closable: true, summary: `Contacto eliminado exitosamente`, life: 3500 });  
             resetModalData()
             await fetchContacts({ ...route.query, ...localFilters.value });
-          } else {
-            console.error('Error al eliminar el contacto:', error.value);
-            toast.add({ severity: 'error', closable: true, summary: `Error al eliminar el contacto: ${contact.search_alias}`, life: 3500});  
-            resetModalData()
-            return
           }
+        } catch (error) {
+          console.error('Error al eliminar el contacto:', error.value);
+          toast.add({ severity: 'error', closable: true, summary: `Error al eliminar el contacto: ${contact.search_alias}`, life: 3500});  
+          resetModalData()
+          return
+        }
       },
       reject: () => resetModalData()
   });
@@ -262,6 +268,21 @@ const handleDelete = async(modalData) => {
     await fetchContacts({ ...route.query, ...localFilters.value });
   }
 };
+
+const handleRestoreContact = async(contact) => { 
+  try {
+    const restoredContact = await restoreItem(contact.id)
+    
+    if(!singleContactError.value && restoredContact){
+      toast.add({ severity: 'success', closable: true, summary: `Contacto recuperado exitosamente`, life: 3500 });  
+      await fetchContacts({ ...route.query, ...localFilters.value });
+    }
+  } catch (error) {
+    console.error('Error al recuperar el contacto:', error.value);
+    toast.add({ severity: 'error', closable: true, summary: `Error al recuperar el contacto: ${contact.search_alias}`, life: 3500});  
+    return
+  }
+}
 
 const handleClearFilters = async(newFilters) => { 
   localFilters.value.contact_type = null;

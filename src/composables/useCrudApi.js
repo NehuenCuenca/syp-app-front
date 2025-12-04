@@ -350,7 +350,7 @@ export function useCrudApi() {
     
     try {
       const apiRoute = getApiRoute();
-      const response = await axios.post(`/${apiRoute}/${id}/restore`);
+      const response = await axios.patch(`/${apiRoute}/${id}/restore`);
       
       if (response.data.success) {
         data.value = response.data.data;
