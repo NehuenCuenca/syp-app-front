@@ -1,5 +1,5 @@
 <template>
-  <div class="universal-card">
+  <div class="universal-card" :class="isDeleted ? 'universal-card_deleted':''">
     <!-- Texto terciario -->
     <div class="card-tertiary">
       {{ tertiaryText }}
@@ -14,6 +14,7 @@
       <!-- Botón del menú -->
       <Button 
         icon="pi pi-ellipsis-v" 
+        :size="'large'"
         text 
         rounded
         class="menu-button"
@@ -31,9 +32,10 @@
     </div>
 
     <!-- Texto secundario -->
-    <div v-if="secondaryText" class="card-secondary" :style="{ color: secondaryColor }" :title="secondaryText">
+    <div v-if="secondaryText && !isProductCard" class="card-secondary" :style="{ color: secondaryColor }" :title="secondaryText">
       {{ truncateText(secondaryText, 35) }}
     </div>
+    <slot name="product-stock"></slot>
   </div>
 </template>
 
@@ -76,9 +78,14 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+
+  isDeleted: {
+    type: Boolean,
+    default: false
+  }
 });
 
-const emit = defineEmits(['view', 'edit', 'delete', 'download', 'openOrder']);
+const emit = defineEmits(['view', 'edit', 'delete', 'download', 'openOrder', 'restore']);
 
 const menu = ref();
 
@@ -107,6 +114,16 @@ const menuItems = computed(() => {
       //   icon: 'pi pi-receipt',
       //   command: () => emit('openOrder')
       // }
+    ];
+  }
+
+  if (props.isDeleted) {
+    return [
+      {
+        label: 'Recuperar',
+        icon: 'pi pi-refresh',
+        command: () => emit('restore')
+      },
     ];
   }
 
@@ -151,6 +168,8 @@ const getViewLabel = () => {
   };
   return labels[props.cardType] || labels.default;
 };
+
+const isProductCard = computed(() => props.cardType === 'producto')
 </script>
 
 <style scoped>
@@ -160,6 +179,10 @@ const getViewLabel = () => {
   padding: 10px;
   position: relative;
   min-height: 100px;
+}
+
+.universal-card_deleted{
+  background-color: var(--p-surface-400);
 }
 
 .card-tertiary {
@@ -173,8 +196,8 @@ const getViewLabel = () => {
 .card-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
+  align-items: center;
+  /* gap: 10px; */
 }
 
 .card-primary {
