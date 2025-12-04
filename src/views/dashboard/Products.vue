@@ -18,10 +18,10 @@
     <template #download-btn>
       <Button type="button" icon="pi pi-download" label="Descargar" severity="secondary" @click="togglePopover" />
       <Popover ref="op">
-        <Message size="small" severity="secondary">Tipo de catálogo...</Message>
+        <Message size="small" severity="secondary">Catálogo de tipo...</Message>
         <ButtonGroup>
-          <Button label="Público" severity="primary" @click="() => handleDownloadCatalog(false)" />
-          <Button label="Privado" severity="secondary" @click="() => handleDownloadCatalog(true)" />
+          <Button label="Público (sin)" severity="primary" @click="() => handleDownloadCatalog(true)" />
+          <Button label="Privado (con)" severity="secondary" @click="() => handleDownloadCatalog(false)" />
         </ButtonGroup>
       </Popover>
     </template>
@@ -52,7 +52,15 @@
         @view="() => handleViewProduct(product)"
         @edit="() => handleEditProduct(product)"
         @delete="() => handleDeleteProduct(product)"
-      />
+        @restore="() => handleRestoreProduct(product)"
+        :is-deleted="!!product.deleted_at"
+      >
+      <template #product-stock>
+        <Tag v-if="!product.is_low_stock && !product.is_empty_stock" severity="success" value="Success">{{product.stock_availability}}</Tag>
+        <Tag v-else-if="product.is_empty_stock" severity="danger" value="Danger">{{product.stock_availability}}</Tag>
+        <Tag v-else="product.is_low_stock && !product.is_empty_stock" severity="warn" value="Warn">{{product.stock_availability}}</Tag>
+      </template>
+    </UniversalCard>
     </template>
   </TabLayout>
 
@@ -108,7 +116,8 @@ const {
   // loading: singleProductLoading,
   error: singleProductError,
   fetchById,
-  deleteItem
+  deleteItem,
+  restoreItem
 } = useCrudApi();
 
 // Cargar filtros al montar
@@ -168,7 +177,6 @@ const handleDeleteProduct = async(e) => {
             toast.add({ severity: 'success', closable: true, summary: `Producto eliminado exitosamente`, life: 3500 });  
             resetModalData()
             await fetchProducts({ ...route.query, ...localFilters.value });
-
           } else {
             console.error('Error al eliminar el producto:', error.value);
             toast.add({ severity: 'error', closable: true, summary: `Error al eliminar el producto: ${product.search_alias}`, life: 3500});  
@@ -178,6 +186,21 @@ const handleDeleteProduct = async(e) => {
       },
       reject: () => resetModalData()
   });
+}
+
+const handleRestoreProduct = async(product) => { 
+  try {
+    const restoredProduct = await restoreItem(product.id)
+    
+    if(!singleProductError.value && restoredProduct){
+      toast.add({ severity: 'success', closable: true, summary: `Producto recuperado exitosamente`, life: 3500 });  
+      await fetchProducts({ ...route.query, ...localFilters.value });
+    }
+  } catch (error) {
+    console.error('Error al recuperar el producto:', error.value);
+    toast.add({ severity: 'error', closable: true, summary: `Error al recuperar el producto: ${product.search_alias}`, life: 3500});  
+    return
+  }
 }
 
 const handleSearch = async(searchTerm) => {
