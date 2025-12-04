@@ -5,7 +5,22 @@
 		--display-font: Tahoma;
 		--default-font: Arial, sans-serif;
 
-		--bg-color-1: #333446;
+		--bg-color-1: var(--p-surface-600);
+		--bg-color-2: var(--p-surface-300);
+		--bg-color-3: var(--p-surface-800);
+		--bg-color-4: var(--p-surface-400);
+
+		--txt-color-1: var(--p-surface-100);
+		--txt-color-2: var(--p-surface-300);
+
+		--error-color-900: var(--p-red-900);
+		--error-color-500: var(--p-red-500);
+		--error-color-100: var(--p-red-100);
+
+		--success-color-900: var(--p-green-900);
+		--success-color-500: var(--p-green-500);
+		--success-color-100: var(--p-green-100);
+		/* --bg-color-1: #333446;
 		--bg-color-2: #7F8CAA;
 		--bg-color-3: #1E1E1E;
 		--bg-color-4: #6B758C;
@@ -14,7 +29,7 @@
 		--error-color-900: #AF0000;
 		--error-color-500: #FF3F3F;
 		--error-color-100: #FFB1B1;
-		--success-color-900: #007C13;
+		--success-color-900: #007C13; */
 
 		/* FONT SIZE VARS */
 		--micro-fs: 12px;
@@ -29,11 +44,11 @@
 		--display-sm-fs: 60px;
 		--display-lg-fs: 72px;
 
-		--p-toast-width: 22rem !important;
+		/* --p-toast-width: 22rem !important;
 		--p-toast-error-background: color-mix(in srgb,var(--p-red-500),transparent 30%) !important;
 		--p-toast-error-color: black !important;
 		--p-toast-success-background: color-mix(in srgb,var(--p-green-500),transparent 30%) !important;
-		--p-toast-success-color: black !important;
+		--p-toast-success-color: black !important; */
 	}
  
 
@@ -49,7 +64,7 @@
 body {
 	line-height: 1.5;
 	-webkit-font-smoothing: antialiased;
-  	background-color: var(--bg-color-1);
+  	background-color: var(--bg-color-3);
   	color: var(--p-primary-50);
 }
 
