@@ -8,58 +8,61 @@
         <span class="detail-label">Pedido:</span>
         <span class="detail-value">{{ `${recordData.search_alias}` || '---'}}</span>
       </div>
-      
-      <!-- Detalle: Ajuste -->
-      <div class="detail-row">
-        <span class="detail-label">Ajuste:</span>
-        <span class="detail-value">
-          ${{ recordData.adjustment_amount || '---'}}
-        </span>
-      </div>
 
-      <!-- Detalle: Total NETO -->
+      <!-- Detalle: fecha -->
       <div class="detail-row">
-        <span class="detail-label">Total NETO:</span>
-        <span class="detail-value">
-          ${{ recordData.total_net || '---'}}
-        </span>
+        <span class="detail-label">Fecha:</span>
+        <span class="detail-value">{{ `${recordData.created_at}` || '---'}}</span>
       </div>
+    </div>
+  </div>
 
+  <br>
+
+  <DataTable :value="recordData.order_details" size="large" showGridlines tableStyle="min-width: 50rem">
+    <template #header>
+      <h3>Detalles</h3>
+    </template>
+    <Column field="product.search_alias" header="Producto"></Column>
+    <Column field="quantity" header="Cantidad"></Column>
+    <Column field="unit_price_at_order" header="Precio unitario">
+      <template #body="{ data }">
+        {{data.formatted_unit_price}}
+      </template>
+    </Column>
+    <Column v-if="isSaleOrder" field="discount_percentage_by_unit" header="Descuento (%)">
+      <template #body="{ data }">
+        -{{data.discount_percentage_by_unit}}%
+      </template>
+    </Column>
+    <Column v-else field="product.profit_percentage" header="Ganancia (%)">
+      <template #body="{ data }">
+        {{data.product.profit_percentage}}%
+      </template>
+    </Column>
+    <Column field="formatted_line_subtotal" header="Subtotal"></Column>
+    <ColumnGroup type="footer">
+        <Row>
+            <Column :footer="`Bruto: ${recordData.subtotal_currency}`" :colspan="3" footerStyle="text-align:right" />
+            <Column :footer="`Ajuste: ${recordData.adjustment_currency}`" footerStyle="text-align:right"/>
+            <Column :footer="`NETO: ${recordData.total_net_currency}`" footerStyle="text-align:right"/>
+        </Row>
+    </ColumnGroup>
+  </DataTable>
+
+  <br>
+  <div class="order-read-details">
+    <div class="details-content">
       <!-- Detalle: Notas -->
       <div class="detail-row">
         <span class="detail-label">Notas:</span>
         <span class="detail-value">
-          {{ `${recordData.notes}` || '---' }}
+          {{ `${recordData.notes || '---'}`  }}
         </span>
       </div>
     </div>
 
-    <!-- DETALLES DEL PEDIDO -->
-    <div class="details-content" v-for="({quantity, product, unit_price_at_order, line_subtotal, discount_percentage_by_unit, }, idx) in recordData.order_details" :key="idx">
-      
-      <!-- Detalle -->
-      <div class="detail-row">
-        <span class="detail-label">Detalle #{{ idx + 1 }}:</span>
-        <span class="detail-value">{{ `${product.search_alias}` || '---'}}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Cantidad:</span>
-        <span class="detail-value">{{ `${quantity}` || '---'}}</span>
-      </div>
-      <div class="detail-row" v-if="recordData.movement_type.name==='Compra'">
-        <span class="detail-label">Ganancia (%):</span>
-        <span class="detail-value">{{ `${product.profit_percentage}%` || '---'}}</span>
-      </div>
-      <div class="detail-row" v-if="recordData.movement_type.name==='Venta' && discount_percentage_by_unit!==0">
-        <span class="detail-label">Descuento (%):</span>
-        <span class="detail-value">{{ `${discount_percentage_by_unit}%` || '---'}}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Subtotales:</span>
-        <span class="detail-value" v-if="quantity!==1">{{ `Por unidad (x1): $${unit_price_at_order}` || '---'}}</span>
-        <span class="detail-value">{{ `Por cantidad (x${quantity}): $${line_subtotal}` || '---'}}</span>
-      </div>
-    </div>
+    
 
 
     <!-- Botón de cerrar -->
@@ -74,6 +77,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 
 // Props del componente
 const props = defineProps({
@@ -84,13 +88,17 @@ const props = defineProps({
 });
 
 // Eventos emitidos
-const emit = defineEmits(['close']);
+const emit = defineEmits(['finish', 'close']);
 
 
 // Maneja el cierre
 const handleClose = () => {
   emit('close');
 };
+
+const isSaleOrder = computed(() => {
+  return props.recordData.movement_type && props.recordData.movement_type.name === 'Venta'
+})
 </script>
 
 <style scoped>
