@@ -21,7 +21,7 @@
             <i class="pi pi-user"></i>
         </InputGroupAddon>
         <FloatLabel variant="in">
-          <AutoComplete showClear id="contact" v-model="formData.contact" dropdown :suggestions="filteredContacts" @complete="searchContact" optionLabel="search_alias" optionValue="id"/>
+          <AutoComplete showClear id="contact" v-model="formData.contact" dropdown :suggestions="filteredContacts" @complete="searchContact" optionLabel="search_alias" optionValue="id" emptySearchMessage="No se encontraron sugerencias."/>
           <label for="contact">CONTACTO (codigo)</label>
         </FloatLabel>
         <Message v-if="errors.contact" severity="error" variant="simple" size="small" class="p-error">{{ errors.contact }}</Message>
@@ -39,13 +39,13 @@
       <!-- Campo: DETALLE_PRODUCTO -->
         <InputGroup>
           <FloatLabel variant="in">
-            <AutoComplete showClear ref="detailProductAutoCompletes" id="detail_product" v-model="detail.product" dropdown :suggestions="filteredProducts" @change="searchProduct" optionLabel="search_alias" optionValue="id" @option-select="(e) => handleOptionSelect(e, idx)"/>
+            <AutoComplete showClear ref="detailProductAutoCompletes" id="detail_product" v-model="detail.product" dropdown :suggestions="filteredProducts" @complete="searchProduct" optionLabel="search_alias" optionValue="id" @option-select="(e) => handleOptionSelect(e, idx)" emptySearchMessage="No se encontraron sugerencias."/>
             <label for="detail_product">PRODUCTO (codigo)</label>
           </FloatLabel>
           <Message v-if="errors[`detail${idx}_product`]" severity="error" variant="simple" size="small" class="p-error">{{ errors[`detail${idx}_product`] }}</Message>
         </InputGroup>
 
-        <template v-if="detail.product">
+        <template v-if="detail.product && detail.product.hasOwnProperty('code')">
           <!-- Campo: DETALLE_CANTIDAD_PRODUCTO -->
           <InputGroup>
             <FloatLabel variant="in">
@@ -101,9 +101,8 @@
             </template>
 
             <template v-if="isSaleOrder">
-              <Message severity="info">Unidad (x1): {{ formatToCurrency(getSaleSubtotalByQuantity(idx, 1)) }}</Message>
-              <br>
-              <Message severity="info">Cantidad (x{{ detail.quantity }}): {{ formatToCurrency(getSaleSubtotalByQuantity(idx, detail.quantity)) }}</Message>
+              <Message severity="secondary">Unidad <b>(x1)</b>: {{ formatToCurrency(getSaleSubtotalByQuantity(idx, 1)) }}</Message>
+              <Message severity="warn" v-if="detail.quantity>1">Cantidad <b>(x{{ detail.quantity }})</b>: {{ formatToCurrency(getSaleSubtotalByQuantity(idx, detail.quantity)) }}</Message>
             </template>
 
             <template v-else>
@@ -295,12 +294,14 @@ const handleCancel = () => {
 
 const filteredContacts = ref([]);
 const searchContact = (event) => {
+  if(event.query && event.query.hasOwnProperty('company_name')) return
+  
   setTimeout(() => {
-      if (!event.query.trim().length) {
+      if (!event.query || !event.query.trim().length) {
           filteredContacts.value = [...createFormData.value.contacts];
       } else {
           filteredContacts.value = createFormData.value.contacts.filter((contact) => {
-              return contact.search_alias.toLowerCase().startsWith(event.query.toLowerCase());
+              return contact.search_alias.toLowerCase().includes(event.query.toLowerCase());
           });
       }
   }, 250);
@@ -308,22 +309,21 @@ const searchContact = (event) => {
 
 const filteredProducts = ref([]);
 const searchProduct = (event) => {
-  if(event.value && event.value.hasOwnProperty('name')) return
+  console.log('searchProduct', event);
+  const selectProductFromDropdown = event.query && event.query.hasOwnProperty('name')
+  const autoCompleteIsEmpty = !event.query.trim().length
+  if(selectProductFromDropdown || autoCompleteIsEmpty) return
 
   setTimeout(() => {
-      if (!event.value.trim().length) {
-          filteredProducts.value = [...createFormData.value.products];
-      } else {
-          filteredProducts.value = createFormData.value.products.filter((product) => {
-              return product.search_alias.toLowerCase().startsWith(event.value.toLowerCase());
-          });
-      }
+      filteredProducts.value = createFormData.value.products.filter((product) => {
+          return product.search_alias.toLowerCase().includes(event.query.toLowerCase());
+      });
   }, 250);
 }
 
 
 const handleChangeOrderType = (e) => { 
-  // console.log(e.value.name);
+  console.log(e.value.name, createFormData.value.products);
   if(e.value === null){
     console.log('reiniciando los detalles');
     formData.order_details = [];
@@ -387,7 +387,6 @@ const getSaleSubtotalByQuantity = (idx, quantity) => {
   if(!isSaleOrder.value) return 0; 
   return (parseInt(detail.price * discountMultiplier(detail)).toFixed(0) * quantity);
 }
-
 
 const getSuggestedSalePrice = (idx) => { 
   const detail = formData.order_details[idx];
