@@ -69,26 +69,25 @@
           <!-- Campo: DETALLE_PRECIO_PRODUCTO -->
           <InputGroup>
             <FloatLabel variant="in">
-              <InputNumber id="detail_price" v-model="detail.price"
-              prefix="$" :class="{ 'p-invalid': errors[`detail${idx}_price`] }"
+              <InputNumber id="detail_unit_price" v-model="detail.unit_price"
+              prefix="$" :class="{ 'p-invalid': errors[`detail${idx}_unit_price`] }"
               :min="0"
             />
-              <label for="detail_price">PRECIO {{ (isSaleOrder) ? 'DE VENTA' : 'DE COMPRA' }}</label>
+              <label for="detail_unit_price">PRECIO {{ (isSaleOrder) ? 'DE VENTA' : 'DE COMPRA' }} (x unidad)</label>
             </FloatLabel>
-            <Message v-if="errors[`detail${idx}_price`]" severity="error" variant="simple" size="small" class="p-error">{{ errors[`detail${idx}_price`] }}</Message>
+            <Message v-if="errors[`detail${idx}_unit_price`]" severity="error" variant="simple" size="small" class="p-error">{{ errors[`detail${idx}_unit_price`] }}</Message>
           </InputGroup>
 
           <!-- Campo: DETALLE_PORCENTAJE_PRODUCTO -->
           <InputGroup>
             <FloatLabel variant="in">
-              <InputNumber id="selected_percentage" v-model="detail.percentage"
-              suffix="%" :class="{ 'p-invalid': errors[`detail${idx}_percentage`] }"
+              <InputNumber id="selected_percentage_applied" v-model="detail.percentage_applied"
+              suffix="%" :class="{ 'p-invalid': errors[`detail${idx}_percentage_applied`] }"
               :min="(isSaleOrder && detail.product) ? 0 : 1" :max="(isSaleOrder && detail.product) ? 100 : 500"
               />
-              <label for="selected_percentage" v-if="isSaleOrder">DESCUENTO (%)</label>
-              <label for="selected_percentage" v-else>GANANCIA (%)</label>
+              <label for="selected_percentage_applied">{{ (isSaleOrder) ? 'DESCUENTO' : 'GANANCIA'}} (%)</label>
             </FloatLabel>
-            <Message v-if="errors[`detail${idx}_percentage`]" severity="error" variant="simple" size="small" class="p-error">{{ errors[`detail${idx}_percentage`] }}</Message>
+            <Message v-if="errors[`detail${idx}_percentage_applied`]" severity="error" variant="simple" size="small" class="p-error">{{ errors[`detail${idx}_percentage_applied`] }}</Message>
           </InputGroup>
 
           <Fieldset v-if="hasFilledDetailFields(idx)">
@@ -248,7 +247,7 @@ const validateForm = () => {
       errors.value[`detail${index}_quantity`] = `La cantidad debe ser mayor a 0`;
       isValid = false;
     }
-    if (detail.price < 0) {
+    if (detail.unit_price < 0) {
       errors.value[`detail${index}_price`] = `El precio no puede ser negativo`;
       isValid = false;
     }
@@ -265,14 +264,9 @@ const handleSubmit = async() => {
       id_movement_type: formData.order_type.id, // Venta
       notes: formData.notes,
       adjustment_amount: formData.adjustment_amount,
-      order_details: formData.order_details.map(detail => ({
-        id_product: detail.product.id,
-        quantity: detail.quantity,
-        unit_price_at_order: detail.price,
-        [ (isSaleOrder.value) 
-            ? 'discount_percentage_by_unit'
-            : 'profit_percentage'
-        ]: detail.percentage
+      order_details: formData.order_details.map(({ product, quantity, unit_price, percentage_applied})  => ({
+        id_product: product.id,
+        quantity, unit_price, percentage_applied,
       }))
     }
     console.log('Datos a enviar:', formDataToSend);
@@ -341,8 +335,8 @@ const addTemporalDetail = () => {
   const detail = reactive({ 
     product: null, 
     quantity: 0, 
-    price: 0, 
-    percentage: (isSaleOrder.value) ? 0 : 30 
+    unit_price: 0, 
+    percentage_applied: (isSaleOrder.value) ? 0 : 30 
   });
 
   formData.order_details.push(detail)
@@ -370,27 +364,27 @@ const isSaleOrder = computed(() => {
 
 const handleOptionSelect = (e, idx) => { 
   console.log('handleOptionSelect', e, idx);
-  formData.order_details[idx].price = (isSaleOrder.value) ? e.value.sale_price : e.value.buy_price;
+  formData.order_details[idx].unit_price = (isSaleOrder.value) ? e.value.sale_price : e.value.buy_price;
 }
 
 const hasFilledDetailFields = (idx) => { 
   const detail = formData.order_details[idx];
-  return detail && detail.product && detail.quantity > 0 && detail.price >= 0 && detail.percentage >= 0;
+  return detail && detail.product && detail.quantity > 0 && detail.unit_price >= 0 && detail.percentage_applied >= 0;
 }
 
-const discountMultiplier = (detail) => (detail.percentage && detail.percentage > 0) 
-                              ? (1 - (detail.percentage / 100)) 
+const discountMultiplier = (detail) => (detail.percentage_applied && detail.percentage_applied > 0) 
+                              ? (1 - (detail.percentage_applied / 100)) 
                               : 1;
 
 const getSaleSubtotalByQuantity = (idx, quantity) => { 
   const detail = formData.order_details[idx];
   if(!isSaleOrder.value) return 0; 
-  return (parseInt(detail.price * discountMultiplier(detail)).toFixed(0) * quantity);
+  return (parseInt(detail.unit_price * discountMultiplier(detail)).toFixed(0) * quantity);
 }
 
 const getSuggestedSalePrice = (idx) => { 
   const detail = formData.order_details[idx];
-  return parseInt((detail.price * (1 + detail.percentage / 100))).toFixed(0)
+  return parseInt((detail.unit_price * (1 + detail.percentage_applied / 100))).toFixed(0)
 }
 
 const formatToCurrency = (amount) => {
@@ -402,7 +396,7 @@ const getSaleApproximateTotalNet = computed(() => {
 
   let total = 0;
   formData.order_details.forEach((detail) => {
-    total += parseInt(detail.price * discountMultiplier(detail)).toFixed(0) * detail.quantity;
+    total += parseInt(detail.unit_price * discountMultiplier(detail)).toFixed(0) * detail.quantity;
   });
 
   return total + formData.adjustment_amount; 
