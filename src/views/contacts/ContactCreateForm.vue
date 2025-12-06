@@ -172,13 +172,6 @@ const handleSubmit = async() => {
 const handleCancel = () => {
   emit('close');
 };
-
-const calculateSalePrice = () => {
-    formData.sale_price = parseFloat((formData.buy_price * formData.profit_percentage).toFixed(2));
-}
-
-watch( () => formData.buy_price, calculateSalePrice );
-watch( () => formData.profit_percentage, calculateSalePrice );
 </script>
 
 <style scoped>

@@ -25,14 +25,14 @@
     </template>
     <Column field="product.search_alias" header="Producto"></Column>
     <Column field="quantity" header="Cantidad"></Column>
-    <Column field="unit_price_at_order" header="Precio unitario">
+    <Column field="unit_price" header="Precio unitario">
       <template #body="{ data }">
         {{data.formatted_unit_price}}
       </template>
     </Column>
     <Column v-if="isSaleOrder" field="discount_percentage_by_unit" header="Descuento (%)">
       <template #body="{ data }">
-        -{{data.discount_percentage_by_unit}}%
+        -{{data.percentage_applied}}%
       </template>
     </Column>
     <Column v-else field="product.profit_percentage" header="Ganancia (%)">

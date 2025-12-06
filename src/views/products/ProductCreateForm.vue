@@ -200,9 +200,9 @@ const validateForm = () => {
     isValid = false;
   }
 
-  // Validar porcentaje de ganancia (requerido y mayor a 0)
-  if (!formData.profit_percentage || formData.profit_percentage < 1.1) {
-    errors.value.profit_percentage = 'El porcentaje de ganancia debe ser mayor a 1.1 (10%)';
+  // Validar porcentaje de ganancia (requerido y mayor a 1)
+  if (!formData.profit_percentage || formData.profit_percentage < 1) {
+    errors.value.profit_percentage = 'El porcentaje de ganancia debe ser mayor o igual al 1%';
     isValid = false;
   }
 
