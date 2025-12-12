@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <Menubar class="navbar" :model="items" />
+    <Menubar class="bg-surface-800 py-4 px-6 shadow-md" :model="items" />
     <ConfirmDialog></ConfirmDialog>
   </nav>
 </template>
@@ -24,6 +24,7 @@ const items = ref([
     {
         label: 'Pedidos',
         icon: 'pi pi-receipt',
+        class: 'text-lg',
         command: () => {
           router.push({name: 'Pedidos'})
         }
@@ -31,6 +32,7 @@ const items = ref([
     {
         label: 'Movimientos',
         icon: 'pi pi-arrow-right-arrow-left',
+        class: 'text-lg',
         command: () => {
           router.push({name: 'Movimientos de stock'})
         }
@@ -38,6 +40,7 @@ const items = ref([
     {
         label: 'Productos',
         icon: 'pi pi-th-large',
+        class: 'text-lg',
         command: () => {
           router.push({name: 'Productos'})
         }
@@ -45,6 +48,7 @@ const items = ref([
     {
         label: 'Contactos',
         icon: 'pi pi-users',
+        class: 'text-lg',
         command: () => {
           router.push({name: 'Contactos'})
         }
@@ -52,7 +56,7 @@ const items = ref([
     {
         label: 'Cerrar sesión',
         icon: 'pi pi-sign-out',
-        class: 'logout-button',
+        class: 'logout-button text-xl',
         command: () => {
           handleLogout()
         },
@@ -88,11 +92,6 @@ const handleLogout = async() => {
 </script>
 
 <style>
-.navbar {
-  background: var(--bg-color-3);
-  padding: 1rem 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
 
 .p-menubar-item.logout-button .p-menubar-item-label{
   color: var(--p-red-200);
