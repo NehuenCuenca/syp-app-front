@@ -6,7 +6,7 @@
     :modal="true"
     :closable="true"
     :draggable="false"
-    :style="{ width: '80vw' }"
+    class="sm:min-w-sreen md:min-w-[80vw] lg:min-w-[60vw] overflow-hidden"
     @update:visible="handleClose"
     maximizable 
     ref="dialog" 
