@@ -1,97 +1,110 @@
 <!-- ContactUpdateForm.vue -->
 <!-- Formulario para editar un contacto existente -->
 <template>
-  <div class="contact-update-form">
-    <div class="form-content">
+  <div class="flex items-center flex-col gap-4">
+    <div class="flex justify-between max-w-xl flex-wrap gap-6">
       <!-- Campo: Nombre negocio -->
-      <InputGroup>
-        <InputGroupAddon>
-            <i class="pi pi-shop"></i>
-        </InputGroupAddon>
-        <FloatLabel variant="in">
-          <InputText id="company_name" v-model="formData.company_name" :class="{ 'p-invalid': errors.company_name }"/>
-          <label for="company_name">NEGOCIO</label>
-        </FloatLabel>
-        <Message v-if="errors.company_name" severity="error" variant="simple" size="small" class="p-error">{{ errors.company_name }}</Message>
-      </InputGroup>
+      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+        <InputGroup>
+          <InputGroupAddon>
+              <i class="pi pi-shop"></i>
+          </InputGroupAddon>
+          <FloatLabel variant="in">
+            <InputText id="company_name" v-model="formData.company_name" :invalid="!!errors.company_name"/>
+            <label for="company_name">NEGOCIO</label>
+          </FloatLabel>
+        </InputGroup>
+        <Message v-if="errors.company_name" severity="error" variant="simple" size="large" class="p-error">{{ errors.company_name }}</Message>
+      </div>
 
       <!-- Campo: Nombre titular -->
-      <InputGroup>
-        <InputGroupAddon>
-            <i class="pi pi-user"></i>
-        </InputGroupAddon>
-        <FloatLabel variant="in">
-          <InputText id="contact_name" v-model="formData.contact_name" :class="{ 'p-invalid': errors.contact_name }"/>
-          <label for="contact_name">PROPIETARIO</label>
-        </FloatLabel>
-        <Message v-if="errors.contact_name" severity="error" variant="simple" size="small" class="p-error">{{ errors.contact_name }}</Message>
-      </InputGroup>
+      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+        <InputGroup>
+          <InputGroupAddon>
+              <i class="pi pi-user"></i>
+          </InputGroupAddon>
+          <FloatLabel variant="in">
+            <InputText id="contact_name" v-model="formData.contact_name" :invalid="!!errors.contact_name"/>
+            <label for="contact_name">PROPIETARIO</label>
+          </FloatLabel>
+        </InputGroup>
+        <Message v-if="errors.contact_name" severity="error" variant="simple" size="large" class="p-error">{{ errors.contact_name }}</Message>
+      </div>
 
       <!-- Campo: Telefono: -->
-      <InputGroup>
-        <InputGroupAddon>
-            <i class="pi pi-phone"></i>
-        </InputGroupAddon>
-        <FloatLabel variant="in">
-          <InputText id="phone" v-model="formData.phone" :class="{ 'p-invalid': errors.phone }"/>
-          <label for="phone">TELEFONO</label>
-        </FloatLabel>
-        <Message v-if="errors.phone" severity="error" variant="simple" size="small" class="p-error">{{ errors.phone }}</Message>
-      </InputGroup>
+      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+        <InputGroup>
+          <InputGroupAddon>
+              <i class="pi pi-phone"></i>
+          </InputGroupAddon>
+          <FloatLabel variant="in">
+            <InputText id="phone" v-model="formData.phone" :invalid="!!errors.phone"/>
+            <label for="phone">TELEFONO</label>
+          </FloatLabel>
+        </InputGroup>
+        <Message v-if="errors.phone" severity="error" variant="simple" size="large" class="p-error">{{ errors.phone }}</Message>
+      </div>
 
       <!-- Campo: Email: -->
-      <InputGroup>
-        <InputGroupAddon>
-            <i class="pi pi-at"></i>
-        </InputGroupAddon>
-        <FloatLabel variant="in">
-          <InputText id="email" v-model="formData.email" :class="{ 'p-invalid': errors.email }"/>
-          <label for="email">EMAIL</label>
-        </FloatLabel>
-        <Message v-if="errors.email" severity="error" variant="simple" size="small" class="p-error">{{ errors.email }}</Message>
-      </InputGroup>
+      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+        <InputGroup>
+          <InputGroupAddon>
+              <i class="pi pi-at"></i>
+          </InputGroupAddon>
+          <FloatLabel variant="in">
+            <InputText id="email" v-model="formData.email" :invalid="!!errors.email"/>
+            <label for="email">EMAIL</label>
+          </FloatLabel>
+        </InputGroup>
+        <Message v-if="errors.email" severity="error" variant="simple" size="large" class="p-error">{{ errors.email }}</Message>
+      </div>
 
       <!-- Campo: Direccion: -->
-      <InputGroup>
-        <InputGroupAddon>
-            <i class="pi pi-map-marker"></i>
-        </InputGroupAddon>
-        <FloatLabel variant="in">
-          <InputText id="address" v-model="formData.address" :class="{ 'p-invalid': errors.address }"/>
-          <label for="address">DIRECCION</label>
-        </FloatLabel>
-        <Message v-if="errors.address" severity="error" variant="simple" size="small" class="p-error">{{ errors.address }}</Message>
-      </InputGroup>
+      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+        <InputGroup>
+          <InputGroupAddon>
+              <i class="pi pi-map-marker"></i>
+          </InputGroupAddon>
+          <FloatLabel variant="in">
+            <InputText id="address" v-model="formData.address" :invalid="!!errors.address"/>
+            <label for="address">DIRECCION</label>
+          </FloatLabel>
+        </InputGroup>
+        <Message v-if="errors.address" severity="error" variant="simple" size="large" class="p-error">{{ errors.address }}</Message>
+      </div>
 
       <!-- Campo: Tipo de contacto -->
-      <InputGroup>
-        <InputGroupAddon>
-            <i class="pi pi-users"></i>
-        </InputGroupAddon>
-        <FloatLabel variant="in">
-          <Select v-model="formData.contact_type" :options="contactTypes" showClear />
-          <label for="contact_type">TIPO DE CONTACTO</label>
-        </FloatLabel>
-        <Message v-if="errors.contact_type" severity="error" variant="simple" size="small" class="p-error">{{ errors.contact_type }}</Message>
-      </InputGroup>
+      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+        <InputGroup>
+          <InputGroupAddon>
+              <i class="pi pi-users"></i>
+          </InputGroupAddon>
+          <FloatLabel variant="in">
+            <Select v-model="formData.contact_type" :options="contactTypes" showClear :invalid="!!errors.contact_type" />
+            <label for="contact_type">TIPO DE CONTACTO</label>
+          </FloatLabel>
+        </InputGroup>
+        <Message v-if="errors.contact_type" severity="error" variant="simple" size="large" class="p-error">{{ errors.contact_type }}</Message>
+      </div>
 
       <Message severity="error" v-if="error">{{ error }}</Message>
+
+      <!-- Botones de acción -->
+      <div class="w-full flex justify-around">
+        <Button
+          label="Cancelar"
+          severity="secondary"
+          outlined
+          @click="handleCancel"
+        />
+        <Button
+          label="Guardar"
+          icon="pi pi-check"
+          @click="handleSubmit"
+        />
+      </div>
     </div>
 
-    <!-- Botones de acción -->
-    <div class="form-actions">
-      <Button
-        label="Cancelar"
-        severity="secondary"
-        outlined
-        @click="handleCancel"
-      />
-      <Button
-        label="Guardar"
-        icon="pi pi-check"
-        @click="handleSubmit"
-      />
-    </div>
   </div>
 </template>
 
@@ -183,51 +196,4 @@ const handleCancel = () => {
 };
 </script>
 
-<style scoped>
-.contact-update-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.form-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-label {
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: #495057;
-}
-
-label.required::after {
-  content: ' *';
-  color: #e24c4c;
-}
-
-.p-error {
-  color: #e24c4c;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-.w-full {
-  width: 100%;
-}
-</style>
+<style scoped></style>
