@@ -1,37 +1,41 @@
 <template>
-  <div class="tab-layout">
+  <div class="w-full max-w-7xl px-4 py-8 flex flex-col gap-6">
     <!-- Header con título e icono -->
-    <header class="tab-header">
-      <i :class="['pi', iconClass]"></i>
-      <h1 class="tab-title">{{ title }}</h1>
+    <header class="flex items-center gap-3">
+      <i style="font-size: 2rem" class="text-2xl" :class="['pi', iconClass]"></i>
+      <h1 class="text-3xl font-semibold">{{ title }}</h1>
     </header>
 
     <!-- Sección de filtros -->
     <template v-if="!loading && error === null">
       <Toolbar>
         <template #start>
+          <div class="flex gap-3">
             <Button size="large" label="Nuevo" icon="pi pi-plus" v-if="showCreateButton" @click="$emit('create')" severity="primary" />
             <slot name="download-btn"></slot>
+          </div>
         </template>
 
         <template #center>
           <!-- Buscador -->
-          <IconField v-if="showSearchInput">
+          <IconField v-if="showSearchInput" class="my-6">
             <InputIcon class="pi pi-search" />
             <InputText type="search" placeholder="Buscador" v-model.trim="searchValue" @input="handleSearchInput"/>
           </IconField>
         </template>
 
         <template #end v-if="filters && !loading">
-          <slot name="filter-1"></slot>
-          <slot name="filter-2"></slot>
-          <slot name="filter-3"></slot>
-          <Button label="Limpiar" severity="secondary" v-if="canClearFilters" icon="pi pi-delete-left" @click="handleClearFilters"/>
+          <div class="flex flex-wrap gap-5">
+            <slot name="filter-1"></slot>
+            <slot name="filter-2"></slot>
+            <slot name="filter-3"></slot>
+            <Button label="Limpiar" severity="secondary" size="small" v-if="canClearFilters" icon="pi pi-delete-left" @click="handleClearFilters"/>
+          </div>
         </template>
       </Toolbar>
 
       <!-- Grid de tarjetas -->
-      <div class="cards-grid">
+      <div class="self-center w-full max-w-5xl grid grid-cols-1 justify-items-center sm:grid-cols-2 md:grid-cols-3 gap-5">
         <slot name="cards" v-if="(totalItems > 0) && (currentPage <= totalPages)"></slot>
         <Message v-else severity="error" style="text-align: center;">No se encontraron registros.</Message>
       </div>
@@ -47,15 +51,15 @@
           '1300px': 'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink',
           default: 'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink'
         }"
-        currentPageReportTemplate="Página {currentPage}"
+        currentPageReportTemplate="Página {currentPage}/{last}"
       />
     </template>
 
-    <div v-else-if="!loading && error !== null" class="error-when-loading">
+    <div v-else-if="!loading && error !== null" class="py-12 px-4 flex flex-col items-center justify-center gap-4 min-h-[150px] w-full">
       <Message severity="error" style="text-align: center;">{{error}}. <br> Inténtalo de nuevo más tarde.</Message>
       <Button label="Recargar" severity="contrast" icon="pi pi-refresh" iconPos="bottom" @click="() => this.$router.go()"/>
     </div>
-    <div v-else class="loader">
+    <div v-else class="rounded-md py-12 px-4 flex flex-col items-center justify-center text-surface-100 text-2xl font-normal min-h-[150px]">
        <ProgressSpinner style="width: 100px; height: 100px" strokeWidth="2" fill="transparent"
             animationDuration="1s" aria-label="Custom ProgressSpinner" />
       <span>Cargando {{ title.toLocaleLowerCase() }}...</span>
@@ -207,250 +211,4 @@ defineExpose({
 });
 </script>
 
-<style scoped>
-.tab-layout {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-/* Header */
-.tab-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.tab-header i {
-  font-size: 2rem;
-  color: #fff;
-}
-
-.tab-title {
-  font-size: 2rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0;
-}
-
-/* Filtros */
-.filters-section {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.filters-left {
-  display: flex;
-  align-items: center;
-
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  width: 100%;
-}
-
-.search-wrapper {
-  position: relative;
-  flex: 1;
-  min-width: 200px;
-}
-
-.search-wrapper i {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
-  font-size: 0.875rem;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.625rem 0.75rem 0.625rem 2.25rem;
-  background: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 0.375rem;
-  color: #fff;
-  font-size: 0.875rem;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.search-input::placeholder {
-  color: #64748b;
-}
-
-.search-input:focus {
-  border-color: #3b82f6;
-}
-
-
-/* .btn-create {
-  background-color: var(--txt-color-2);
-  border-color: transparent;
-}
-
-:is(.btn-create:not(:disabled):hover, .btn-create:not(:disabled):active){
-  background-color: var(--txt-color-1);
-  border-color: transparent;
-}
- */
-.filters-right {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  width: 100%;
-  justify-content: flex-start;
-}
-
-/* Grid de tarjetas */
-.cards-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-}
-
-.loader {
-  border-radius: 0.5rem;
-  padding: 3rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--txt-color-1);
-  font: normal normal 600 clamp(var(--subtitle-fs), 2.5vw, var(--heading-sm-fs)) 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  min-height: 150px;
-}
-
-.error-when-loading{
-  /* border-radius: 0.5rem; */
-  padding: 3rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  min-height: 150px;
-}
-
-/* Paginación */
-.pagination {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 0;
-}
-
-.pagination-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  color: #fff;
-}
-
-.pagination-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.pagination-numbers {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.pagination-number {
-  min-width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1px solid #334155;
-  border-radius: 0.375rem;
-  color: #94a3b8;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.pagination-number:hover:not(.active):not(.ellipsis) {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: #3b82f6;
-  color: #fff;
-}
-
-.pagination-number.active {
-  background: #3b82f6;
-  border-color: #3b82f6;
-  color: #fff;
-  font-weight: 600;
-}
-
-.pagination-number.ellipsis {
-  border: none;
-  cursor: default;
-}
-
-/* Tablet */
-@media (min-width: 640px) {
-  .cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .pagination {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-}
-
-/* Desktop */
-@media (min-width: 1024px) {
-  .tab-layout {
-    padding: 2rem;
-  }
-  
-  .filters-section {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .filters-left {
-    flex: 0 0 auto;
-    width: auto;
-  }
-  
-  .filters-right {
-    flex: 0 0 auto;
-    width: auto;
-    justify-content: flex-end;
-  }
-  
-  .cards-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-  }
-}
-</style>
+<style scoped></style>
