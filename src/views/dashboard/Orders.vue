@@ -33,7 +33,7 @@
         v-for="order in ordersData"
         :primary-text="order.search_alias"
         :secondary-text="order.order_type_with_total_net"
-        :tertiary-text="order.created_at"
+        :tertiary-text="extractDate(order.created_at)"
         card-type="pedido"
         :is-exportable="order.is_exportable"
         @view="() => handleViewOrder(order)"
@@ -69,6 +69,8 @@ import OrderEditForm from '~views/orders/OrderEditForm.vue';
 import axios from 'axios';
 import { useConfirm } from 'primevue';
 import { createTemporalLink, getAxiosConfigForBlobResponse } from '@/helpers/downloads';
+import { extractDate } from '@/helpers/dates';
+
 // import OrderDeleteConfirm from '~views/orders/OrderDeleteConfirm.vue';
 
 const toast = useToast();
@@ -135,7 +137,7 @@ const handleEditOrder = async(e) => {
   }
 
   confirm.require({
-      message: `¿Estas seguro de borrar "${order.search_alias}"?`,
+      message: `¿Estas seguro de borrar "${order.search_alias}"? Revertirás sus movimientos.`,
       header: 'Borrar pedido',
       icon: 'pi pi-exclamation-triangle',
       rejectLabel: 'No, cancelar',
