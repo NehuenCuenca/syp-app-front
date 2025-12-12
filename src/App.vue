@@ -11,7 +11,7 @@ const authStore = useAuthStore()
     <header>
       <Navbar v-if="authStore.isLoggedIn"/>
     </header>
-    <main>
+    <main class="flex flex-col items-center">
       <router-view />
       <Toast position="bottom-right"/>
     </main>

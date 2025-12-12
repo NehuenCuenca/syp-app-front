@@ -25,7 +25,7 @@
         :primary-text="stockMovement.sign_with_quantity_and_product"
         :primary-color="stockMovement.quantity_moved < 0 ? 'var(--error-color-900)':'var(--success-color-900)'"
         :secondary-text="stockMovement.notes_info"
-        :tertiary-text="stockMovement.created_at"
+        :tertiary-text="extractDate(stockMovement.created_at)"
         card-type="movimiento"
         @view="() => handleViewStockMovement(stockMovement)"
         @openOrder="() => handleOpenOrder(stockMovement.order)"
@@ -52,6 +52,7 @@ import TabLayout from '~components/TabLayout.vue';
 import { useCrudApi } from '~composables/useCrudApi';
 import { useToast } from 'primevue/usetoast';
 import StockMovementReadDetails from '../stockMovements/StockMovementReadDetails.vue';
+import { extractDate } from '@/helpers/dates';
 
 const toast = useToast();
 
