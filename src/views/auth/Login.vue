@@ -1,55 +1,55 @@
 <template>
-  <div class="login-container">
-    <div class="login-wrapper">
+  <div class="min-h-dvh flex items-center justify-center p-4">
+    <div class="max-w-md flex flex-col gap-6">
       <!-- Header -->
-      <div class="header">
-        <h1 class="title">
-          ¡Bienvenido a <span class="highlight">SyP app</span>!
+      <div class="text-center flex flex-col gap-1">
+        <h1 class="text-2xl font-bold ">
+          ¡Bienvenido a <span class="text-primary-300">SyP app</span>!
         </h1>
-        <p class="subtitle">Inicia sesión y armá tus pedidos.</p>
+        <p class="text-primary-100">Inicia sesión y armá tus pedidos.</p>
       </div>
 
       <!-- Login Card -->
-      <div class="login-card">
-        <h2 class="card-title">Acceso a la plataforma</h2>
+      <div class="bg-surface-200 rounded p-7 shadow-2xl flex flex-col gap-4">
+        <h2 class="text-xl text-surface-800 font-semibold">Acceso a la plataforma</h2>
 
-        <form @submit.prevent="handleSubmit" novalidate>
+        <form @submit.prevent="handleSubmit" novalidate class="flex flex-col gap-6">
           <!-- Email Field -->
-          <div class="form-group">
-            <label for="email" class="form-label">Email</label>
+          <div class="flex flex-col gap-2">
+            <label for="email" class="block text-lg text-surface-800">Email</label>
             <input
               type="email"
               id="email"
               v-model="formData.email"
               @blur="() => handleBlur('email')"
               @input="() => handleInput('email')"
-              :class="['form-input', { 'input-error': touched.email && errors.email }]"
+              :class="['p-3 bg-surface-100 text-surface-800 border-1 border-surface-900 outline-none rounded-lg placeholder:text-surface-400 focus:shadow-md', { 'border-red-400 focus:shadow-red-900': touched.email && errors.email }]"
               placeholder="tu@email.com"
             />
-            <p v-if="touched.email && errors.email" class="error-message">
+            <p v-if="touched.email && errors.email" class="text-md text-red-700">
               {{ errors.email }}
             </p>
           </div>
 
           <!-- Password Field -->
-          <div class="form-group">
-            <label for="password" class="form-label">Contraseña</label>
+          <div class="flex flex-col gap-2">
+            <label for="password" class="block text-lg text-surface-800">Contraseña</label>
             <input
               type="password"
               id="password"
               v-model="formData.password"
               @blur="() => handleBlur('password')"
               @input="() => handleInput('password')"
-              :class="['form-input', { 'input-error': touched.password && errors.password }]"
+              :class="['p-3 bg-surface-100 text-surface-800 border-1 border-surface-900 outline-none rounded-lg placeholder:text-surface-400 focus:shadow-md', { 'border-red-400 focus:shadow-red-900': touched.password && errors.password }]"
               placeholder="••••••••"
             />
-            <p v-if="touched.password && errors.password" class="error-message">
+            <p v-if="touched.password && errors.password" class="text-md text-red-700">
               {{ errors.password }}
             </p>
           </div>
 
           <!-- General Error Message -->
-          <div v-if="errors.general" class="general-error">
+          <div v-if="errors.general" class="p-3 bg-red-100 border border-red-300 rounded-lg text-red-900 text-md">
             {{ errors.general }}
           </div>
 
@@ -57,9 +57,9 @@
           <button
             type="submit"
             :disabled="!isFormValid || isSubmitting"
-            :class="['submit-button', { 'button-disabled': !isFormValid || isSubmitting }]"
+            :class="['p-4 bg-surface-800 border-none rounded-lg text-lg cursor-pointer transition-all shadow-md hover:not-disabled:bg-surface-900 shadow-lg', { 'disabled:bg-surface-800 cursor-not-allowed shadow-none opacity-60': !isFormValid || isSubmitting }]"
           >
-            <span v-if="isSubmitting" class="loading-spinner"></span>
+            <!-- <span v-if="isSubmitting" class="loading-spinner"></span> -->
             {{ isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión' }}
           </button>
         </form>
@@ -203,51 +203,15 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-/* Container principal */
-.login-container {
-  min-height: 100vh;
-  background: #333446;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.login-wrapper {
-  width: 100%;
-  max-width: 28rem;
-}
-
-/* Header */
-.header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
 
 .title {
   font-size: 2rem;
   font-weight: 700;
   color: white;
   margin-bottom: 0.75rem;
-  line-height: 1.2;
+  /* line-height: 1.2; */
 }
 
-.highlight {
-  color: #B8CFCE;
-}
-
-.subtitle {
-  color: #cbd5e1;
-  font-size: 0.875rem;
-}
-
-/* Login Card */
-.login-card {
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-  padding: 1.5rem;
-}
 
 .card-title {
   font-size: 1.25rem;
@@ -275,7 +239,7 @@ const handleSubmit = async () => {
   border: 1px solid #cbd5e1;
   border-radius: 0.5rem;
   font-size: 1rem;
-  transition: all 0.2s;
+  /* transition: all 0.2s; */
   outline: none;
   color: #000000;
   background: white;
@@ -298,25 +262,7 @@ const handleSubmit = async () => {
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
-.error-message {
-  margin-top: 0.25rem;
-  font-size: 0.75rem;
-  color: #ef4444;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
 
-/* General Error */
-.general-error {
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  background: #fee2e2;
-  border: 1px solid #fca5a5;
-  border-radius: 0.5rem;
-  color: #991b1b;
-  font-size: 0.875rem;
-}
 
 /* Submit Button */
 .submit-button {
@@ -374,41 +320,6 @@ const handleSubmit = async () => {
 .additional-links {
   margin-top: 1.5rem;
   text-align: center;
-}
-
-.link {
-  font-size: 0.875rem;
-  color: #0891b2;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-
-.link:hover {
-  color: #0e7490;
-  text-decoration: underline;
-}
-
-/* Footer */
-.footer {
-  margin-top: 1.5rem;
-  text-align: center;
-}
-
-.footer-text {
-  color: #cbd5e1;
-  font-size: 0.875rem;
-}
-
-.link-highlight {
-  color: #B8CFCE;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-
-.link-highlight:hover {
-  color: #a0bfbd;
-  text-decoration: underline;
 }
 
 /* Responsive - Tablet y Desktop */
