@@ -1,25 +1,26 @@
 <template>
-  <div class="universal-card" :class="isDeleted ? 'universal-card_deleted':''">
-    <!-- Texto terciario -->
-    <div class="card-tertiary">
-      {{ tertiaryText }}
-    </div>
-
+  <div class="bg-surface-100 p-3 radius rounded-lg flex flex-col justify-between gap-3 max-w-xs w-full min-h-28" 
+  :class="{'bg-surface-400': isDeleted}">
+  
     <!-- Contenedor del texto primario y menú -->
-    <div class="card-header">
-      <div class="card-primary" :style="{ color: primaryColor }" :title="primaryText">
-        {{ truncateText(primaryText, 25) }}
+    <div class="flex justify-between items-center">
+      <div class="flex flex-col justify-between items-start">
+        <!-- Texto terciario -->
+        <p class="text-md md:text-lg font-bold text-surface-600 flex gap-3.5">
+          {{ tertiaryText }}
+        </p>
+        <p class="text-2xl md:text-xl font-bold text-surface-800 flex-1 break-normal" :style="{ color: primaryColor }" :title="primaryText">
+          {{ truncateText(primaryText, 20) }}
+        </p>
       </div>
 
       <!-- Botón del menú -->
-      <Button 
+      <Button
         icon="pi pi-ellipsis-v" 
-        :size="'large'"
-        text 
-        rounded
-        class="menu-button"
+        :size="'large'" 
         @click="toggleMenu"
         aria-label="Opciones"
+        severity="contrast" rounded 
       />
       
       <!-- Menu Popup -->
@@ -27,14 +28,13 @@
         ref="menu" 
         :model="menuItems" 
         :popup="true"
-        class="custom-menu"
       />
     </div>
 
     <!-- Texto secundario -->
-    <div v-if="secondaryText && !isProductCard" class="card-secondary" :style="{ color: secondaryColor }" :title="secondaryText">
+    <p v-if="secondaryText && !isProductCard" class="text-lg text-surface-600" :title="secondaryText">
       {{ truncateText(secondaryText, 35) }}
-    </div>
+    </p>
     <slot name="product-stock"></slot>
   </div>
 </template>
@@ -61,10 +61,6 @@ const props = defineProps({
   primaryColor: {
     type: String,
     default: 'var(--bg-color-3)'
-  },
-  secondaryColor: {
-    type: String,
-    default: 'var(--bg-color-1)'
   },
   
   // Tipo de card para determinar las opciones del menú
@@ -174,57 +170,19 @@ const isProductCard = computed(() => props.cardType === 'producto')
 
 <style scoped>
 .universal-card {
-  background-color: var(--txt-color-1);
-  border-radius: 8px;
-  padding: 10px;
-  position: relative;
-  min-height: 100px;
+  /* position: relative; */
 }
 
 .universal-card_deleted{
-  background-color: var(--p-surface-400);
+  /* background-color: var(--p-surface-400); */
 }
 
-.card-tertiary {
-  font-size: clamp(14px, 1.5vw, 16px);
-  font-weight: bold;
-  color: var(--bg-color-1);
-  display: flex;
-  gap: 15px;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  /* gap: 10px; */
-}
-
-.card-primary {
-  font-size: clamp(var(--body-lg-fs), 2.5vw, var(--subtitle-fs));
-  font-weight: bold;
-  color: var(--bg-color-3);
-  flex: 1;
-  word-break: break-word;
-}
-
-.menu-button {
-  color: var(--bg-color-1) !important;
-  flex-shrink: 0;
-}
-
-.menu-button:hover {
+/* .menu-button:hover {
   background-color: rgba(51, 52, 70, 0.1) !important;
-}
-
-.card-secondary {
-  font-size: clamp(18px, 1.4vw, 24px);
-  font-weight: normal;
-  color: var(--bg-color-1);
-}
+} */
 
 /* Estilos personalizados para el menú */
-:deep(.custom-menu) {
+/* :deep(.custom-menu) {
   background-color: var(--bg-color-3) !important;
   border: none !important;
   border-radius: 8px;
@@ -245,5 +203,5 @@ const isProductCard = computed(() => props.cardType === 'producto')
 
 :deep(.custom-menu .p-menuitem-text) {
   color: var(--txt-color-1) !important;
-}
+} */
 </style>
