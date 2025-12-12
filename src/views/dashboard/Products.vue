@@ -18,11 +18,13 @@
     <template #download-btn>
       <Button type="button" icon="pi pi-download" label="Descargar" severity="secondary" @click="togglePopover" />
       <Popover ref="op">
-        <Message size="small" severity="secondary">Catálogo de tipo...</Message>
-        <ButtonGroup>
-          <Button label="Público (sin)" severity="primary" @click="() => handleDownloadCatalog(true)" />
-          <Button label="Privado (con)" severity="secondary" @click="() => handleDownloadCatalog(false)" />
-        </ButtonGroup>
+        <div class="flex flex-col gap-3">
+          <Message size="small" severity="secondary">Catálogo de tipo...</Message>
+          <ButtonGroup>
+            <Button label="Público (sin)" severity="primary" @click="() => handleDownloadCatalog(true)" />
+              <Button label="Privado (con)" severity="secondary" @click="() => handleDownloadCatalog(false)" />
+            </ButtonGroup>
+        </div>
       </Popover>
     </template>
 
@@ -45,8 +47,6 @@
       <UniversalCard
         v-for="product in productsData"
         :primary-text="`${product.search_alias}`"
-        :secondary-text="product.stock_availability"
-        :secondary-color="(product.is_low_stock) ? 'var(--error-color-900)':'var(--success-color-900)'"
         :tertiary-text="product.category.search_alias"
         card-type="producto"
         @view="() => handleViewProduct(product)"
@@ -56,9 +56,9 @@
         :is-deleted="!!product.deleted_at"
       >
       <template #product-stock>
-        <Tag v-if="!product.is_low_stock && !product.is_empty_stock" severity="success" value="Success">{{product.stock_availability}}</Tag>
-        <Tag v-else-if="product.is_empty_stock" severity="danger" value="Danger">{{product.stock_availability}}</Tag>
-        <Tag v-else="product.is_low_stock && !product.is_empty_stock" severity="warn" value="Warn">{{product.stock_availability}}</Tag>
+        <Tag class="w-fit" v-if="!product.is_low_stock && !product.is_empty_stock" severity="success" value="Success">{{product.stock_availability}}</Tag>
+        <Tag class="w-fit" v-else-if="product.is_empty_stock" severity="danger" value="Danger">{{product.stock_availability}}</Tag>
+        <Tag class="w-fit" v-else="product.is_low_stock && !product.is_empty_stock" severity="warn" value="Warn">{{product.stock_availability}}</Tag>
       </template>
     </UniversalCard>
     </template>
@@ -321,92 +321,4 @@ const handleDownloadCatalog = async(exclude_special_category=false) => {
 }
 </script>
 
-<style scoped>
-.filter-select {
-  padding: 0.625rem 0.75rem;
-  background: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 0.375rem;
-  color: #fff;
-  font-size: 0.875rem;
-  outline: none;
-  cursor: pointer;
-  min-width: 120px;
-  transition: border-color 0.2s;
-}
-
-.filter-select:focus {
-  border-color: #3b82f6;
-}
-
-.filter-select option {
-  background: #1e293b;
-  color: #fff;
-}
-
-.product-card {
-  background: #cbd5e1;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-}
-
-.product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-}
-
-.product-image {
-  width: 100%;
-  height: 150px;
-  background: #94a3b8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.product-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.product-info {
-  padding: 1rem;
-}
-
-.product-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 0.5rem 0;
-}
-
-.product-price {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #3b82f6;
-  margin: 0 0 0.5rem 0;
-}
-
-.product-status {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-
-.product-status.activo {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.product-status.inactivo {
-  background: #fee2e2;
-  color: #991b1b;
-}
-</style>
+<style scoped></style>
