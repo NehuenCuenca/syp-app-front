@@ -1,55 +1,70 @@
 <!-- StockMovementReadDetails.vue -->
 <!-- Vista de solo lectura de los detalles de un movemento -->
 <template>
-  <div class="movement-read-details">
-    <div class="details-content">
+  <div class="flex items-center flex-col gap-4">
+    <div class="flex justify-between max-w-xl flex-wrap gap-6">
       <!-- Detalle: Producto -->
-      <div class="detail-row">
-        <span class="detail-label">Producto:</span>
-        <span class="detail-value">{{ recordData.product?.search_alias || '---'}}</span>
+      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+        <InputGroup>
+          <InputGroupAddon>
+              <i class="pi pi-th-large"></i>
+          </InputGroupAddon>
+          <FloatLabel variant="in">
+            <InputText disabled id="product" v-model="recordData.product.search_alias"/>
+            <label for="product">Producto</label>
+          </FloatLabel>
+        </InputGroup>
       </div>
 
       <!-- Detalle: Cantidad movida -->
-      <div class="detail-row">
-        <span class="detail-label">Cantidad movida:</span>
-        <span class="detail-value">
-          {{ recordData.quantity_moved || '---'}}
-        </span>
+      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+        <InputGroup>
+          <InputGroupAddon>
+              <i class="pi pi-arrow-right-arrow-left"></i>
+          </InputGroupAddon>
+          <FloatLabel variant="in">
+            <InputText disabled id="quantity_moved" v-model="recordData.quantity_moved"/>
+            <label for="quantity_moved">Cantidad movida</label>
+          </FloatLabel>
+        </InputGroup>
       </div>
 
       <!-- Detalle: Notas -->
-      <div class="detail-row">
-        <span class="detail-label">Notas:</span>
-        <span class="detail-value">
-          {{ recordData.notes || '---'}}
-        </span>
+      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+        <InputGroup>
+          <InputGroupAddon>
+              <i class="pi pi-clipboard"></i>
+          </InputGroupAddon>
+          <FloatLabel variant="in">
+            <Textarea disabled id="notes" v-model="recordData.notes"/>
+            <label for="notes">Notas</label>
+          </FloatLabel>
+        </InputGroup>
       </div>
+      
 
-      <!-- Detalle: Porcentaje de ganancia -->
-      <div class="detail-row">
-        <span class="detail-label">Pedido:</span>
-        <span class="detail-value">
-          {{ recordData.order?.code || '---' }}
-        </span>
-      </div>
-
-      <!-- Detalle: Tipo de movimiento -->
-      <div class="detail-row">
-        <span class="detail-label">Tipo de movimiento:</span>
-        <span class="detail-value">
-          {{ recordData.movement_type.name || '---'}}
-        </span>
+      <!-- Detalle: pedido -->
+       <div class="flex flex-col flex-[1_2_200px] gap-y-2" v-if="!!recordData.order">
+        <InputGroup>
+          <InputGroupAddon>
+              <i class="pi pi-receipt"></i>
+          </InputGroupAddon>
+          <FloatLabel variant="in">
+            <InputText disabled id="order" v-model="recordData.order.search_alias" />
+            <label for="order">Pedido</label>
+          </FloatLabel>
+        </InputGroup>
       </div>
     </div>
 
     <!-- Botón de cerrar -->
-    <div class="form-actions">
-      <Button
-        label="Cerrar"
-        severity="secondary"
-        @click="handleClose"
-      />
-    </div>
+    <div class="w-full flex justify-around">
+        <Button
+          label="Cerrar"
+          severity="primary"
+          @click="handleClose"
+        />
+      </div>
   </div>
 </template>
 
