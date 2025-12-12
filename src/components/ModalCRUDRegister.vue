@@ -65,10 +65,10 @@ const currentComponent = computed(() => {
 // Computed: Título dinámico según la acción y modelo
 const dynamicTitle = computed(() => {
   const actionTitles = {
-    create: `Crear ${props.modelName}`,
-    read: `Ver ${props.modelName}`,
-    edit: `Editar ${props.modelName}`,
-    delete: `Eliminar ${props.modelName}`
+    create: `Creando ${props.modelName}`,
+    read: `Viendo ${props.modelName}`,
+    edit: `Editando ${props.modelName}`,
+    delete: `Eliminando ${props.modelName}`
   };
   return actionTitles[props.action] || props.modelName;
 });
