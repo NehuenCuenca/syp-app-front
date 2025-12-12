@@ -22,6 +22,9 @@ app.use(ConfirmationService)
 const MyPreset = definePreset(Lara, {
     components: {
         toast: {
+            root: {
+                width: 'max(280px)'
+            },
             colorScheme: {
                 dark: {
                     success: {
@@ -33,6 +36,11 @@ const MyPreset = definePreset(Lara, {
                         color: '{red.100}',
                     },
                 }
+            }
+        },
+        toolbar: {
+            root: {
+                gap: '2rem'
             }
         },
     },
