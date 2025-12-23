@@ -7,28 +7,14 @@
       <div class="flex flex-col flex-[1_2_200px] gap-y-2">
         <InputGroup>
           <InputGroupAddon>
-              <i class="pi pi-shop"></i>
-          </InputGroupAddon>
-          <FloatLabel variant="in">
-            <InputText id="company_name" v-model="formData.company_name" :invalid="!!errors.company_name"/>
-            <label for="company_name">NEGOCIO</label>
-          </FloatLabel>
-        </InputGroup>
-        <Message v-if="errors.company_name" severity="error" variant="simple" size="large" class="p-error">{{ errors.company_name }}</Message>
-      </div>
-
-      <!-- Campo: Nombre titular -->
-      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-        <InputGroup>
-          <InputGroupAddon>
               <i class="pi pi-user"></i>
           </InputGroupAddon>
           <FloatLabel variant="in">
-            <InputText id="contact_name" v-model="formData.contact_name" :invalid="!!errors.contact_name"/>
-            <label for="contact_name">PROPIETARIO</label>
+            <InputText id="name" v-model="formData.name" :invalid="!!errors.name"/>
+            <label for="name">NOMBRE</label>
           </FloatLabel>
         </InputGroup>
-        <Message v-if="errors.contact_name" severity="error" variant="simple" size="large" class="p-error">{{ errors.contact_name }}</Message>
+        <Message v-if="errors.name" severity="error" variant="simple" size="large" class="p-error">{{ errors.name }}</Message>
       </div>
 
       <!-- Campo: Telefono: -->
@@ -140,8 +126,7 @@ onMounted(async() => {
 
 // Estado del formulario
 const formData = reactive({
-  company_name: '',
-  contact_name: '',
+  name: '',
   email: '',
   phone: '',
   address: '',
@@ -157,8 +142,8 @@ const validateForm = () => {
   let isValid = true;
   
   // Validar nombre (requerido)
-  if (!formData.company_name || formData.company_name.trim() === '') {
-    errors.value.company_name = 'El nombre del negocio es requerido';
+  if (!formData.name || formData.name.trim() === '') {
+    errors.value.name = 'El nombre del contacto es requerido';
     isValid = false;
   }
   

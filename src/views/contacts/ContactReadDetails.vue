@@ -7,24 +7,11 @@
       <div class="flex flex-col flex-[1_2_200px] gap-y-2">
         <InputGroup>
           <InputGroupAddon>
-            <i class="pi pi-shop"></i>
-          </InputGroupAddon>
-          <FloatLabel variant="in">
-            <InputText disabled id="company_name" v-model="recordData.company_name" />
-            <label for="company_name">NEGOCIO</label>
-          </FloatLabel>
-        </InputGroup>
-      </div>
-
-      <!-- Campo: Nombre titular -->
-      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-        <InputGroup>
-          <InputGroupAddon>
             <i class="pi pi-user"></i>
           </InputGroupAddon>
           <FloatLabel variant="in">
-            <InputText disabled id="contact_name" v-model="recordData.contact_name" />
-            <label for="contact_name">PROPIETARIO</label>
+            <InputText disabled id="name" v-model="recordData.name" />
+            <label for="name">NOMBRE</label>
           </FloatLabel>
         </InputGroup>
       </div>

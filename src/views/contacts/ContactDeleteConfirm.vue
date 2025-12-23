@@ -6,20 +6,12 @@
     <div class="warning-content">
       <i class="pi pi-exclamation-triangle warning-icon"></i>
       <div class="warning-message">
-        <p class="warning-title">¿Está seguro que desea eliminar el contacto '{{ recordData.company_name }}'?</p>
+        <p class="warning-title">¿Está seguro que desea eliminar el contacto '{{ recordData.name }}'?</p>
         <p class="warning-subtitle">Esta acción no se puede deshacer.</p>
       </div>
     </div>
 
     <Message severity="error" v-if="error">{{ error }}</Message>
-
-    <!-- Detalles del contacto a eliminar -->
-    <!-- <div class="contact-info">
-      <div class="info-row">
-        <span class="info-label">Nombre:</span>
-        <span class="info-value">{{ recordData.name }}</span>
-      </div>
-    </div> -->
 
     <!-- Botones de acción -->
     <div class="form-actions">
