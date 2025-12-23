@@ -303,8 +303,14 @@ const handleSubmit = async () => {
 
     const { contact, adjustment_amount, notes, order_details } = toRaw(editFormData.value.order)
 
+    const contactComeFromSuggesteds = contact && contact.hasOwnProperty('id')
+    const contactKey = (contactComeFromSuggesteds)
+                                    ? 'id_contact'
+                                    : 'new_contact_name'
+
     const orderWithChanges = {
-      id_contact: contact.id,
+      // id_contact: contact.id,
+      [contactKey]: (contactComeFromSuggesteds) ? contact.id : contact,
       adjustment_amount,
       notes,
       order_details: order_details.map(({ product, quantity, unit_price, percentage_applied }) => ({
@@ -316,7 +322,6 @@ const handleSubmit = async () => {
     }
 
     console.log('Datos a enviar:', props.recordData.id, orderWithChanges);
-
     const updatedOrder = await updateItem(props.recordData.id, orderWithChanges)
 
     if (!error.value && editedOrder.value) {
@@ -337,16 +342,13 @@ const filteredContacts = ref([]);
 const searchContact = (event) => {
   if (event.query && event.query.hasOwnProperty('company_name')) return
 
-  setTimeout(() => {
-    if (!event.query || !event.query.trim().length) {
-      filteredContacts.value = [...editFormData.value.contacts];
-    } else {
-      filteredContacts.value = editFormData.value.contacts.filter((contact) => {
-        return contact.search_alias.toLowerCase().includes(event.query.toLowerCase());
-        // return contact.search_alias.toLowerCase().startsWith(event.query.toLowerCase());
-      });
-    }
-  }, 250);
+  if (!event.query || !event.query.trim().length) {
+    filteredContacts.value = [...editFormData.value.contacts];
+  } else {
+    filteredContacts.value = editFormData.value.contacts.filter((contact) => {
+      return contact.search_alias.toLowerCase().includes(event.query.toLowerCase());
+    });
+  }
 }
 
 const filteredProducts = ref([]);
@@ -355,11 +357,9 @@ const searchProduct = (event) => {
   const autoCompleteIsEmpty = !event.query.trim().length
   if (selectProductFromDropdown || autoCompleteIsEmpty) return
 
-  setTimeout(() => {
-    filteredProducts.value = editFormData.value.products.filter((product) => {
-      return product.search_alias.toLowerCase().includes(event.query.toLowerCase());
-    });
-  }, 250);
+  filteredProducts.value = editFormData.value.products.filter((product) => {
+    return product.search_alias.toLowerCase().includes(event.query.toLowerCase());
+  });
 }
 
 

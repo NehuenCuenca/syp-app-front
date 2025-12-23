@@ -300,9 +300,13 @@ const validateForm = () => {
 // Maneja el envío del formulario
 const handleSubmit = async () => {
   if (validateForm()) {
+    const contactComeFromSuggesteds = formData.contact && formData.contact.hasOwnProperty('id')
+    const contactKey = (contactComeFromSuggesteds)
+                                    ? 'id_contact'
+                                    : 'new_contact_name'
     const formDataToSend = {
-      id_contact: formData.contact.id,
-      id_movement_type: formData.order_type.id, // Venta
+      [contactKey]: (contactComeFromSuggesteds) ? formData.contact.id : formData.contact,
+      id_movement_type: formData.order_type.id,
       notes: formData.notes,
       adjustment_amount: formData.adjustment_amount,
       order_details: formData.order_details.map(({ product, quantity, unit_price, percentage_applied }) => ({
@@ -331,15 +335,15 @@ const filteredContacts = ref([]);
 const searchContact = (event) => {
   if (event.query && event.query.hasOwnProperty('company_name')) return
 
-  setTimeout(() => {
-    if (!event.query || !event.query.trim().length) {
-      filteredContacts.value = [...createFormData.value.contacts];
-    } else {
-      filteredContacts.value = createFormData.value.contacts.filter((contact) => {
-        return contact.search_alias.toLowerCase().includes(event.query.toLowerCase());
-      });
-    }
-  }, 250);
+  if (!event.query || !event.query.trim().length) {
+    filteredContacts.value = [...createFormData.value.contacts];
+  } else {
+    filteredContacts.value = createFormData.value.contacts.filter((contact) => {
+      return contact.search_alias.toLowerCase().includes(event.query.toLowerCase());
+    });
+
+    console.log('nombre de contacto: ', event.query);
+  }
 }
 
 const filteredProducts = ref([]);
@@ -349,11 +353,9 @@ const searchProduct = (event) => {
   const autoCompleteIsEmpty = !event.query.trim().length
   if (selectProductFromDropdown || autoCompleteIsEmpty) return
 
-  setTimeout(() => {
-    filteredProducts.value = createFormData.value.products.filter((product) => {
-      return product.search_alias.toLowerCase().includes(event.query.toLowerCase());
-    });
-  }, 250);
+  filteredProducts.value = createFormData.value.products.filter((product) => {
+    return product.search_alias.toLowerCase().includes(event.query.toLowerCase());
+  });
 }
 
 
