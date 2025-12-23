@@ -4,13 +4,14 @@
   
     <!-- Contenedor del texto primario y menú -->
     <div class="flex justify-between items-center">
-      <div class="flex flex-col justify-between items-start">
+      <div class="flex flex-col justify-between items-start w-4/5">
         <!-- Texto terciario -->
         <p class="text-md md:text-lg font-bold text-surface-600 flex gap-3.5">
           {{ tertiaryText }}
         </p>
-        <p class="text-2xl md:text-xl font-bold text-surface-800 flex-1 break-normal" :style="{ color: primaryColor }" :title="primaryText">
-          {{ truncateText(primaryText, 20) }}
+        <p class="text-2xl md:text-xl font-bold text-surface-800 flex-1 break-normal w-4/5" :style="{ color: primaryColor }" :title="primaryText">
+          <!-- {{ truncateText(primaryText, 20) }} -->
+            {{ primaryText }}
         </p>
       </div>
 
