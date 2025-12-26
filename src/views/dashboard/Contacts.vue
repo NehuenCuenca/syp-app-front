@@ -149,37 +149,26 @@ const handleDeleteContact = async(e) => {
           severity: 'danger'
       },
       accept: async() => {
-        try {
           const deletedContact = await deleteItem(contact.id)
           
           if(!singleContactError.value && deletedContact){
             toast.add({ severity: 'success', closable: true, summary: `Contacto eliminado exitosamente`, life: 3500 });  
             resetModalData()
             await fetchContacts({ ...route.query, ...localFilters.value });
+          } else {
+            console.error('Error al eliminar el contacto:', singleContactError.value);
+            toast.add({ severity: 'error', closable: true, summary: `Error al eliminar el contacto: ${contact.search_alias}`, life: 3500});  
+            resetModalData()
+            return
           }
-        } catch (error) {
-          console.error('Error al eliminar el contacto:', error.value);
-          toast.add({ severity: 'error', closable: true, summary: `Error al eliminar el contacto: ${contact.search_alias}`, life: 3500});  
-          resetModalData()
-          return
-        }
       },
       reject: () => resetModalData()
   });
 }
 
-/* const handleDeleteContact = async(e) => { 
-  const contact = await fetchById(e.id)
-  if(!singleContactError.value && singleContactData.value){
-    openModal('delete', contact);
-  } else {
-    toast.add({ severity: 'error', closable: true, summary: 'Error al obtener el contacto:'  + singleContactError.value });  
-    return;
-  }
- } */
 
 const handleSearch = async(searchTerm) => {
-  console.log('Buscando:', searchTerm);
+  console.log('Buscando contacto por termino:', searchTerm);
   await fetchContacts({ ...route.query, ...localFilters.value, search: searchTerm, page: 1 });
 };
 
@@ -226,7 +215,7 @@ const closeModal = () => {
 
 // Manejar el submit del formulario según la acción
 const handleFinishAction = (modalData) => {
-  console.log('📦 Datos recibidos desde el modal:', modalData);
+  // console.log('📦 Datos recibidos desde el modal:', modalData);
   console.log('🔧 Acción ejecutada:', currentAction.value);
 
   switch (currentAction.value) {
@@ -270,17 +259,15 @@ const handleDelete = async(modalData) => {
 };
 
 const handleRestoreContact = async(contact) => { 
-  try {
-    const restoredContact = await restoreItem(contact.id)
-    
-    if(!singleContactError.value && restoredContact){
-      toast.add({ severity: 'success', closable: true, summary: `Contacto recuperado exitosamente`, life: 3500 });  
-      await fetchContacts({ ...route.query, ...localFilters.value });
-    }
-  } catch (error) {
-    console.error('Error al recuperar el contacto:', error.value);
-    toast.add({ severity: 'error', closable: true, summary: `Error al recuperar el contacto: ${contact.search_alias}`, life: 3500});  
-    return
+  const restoredContact = await restoreItem(contact.id)
+  
+  if(!singleContactError.value && restoredContact){
+    toast.add({ severity: 'success', closable: true, summary: `Contacto recuperado exitosamente`, life: 3500 });  
+    await fetchContacts({ ...route.query, ...localFilters.value });
+  } else {
+  console.error('Error al recuperar el contacto:', singleContactError.value);
+  toast.add({ severity: 'error', closable: true, summary: `Error al recuperar el contacto: ${contact.search_alias}`, life: 3500});  
+  return
   }
 }
 
@@ -292,12 +279,13 @@ const handleClearFilters = async(newFilters) => {
 
 const handleDownloadContactsList = async() => {
   try {
-    const linkToApi = new URL(`${axios.defaults.baseURL}/contacts/export-list`);
+    const linkToApi = new URL(`${axios.defaults.baseURL}/contacts/export`);
     
     const response = await axios.get(linkToApi, { ...getAxiosConfigForBlobResponse() }); 
     const filename = response.headers.get('x-filename') || `listado_contactos_${Date.now()}.xlsx`;
 
     createTemporalLink({ blob: response.data, filename })
+    toast.add({ severity: 'success', closable: true, life: 3500, summary: 'Se descargó el listado de contactos' });
   } catch (error) {
     console.error('la descarga de listado contactos falló', error);
     toast.add({ severity: 'error', closable: true, summary: 'Error al descargar el listado contactos:'  + error });
