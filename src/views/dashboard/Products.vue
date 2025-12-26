@@ -178,7 +178,7 @@ const handleDeleteProduct = async(e) => {
             resetModalData()
             await fetchProducts({ ...route.query, ...localFilters.value });
           } else {
-            console.error('Error al eliminar el producto:', error.value);
+            console.error('Error al eliminar el producto:', singleProductError.value);
             toast.add({ severity: 'error', closable: true, summary: `Error al eliminar el producto: ${product.search_alias}`, life: 3500});  
             resetModalData()
             return
@@ -189,18 +189,16 @@ const handleDeleteProduct = async(e) => {
 }
 
 const handleRestoreProduct = async(product) => { 
-  try {
     const restoredProduct = await restoreItem(product.id)
     
     if(!singleProductError.value && restoredProduct){
       toast.add({ severity: 'success', closable: true, summary: `Producto recuperado exitosamente`, life: 3500 });  
       await fetchProducts({ ...route.query, ...localFilters.value });
+    } else {
+      console.error('Error al recuperar el producto:', singleProductError.value);
+      toast.add({ severity: 'error', closable: true, summary: `Error al recuperar el producto: ${product.search_alias}`, life: 3500});  
+      return
     }
-  } catch (error) {
-    console.error('Error al recuperar el producto:', error.value);
-    toast.add({ severity: 'error', closable: true, summary: `Error al recuperar el producto: ${product.search_alias}`, life: 3500});  
-    return
-  }
 }
 
 const handleSearch = async(searchTerm) => {
@@ -314,6 +312,8 @@ const handleDownloadCatalog = async(exclude_special_category=false) => {
     const filename = response.headers.get('x-filename') || `catalogo_productos_${Date.now()}.xlsx`;
 
     createTemporalLink({ blob: response.data, filename })
+    const catalogType = (exclude_special_category) ? 'PUBLICO' : 'PRIVADO'
+    toast.add({ severity: 'success', closable: true, life: 3500, summary: `Se descargó catalogo ${catalogType}.` });
   } catch (error) {
     console.error('la descarga del catalogo falló', error);
     toast.add({ severity: 'error', closable: true, summary: 'Error al descargar el catalogo:'  + error });
