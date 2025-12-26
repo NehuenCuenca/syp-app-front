@@ -314,7 +314,7 @@ const handleSubmit = async () => {
         quantity, unit_price, percentage_applied,
       }))
     }
-    console.log('Datos a enviar:', formDataToSend);
+    // console.log('Datos a enviar:', formDataToSend);
     const createdOrder = await createItem(formDataToSend)
 
     if (!error.value && newOrder.value) {
@@ -341,14 +341,11 @@ const searchContact = (event) => {
     filteredContacts.value = createFormData.value.contacts.filter((contact) => {
       return contact.search_alias.toLowerCase().includes(event.query.toLowerCase());
     });
-
-    console.log('nombre de contacto: ', event.query);
   }
 }
 
 const filteredProducts = ref([]);
 const searchProduct = (event) => {
-  console.log('searchProduct', event);
   const selectProductFromDropdown = event.query && event.query.hasOwnProperty('name')
   const autoCompleteIsEmpty = !event.query.trim().length
   if (selectProductFromDropdown || autoCompleteIsEmpty) return
@@ -360,9 +357,8 @@ const searchProduct = (event) => {
 
 
 const handleChangeOrderType = (e) => {
-  console.log(e.value.name, createFormData.value.products);
   if (e.value === null) {
-    console.log('reiniciando los detalles');
+    console.log('Reiniciando los detalles');
     formData.order_details = [];
     return
   }
@@ -415,7 +411,7 @@ const isSaleOrder = computed(() => {
 })
 
 const handleOptionSelect = (e, idx) => {
-  console.log('handleOptionSelect', e, idx);
+  // console.log('Seleccion de sugerencia', e, idx);
   const detail = formData.order_details[idx]
   detail.unit_price = (isSaleOrder.value) ? e.value.sale_price : e.value.buy_price;
   detail.percentage_applied = (isSaleOrder.value) ? 0 : detail?.product.profit_percentage;
