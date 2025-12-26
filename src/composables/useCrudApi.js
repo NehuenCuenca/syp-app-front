@@ -130,7 +130,7 @@ export function useCrudApi() {
       // Usar queryParams proporcionados o los del route.query
       const params = queryParams;
       
-      const response = await axios.get(`/${apiRoute}/filtered`, { params });
+      const response = await axios.get(`/${apiRoute}`, { params });
       
       if (response.data.success) {
         data.value = response.data.data;

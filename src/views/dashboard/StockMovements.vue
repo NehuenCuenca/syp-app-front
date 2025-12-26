@@ -97,7 +97,7 @@ const handleViewStockMovement = async(e) => {
  }
 
   const handleSearch = async(searchTerm) => {
-    console.log('Buscando:', searchTerm);
+    console.log('Buscando mov. de stock por termino:', searchTerm);
     await fetchStockMovements({ ...route.query, ...localFilters.value, search: searchTerm, page: 1 });
   };
 
@@ -143,7 +143,7 @@ const closeModal = () => {
 
 // Manejar el submit del formulario según la acción
 const handleFinishAction = (modalData) => {
-  console.log('📦 Datos recibidos desde el modal:', modalData);
+  // console.log('📦 Datos recibidos desde el modal:', modalData);
   console.log('🔧 Acción ejecutada:', currentAction.value);
 
   switch (currentAction.value) {

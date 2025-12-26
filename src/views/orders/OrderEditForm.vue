@@ -321,7 +321,7 @@ const handleSubmit = async () => {
       }))
     }
 
-    console.log('Datos a enviar:', props.recordData.id, orderWithChanges);
+    // console.log('Datos a enviar:', props.recordData.id, orderWithChanges);
     const updatedOrder = await updateItem(props.recordData.id, orderWithChanges)
 
     if (!error.value && editedOrder.value) {
@@ -364,13 +364,6 @@ const searchProduct = (event) => {
 
 
 const handleChangeOrderType = (e) => {
-  // console.log(e.value.name);
-  // if(e.value === null){
-  //   console.log('reiniciando los detalles');
-  //   editFormData.order.order_details = [];
-  //   return
-  // }
-
   if (e.value.name === 'Venta') {
     filteredProducts.value = editFormData.value.products.filter(product => product.current_stock > 0);
   } else {
@@ -410,7 +403,7 @@ const isSaleOrder = computed(() => {
 })
 
 const handleOptionSelect = (e, idx) => {
-  console.log('handleOptionSelect', e, idx);
+  // console.log('Seleccion de sugerencia', e, idx);
   const detail = editFormData.value.order.order_details[idx]
   detail.unit_price = (isSaleOrder.value) ? e.value.sale_price : e.value.buy_price;
   detail.percentage_applied = (isSaleOrder.value) ? 0 : e.value.profit_percentage;
@@ -433,9 +426,7 @@ const getSaleSubtotalByQuantity = (idx, quantity) => {
 
 
 const getSuggestedSalePrice = (idx) => {
-  console.log(editFormData.value.order);
   const { unit_price, percentage_applied } = editFormData.value.order.order_details[idx];
-
   return parseInt((unit_price * (1 + percentage_applied / 100))).toFixed(0)
 }
 

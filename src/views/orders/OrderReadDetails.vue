@@ -29,7 +29,7 @@
         </InputGroup>
       </div>
 
-    <DataTable :value="recordData.order_details" size="small" showGridlines class="max-w-[280px] xl:max-w-full">
+    <DataTable :value="recordData.order_details" size="small" showGridlines class="max-w-[280px] sm:max-w-full">
       <template #header>
         <h3 class="text-xl">Detalles ({{recordData.order_details.length}})</h3>
       </template>

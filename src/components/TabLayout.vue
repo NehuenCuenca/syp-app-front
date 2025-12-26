@@ -137,16 +137,6 @@ onMounted(() => {
   sortDirection.value = route.query.sort_direction || '';
 });
 
-// Observar cambios en la ruta
-// watch(() => route.query, (newQuery) => {
-//   console.log({newQuery});
-//   // searchValue.value = newQuery.search || '';
-//   // currentPage.value = parseInt(newQuery.page) || 1;
-//   sortBy.value = newQuery.sort_by || '';
-//   sortDirection.value = newQuery.sort_direction || '';
-// }, { deep: true });
-
-
 // Manejo del buscador con debounce
 let searchTimeout;
 const handleSearchInput = () => {  

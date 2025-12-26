@@ -68,7 +68,6 @@ const {
 // Maneja la eliminación
 const handleDelete = async() => {
     const deletedProduct = await deleteItem(props.recordData.id)
-  console.log(deletedProduct, error.value, data.value);
     if(!error.value && deletedProduct){
       emit('finish', deletedProduct);
     } else {

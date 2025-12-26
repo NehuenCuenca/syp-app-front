@@ -23,7 +23,7 @@
               v-model="formData.email"
               @blur="() => handleBlur('email')"
               @input="() => handleInput('email')"
-              :class="['p-3 bg-surface-100 text-surface-800 border-1 border-surface-900 outline-none rounded-lg placeholder:text-surface-400 focus:shadow-md', { 'border-red-400 focus:shadow-red-900': touched.email && errors.email }]"
+              :class="['p-3 bg-surface-100 text-surface-800 border border-surface-900 outline-none rounded-lg placeholder:text-surface-400 focus:shadow-md', { 'border-red-400 focus:shadow-red-900': touched.email && errors.email }]"
               placeholder="tu@email.com"
             />
             <p v-if="touched.email && errors.email" class="text-md text-red-700">
