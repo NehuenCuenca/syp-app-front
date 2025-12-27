@@ -10,6 +10,7 @@
     :current-page="stockMovementsPagination?.current_page"
     :items-per-page="9"
     :show-create-button="false"
+    :searchPlaceHolder="'COD o nombre producto'"
     @search="handleSearch"
     @page-change="handlePageChange"
     @clear-filters="handleClearFilters"

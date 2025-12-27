@@ -9,6 +9,7 @@
     :total-items="productsPagination?.total"
     :current-page="productsPagination?.current_page"
     :items-per-page="9"
+    :searchPlaceHolder="'COD o nombre producto'"
     @create="() => openModal('create')"
     @search="handleSearch"
     @page-change="handlePageChange"
@@ -86,7 +87,6 @@ import ModalCRUDRegister from '~components/ModalCRUDRegister.vue';
 import ProductCreateForm from '~views/products/ProductCreateForm.vue';
 import ProductEditForm from '~views/products/ProductEditForm.vue';
 import ProductReadDetails from '~views/products/ProductReadDetails.vue';
-import ProductDeleteConfirm from '~views/products/ProductDeleteConfirm.vue';
 import { useConfirm } from "primevue/useconfirm";
 import axios from 'axios';
 import { createTemporalLink, getAxiosConfigForBlobResponse } from '@/helpers/downloads';
@@ -222,7 +222,6 @@ const productComponentMap = {
   create: ProductCreateForm,
   edit: ProductEditForm,
   read: ProductReadDetails,
-  delete: ProductDeleteConfirm
 };
 
 // Estado de la aplicación

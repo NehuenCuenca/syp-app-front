@@ -13,6 +13,7 @@
     @search="handleSearch"
     @page-change="handlePageChange"
     @clear-filters="handleClearFilters"
+    :searchPlaceHolder="'COD o nombre contacto'"
     ref="tabLayoutRef"
   >
     <template #download-btn>
@@ -65,7 +66,6 @@ import ModalCRUDRegister from '~components/ModalCRUDRegister.vue';
 import ContactCreateForm from '~views/contacts/ContactCreateForm.vue';
 import ContactEditForm from '~views/contacts/ContactEditForm.vue';
 import ContactReadDetails from '~views/contacts/ContactReadDetails.vue';
-import ContactDeleteConfirm from '~views/contacts/ContactDeleteConfirm.vue';
 import { useConfirm } from 'primevue';
 import { createTemporalLink, getAxiosConfigForBlobResponse } from '@/helpers/downloads';
 import axios from 'axios';
@@ -189,7 +189,6 @@ const contactComponentMap = {
   create: ContactCreateForm,
   edit: ContactEditForm,
   read: ContactReadDetails,
-  delete: ContactDeleteConfirm
 };
 
 // Estado de la aplicación

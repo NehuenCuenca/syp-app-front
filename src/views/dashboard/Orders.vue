@@ -9,6 +9,7 @@
     :total-items="ordersPagination?.total"
     :current-page="ordersPagination?.current_page"
     :items-per-page="9"
+    :searchPlaceHolder="'COD pedido o nombre contacto'"
     @create="() => openModal('create')"
     @search="handleSearch"
     @page-change="handlePageChange"

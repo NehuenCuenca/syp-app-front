@@ -20,7 +20,7 @@
           <!-- Buscador -->
           <IconField v-if="showSearchInput" class="my-6">
             <InputIcon class="pi pi-search" />
-            <InputText type="search" placeholder="Buscador" v-model.trim="searchValue" @input="handleSearchInput"/>
+            <InputText type="search" :placeholder="searchPlaceHolder" v-model.trim="searchValue" @input="handleSearchInput"/>
           </IconField>
         </template>
 
@@ -115,6 +115,10 @@ const props = defineProps({
   filters: {
     type: Object,
     default: () => ({})
+  },
+  searchPlaceHolder: {
+    type: String,
+    default: 'Buscador'
   }
 });
 
