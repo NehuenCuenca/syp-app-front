@@ -157,6 +157,8 @@
 
         <Button class="w-3/4" label="Agregar detalle" icon="pi pi-plus" @click="addTemporalDetail"
           :disabled="!hasSelectedOrderType" severity="contrast" />
+          
+        <Message v-if="errors.order_details" severity="error" variant="simple" size="large">{{ errors.order_details }}</Message>
       </div>
 
       <!-- Campo: Ajuste (+/-)-->
@@ -328,6 +330,8 @@ const handleSubmit = async () => {
       console.error('Error al crear el pedido:', error.value);
       return
     }
+  } else {
+    toast.add({ severity: 'error', life: 3500, summary: 'Error al validar', detail: 'Revise los campos invalidos.' });
   }
 };
 

@@ -97,6 +97,7 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
 import { useCrudApi } from '../../composables/useCrudApi.js'
+import { useToast } from 'primevue';
 
 // Props del componente
 const props = defineProps({
@@ -117,6 +118,8 @@ const {
   fetchFilters,
   updateItem,
 } = useCrudApi();
+
+const toast = useToast();
 
 const contactTypes = ref([]);
 onMounted(async() => {
@@ -172,6 +175,8 @@ const handleSubmit = async() => {
       console.error('Error al actualizar el contacto:', error.value);
       return
     }
+  } else {
+    toast.add({ severity: 'error', life: 3500, summary: 'Error al validar', detail: 'Revise los campos invalidos.' });
   }
 };
 

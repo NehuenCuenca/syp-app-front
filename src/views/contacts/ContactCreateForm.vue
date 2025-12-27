@@ -98,8 +98,9 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useCrudApi } from '../../composables/useCrudApi.js'
+import { useToast } from 'primevue';
 
 const {
   data,
@@ -109,6 +110,8 @@ const {
   fetchFilters,
   createItem,
 } = useCrudApi();
+
+const toast = useToast();
 
 // Eventos emitidos
 const emit = defineEmits(['finish', 'close']);
@@ -166,6 +169,8 @@ const handleSubmit = async() => {
       console.error('Error al crear el contacto:', error.value);
       return
     }
+  } else {
+    toast.add({ severity: 'error', life: 3500, summary: 'Error al validar', detail: 'Revise los campos invalidos.' });
   }
 };
 

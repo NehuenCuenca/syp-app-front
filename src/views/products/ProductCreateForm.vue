@@ -125,8 +125,9 @@
       <Message v-if="errors.min_stock_alert" severity="error" variant="simple" size="large" class="p-error">{{ errors.min_stock_alert }}</Message>
     </div>
 
-      <Message severity="error" v-if="error">{{ error }}</Message>
-      <!-- Botones de acción -->
+    <Message severity="error" v-if="error">{{ error }}</Message>
+
+    <!-- Botones de acción -->
     <div class="w-full flex justify-around">
       <Button
         label="Cancelar"
@@ -149,6 +150,7 @@
 <script setup>
 import { onMounted, reactive, ref, watch } from 'vue';
 import { useCrudApi } from '../../composables/useCrudApi.js'
+import { useToast } from 'primevue';
 
 const {
   data,
@@ -158,6 +160,8 @@ const {
   fetchFilters,
   createItem,
 } = useCrudApi();
+
+const toast = useToast();
 
 // Eventos emitidos
 const emit = defineEmits(['finish', 'close']);
@@ -267,6 +271,8 @@ const handleSubmit = async() => {
       console.error('Error al crear el producto:', error.value);
       return
     }
+  } else {
+    toast.add({ severity: 'error', life: 3500, summary: 'Error al validar', detail: 'Revise los campos invalidos.' });
   }
 };
 
