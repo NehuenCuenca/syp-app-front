@@ -157,7 +157,7 @@ const handleEditOrder = async(e) => {
             resetModalData()
             await fetchOrders({ ...route.query, ...localFilters.value });
           } else {
-            console.error('Error al eliminar el pedido:', error.value);
+            console.error('Error al eliminar el pedido:', singleOrderError.value);
             toast.add({ severity: 'error', closable: true, summary: `Error al eliminar el pedido: ${order.search_alias}`, life: 3500});  
             resetModalData()
             return
@@ -166,16 +166,6 @@ const handleEditOrder = async(e) => {
       reject: () => resetModalData()
   });
 }
-
-/* const handleDeleteOrder = async(e) => { 
-  const order = await fetchById(e.id)
-  if(!singleOrderError.value && singleOrderData.value){
-    openModal('delete', order);
-  } else {
-    toast.add({ severity: 'error', closable: true, summary: 'Error al obtener el pedido:'  + singleOrderError.value });  
-    return;
-  }
- } */
 
 const handleSearch = async(searchTerm) => {
   console.log('Buscando pedido por termino:', searchTerm);

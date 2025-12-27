@@ -214,6 +214,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref, useTemplateRef, watch } from 'vue';
 import { useCrudApi } from '../../composables/useCrudApi.js'
+import { useToast } from 'primevue';
 
 const {
   data: createFormData,
@@ -229,16 +230,20 @@ const {
   createItem,
 } = useCrudApi();
 
+const toast = useToast();
+
 // Eventos emitidos
 const emit = defineEmits(['finish', 'close']);
 
 onMounted(async () => {
   await fetchCreate();
 
-  if (!error.value && createFormData.value.contacts.length > 0) {
+  if (!errorCreateForm.value) {
     filteredContacts.value = [...createFormData.value.contacts];
   } else {
-    filteredContacts.value = [];
+    console.error('Error al obtener los datos para crear un pedido: ', errorCreateForm.value);
+    toast.add({ severity: 'error', closable: true, summary: errorCreateForm.value });
+    emit('close')
   }
 })
 

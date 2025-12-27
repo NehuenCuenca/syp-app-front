@@ -207,13 +207,13 @@
 <script setup>
 import { computed, onMounted, reactive, ref, toRaw, useTemplateRef, watch } from 'vue';
 import { useCrudApi } from '../../composables/useCrudApi.js'
+import { useToast } from 'primevue';
 
 const {
   data: editFormData,
   loading: loadingEditForm,
   error: errorEditForm,
   fetchEdit,
-
 } = useCrudApi();
 
 const {
@@ -222,6 +222,9 @@ const {
   error,
   updateItem,
 } = useCrudApi();
+
+const toast = useToast();
+
 
 const props = defineProps({
   recordData: {
@@ -237,12 +240,13 @@ const emit = defineEmits(['finish', 'close']);
 onMounted(async () => {
   await fetchEdit(props.recordData.id);
 
-  if (!error.value && editFormData.value.contacts.length > 0) {
-    filteredContacts.value = editFormData.value.contacts.map(({ name }) => name);
+  if (!errorEditForm.value) {
+    filteredContacts.value = [...editFormData.value.contacts];
   } else {
-    filteredContacts.value = [];
+    console.error('Error al obtener los datos para editar un pedido: ', errorEditForm.value);
+    toast.add({ severity: 'error', closable: true, summary: errorEditForm.value });
+    emit('close')
   }
-
 })
 
 const detailProductAutoCompletesRefs = useTemplateRef('detailProductAutoCompletes')
