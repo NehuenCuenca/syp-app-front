@@ -3,194 +3,208 @@
 <template>
   <div class="flex items-center flex-col gap-4" v-if="createFormData">
     <div class="flex justify-center max-w-xl flex-wrap gap-10">
-      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-        <!-- Campo: Tipo de pedido -->
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-receipt"></i>
-          </InputGroupAddon>
-          <FloatLabel variant="in">
-            <Select v-model="formData.order_type" :options="createFormData.order_types" optionLabel="name" showClear
-              @change="handleChangeOrderType" :invalid="!!errors.order_type" />
-            <label for="order_type">TIPO DE PEDIDO</label>
-          </FloatLabel>
-        </InputGroup>
-        <Message v-if="errors.order_type" severity="error" variant="simple" size="large">{{
-          errors.order_type }}</Message>
+      <div class="w-full flex flex-wrap gap-4">
+        <h3 class="text-lg flex-[1_2_100%] text-surface-200">Operacionales</h3>
+        
+        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+          <!-- Campo: Tipo de pedido -->
+          <InputGroup>
+            <InputGroupAddon>
+              <i class="pi pi-receipt"></i>
+            </InputGroupAddon>
+            <FloatLabel variant="in">
+              <Select v-model="formData.order_type" :options="createFormData.order_types" optionLabel="name" showClear
+                @change="handleChangeOrderType" :invalid="!!errors.order_type" />
+              <label for="order_type">TIPO DE PEDIDO</label>
+            </FloatLabel>
+          </InputGroup>
+          <Message v-if="errors.order_type" severity="error" variant="simple" size="large">{{
+            errors.order_type }}</Message>
+        </div>
+
+        <!-- Campo: Contacto -->
+        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+          <InputGroup>
+            <InputGroupAddon>
+              <i class="pi pi-user"></i>
+            </InputGroupAddon>
+            <FloatLabel variant="in">
+              <AutoComplete showClear id="contact" v-model="formData.contact" dropdown :suggestions="filteredContacts"
+                @complete="searchContact" optionLabel="search_alias" optionValue="id"
+                emptySearchMessage="No se encontraron sugerencias." :invalid="!!errors.contact" :delay="150"
+                dropdownClass="max-w-[150px]" />
+              <label for="contact">CONTACTO</label>
+            </FloatLabel>
+          </InputGroup>
+          <Message v-if="errors.contact" severity="error" variant="simple" size="large">{{ errors.contact
+            }}</Message>
+        </div>
       </div>
 
-      <!-- Campo: Contacto -->
-      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-user"></i>
-          </InputGroupAddon>
-          <FloatLabel variant="in">
-            <AutoComplete showClear id="contact" v-model="formData.contact" dropdown :suggestions="filteredContacts"
-              @complete="searchContact" optionLabel="search_alias" optionValue="id"
-              emptySearchMessage="No se encontraron sugerencias." :invalid="!!errors.contact" :delay="150"
-              dropdownClass="max-w-[150px]" />
-            <label for="contact">CONTACTO</label>
-          </FloatLabel>
-        </InputGroup>
-        <Message v-if="errors.contact" severity="error" variant="simple" size="large">{{ errors.contact
-        }}</Message>
-      </div>
-
-      <div class="w-full flex justify-center flex-wrap gap-6 rounded-sm p-6 border">
-        <Panel toggleable v-for="(detail, idx) in formData.order_details" :key="idx" v-if="hasSelectedOrderType"
-          class="w-auto">
-          <template #toggleicon="data">
-            <i :class="['pi', data.collapsed ? 'pi-chevron-down' : 'pi-chevron-up']"></i>
-          </template>
-          <template #header="data">
-            <span class="font-bold">Detalle #{{ idx + 1 }}</span>
-            <Button v-if="!data.collapsed" icon="pi pi-trash" severity="danger" variant="outlined" text
-              @click="() => removeTemporalDetail(idx)" />
-          </template>
-
-          <div class="flex flex-col gap-4 py-4">
-            <!-- Campo: DETALLE_PRODUCTO -->
-            <div class="flex flex-col flex-[1_2_100%] gap-y-2">
-              <InputGroup>
-                <FloatLabel variant="in">
-                  <AutoComplete showClear ref="detailProductAutoCompletes" id="detail_product" v-model="detail.product"
-                    dropdown :suggestions="filteredProducts" @complete="searchProduct" optionLabel="search_alias"
-                    optionValue="id" @option-select="(e) => handleOptionSelect(e, idx)"
-                    emptySearchMessage="No se encontraron sugerencias." :invalid="!!errors[`detail${idx}_product`]" />
-                  <label for="detail_product">PRODUCTO</label>
-                </FloatLabel>
-              </InputGroup>
-
-              <Message v-if="errors[`detail${idx}_product`]" severity="error" variant="simple" size="large">{{
-                errors[`detail${idx}_product`] }}</Message>
-            </div>
-
-
-            <template v-if="detail.product && detail.product.hasOwnProperty('code')">
-              <!-- Campo: DETALLE_CANTIDAD_PRODUCTO -->
-              <div class="flex flex-col flex-[1_2_100%] gap-y-2">
-                <InputGroup>
-                  <FloatLabel variant="in">
-                    <InputNumber id="detail_quantity" v-model="detail.quantity"
-                      :invalid="!!errors[`detail${idx}_quantity`]" showButtons buttonLayout="horizontal" :step="5"
-                      :min="0" :max="(isSaleOrder) ? detail.product.current_stock : null">
-                      <template #incrementbuttonicon>
-                        <span class="pi pi-plus" />
-                      </template>
-                      <template #decrementbuttonicon>
-                        <span class="pi pi-minus" />
-                      </template>
-                    </InputNumber>
-                    <label for="detail_quantity">CANTIDAD</label>
-                  </FloatLabel>
-                </InputGroup>
-                <Message v-if="detail.product && !errors[`detail${idx}_quantity`]" size="large" severity="secondary"
-                  variant="simple">
-                  En stock: {{ detail.product.current_stock }}</Message>
-                <Message v-else severity="error" variant="simple" size="large">{{
-                  errors[`detail${idx}_quantity`] }}</Message>
-              </div>
-
-
-              <!-- Campo: DETALLE_PRECIO_PRODUCTO -->
-              <div class="flex flex-col flex-[1_2_100%] gap-y-2">
-                <InputGroup>
-                  <FloatLabel variant="in">
-                    <InputNumber id="detail_unit_price" v-model="detail.unit_price" prefix="$"
-                      :invalid="!!errors[`detail${idx}_unit_price`]" :min="0" />
-                    <label for="detail_unit_price">PRECIO {{ (isSaleOrder) ? 'DE VENTA' : 'DE COMPRA' }} (x
-                      unidad)</label>
-                  </FloatLabel>
-                </InputGroup>
-
-                <Message v-if="errors[`detail${idx}_unit_price`]" severity="error" variant="simple" size="large">{{
-                  errors[`detail${idx}_unit_price`] }}</Message>
-              </div>
-
-
-              <!-- Campo: DETALLE_PORCENTAJE_PRODUCTO -->
-              <div class="flex flex-col flex-[1_2_100%] gap-y-2">
-
-                <InputGroup>
-                  <FloatLabel variant="in">
-                    <InputNumber id="selected_percentage_applied" v-model="detail.percentage_applied" suffix="%"
-                      :invalid="!!errors[`detail${idx}_percentage_applied`]"
-                      :min="(isSaleOrder && detail.product) ? 0 : 1"
-                      :max="(isSaleOrder && detail.product) ? 100 : 500" />
-                    <label for="selected_percentage_applied">{{ (isSaleOrder) ? 'DESCUENTO' : 'GANANCIA' }} (%)</label>
-                  </FloatLabel>
-                </InputGroup>
-
-                <Message v-if="errors[`detail${idx}_percentage_applied`]" severity="error" variant="simple"
-                  size="large">{{
-                    errors[`detail${idx}_percentage_applied`] }}</Message>
-              </div>
-
-
-              <Fieldset v-if="hasFilledDetailFields(idx)">
-                <template #legend>
-                  <div class="flex items-center pl-2">
-                    <i class="pi pi-info-circle" style="font-size: 1rem"></i>
-                    <span v-if="isSaleOrder" class="font-bold p-2"> Subtotales</span>
-                    <span v-else class="font-bold p-2"> Precio venta sugerido</span>
-                  </div>
-                </template>
-
-                <template v-if="isSaleOrder">
-                  <div class="flex flex-col gap-2">
-                    <Message severity="secondary">Unidad <b>(x1)</b>: {{ formatToCurrency(getSaleSubtotalByQuantity(idx,
-                      1))
-                      }}</Message>
-                    <Message severity="warn" v-if="detail.quantity > 1">Cantidad <b>(x{{ detail.quantity }})</b>: {{
-                      formatToCurrency(getSaleSubtotalByQuantity(idx, detail.quantity)) }}</Message>
-                  </div>
-                </template>
-
-                <template v-else>
-                  <Message>Unidad (x1): {{ formatToCurrency(getSuggestedSalePrice(idx)) }}</Message>
-                </template>
-              </Fieldset>
+      <div class="w-full flex flex-wrap gap-4">
+        <h3 class="text-lg flex-[1_2_100%] text-surface-200">Detalles</h3>
+        <div class="w-full flex justify-center flex-wrap gap-6 rounded-sm p-6 border">
+          <Panel toggleable v-for="(detail, idx) in formData.order_details" :key="idx" v-if="hasSelectedOrderType"
+            class="w-auto">
+            <template #toggleicon="data">
+              <i :class="['pi', data.collapsed ? 'pi-chevron-down' : 'pi-chevron-up']"></i>
             </template>
-          </div>
-        </Panel>
+            <template #header="data">
+              <span class="font-bold">Detalle #{{ idx + 1 }}</span>
+              <Button v-if="!data.collapsed" icon="pi pi-trash" severity="danger" variant="outlined" text
+                @click="() => removeTemporalDetail(idx)" />
+            </template>
 
-        <Button class="w-3/4" label="Agregar detalle" icon="pi pi-plus" @click="addTemporalDetail"
-          :disabled="!hasSelectedOrderType" severity="contrast" />
-          
-        <Message v-if="errors.order_details" severity="error" variant="simple" size="large">{{ errors.order_details }}</Message>
+            <div class="flex flex-col gap-4 py-4">
+              <!-- Campo: DETALLE_PRODUCTO -->
+              <div class="flex flex-col flex-[1_2_100%] gap-y-2">
+                <InputGroup>
+                  <FloatLabel variant="in">
+                    <AutoComplete showClear ref="detailProductAutoCompletes" id="detail_product"
+                      v-model="detail.product" dropdown :suggestions="filteredProducts" @complete="searchProduct"
+                      optionLabel="search_alias" optionValue="id" @option-select="(e) => handleOptionSelect(e, idx)"
+                      emptySearchMessage="No se encontraron sugerencias." :invalid="!!errors[`detail${idx}_product`]" />
+                    <label for="detail_product">PRODUCTO</label>
+                  </FloatLabel>
+                </InputGroup>
+
+                <Message v-if="errors[`detail${idx}_product`]" severity="error" variant="simple" size="large">{{
+                  errors[`detail${idx}_product`] }}</Message>
+              </div>
+
+
+              <template v-if="detail.product && detail.product.hasOwnProperty('code')">
+                <!-- Campo: DETALLE_CANTIDAD_PRODUCTO -->
+                <div class="flex flex-col flex-[1_2_100%] gap-y-2">
+                  <InputGroup>
+                    <FloatLabel variant="in">
+                      <InputNumber id="detail_quantity" v-model="detail.quantity"
+                        :invalid="!!errors[`detail${idx}_quantity`]" showButtons buttonLayout="horizontal" :step="5"
+                        :min="0" :max="(isSaleOrder) ? detail.product.current_stock : null">
+                        <template #incrementbuttonicon>
+                          <span class="pi pi-plus" />
+                        </template>
+                        <template #decrementbuttonicon>
+                          <span class="pi pi-minus" />
+                        </template>
+                      </InputNumber>
+                      <label for="detail_quantity">CANTIDAD</label>
+                    </FloatLabel>
+                  </InputGroup>
+                  <Message v-if="detail.product && !errors[`detail${idx}_quantity`]" size="large" severity="secondary"
+                    variant="simple">
+                    En stock: {{ detail.product.current_stock }}</Message>
+                  <Message v-else severity="error" variant="simple" size="large">{{
+                    errors[`detail${idx}_quantity`] }}</Message>
+                </div>
+
+
+                <!-- Campo: DETALLE_PRECIO_PRODUCTO -->
+                <div class="flex flex-col flex-[1_2_100%] gap-y-2">
+                  <InputGroup>
+                    <FloatLabel variant="in">
+                      <InputNumber id="detail_unit_price" v-model="detail.unit_price" prefix="$"
+                        :invalid="!!errors[`detail${idx}_unit_price`]" :min="0" />
+                      <label for="detail_unit_price">PRECIO {{ (isSaleOrder) ? 'DE VENTA' : 'DE COMPRA' }} (x
+                        unidad)</label>
+                    </FloatLabel>
+                  </InputGroup>
+
+                  <Message v-if="errors[`detail${idx}_unit_price`]" severity="error" variant="simple" size="large">{{
+                    errors[`detail${idx}_unit_price`] }}</Message>
+                </div>
+
+
+                <!-- Campo: DETALLE_PORCENTAJE_PRODUCTO -->
+                <div class="flex flex-col flex-[1_2_100%] gap-y-2">
+
+                  <InputGroup>
+                    <FloatLabel variant="in">
+                      <InputNumber id="selected_percentage_applied" v-model="detail.percentage_applied" suffix="%"
+                        :invalid="!!errors[`detail${idx}_percentage_applied`]"
+                        :min="(isSaleOrder && detail.product) ? 0 : 1"
+                        :max="(isSaleOrder && detail.product) ? 100 : 500" />
+                      <label for="selected_percentage_applied">{{ (isSaleOrder) ? 'DESCUENTO' : 'GANANCIA' }}
+                        (%)</label>
+                    </FloatLabel>
+                  </InputGroup>
+
+                  <Message v-if="errors[`detail${idx}_percentage_applied`]" severity="error" variant="simple"
+                    size="large">{{
+                      errors[`detail${idx}_percentage_applied`] }}</Message>
+                </div>
+
+
+                <Fieldset v-if="hasFilledDetailFields(idx)">
+                  <template #legend>
+                    <div class="flex items-center pl-2">
+                      <i class="pi pi-info-circle" style="font-size: 1rem"></i>
+                      <span v-if="isSaleOrder" class="font-bold p-2"> Subtotales</span>
+                      <span v-else class="font-bold p-2"> Precio venta sugerido</span>
+                    </div>
+                  </template>
+
+                  <template v-if="isSaleOrder">
+                    <div class="flex flex-col gap-2">
+                      <Message severity="secondary">Unidad <b>(x1)</b>: {{
+                        formatToCurrency(getSaleSubtotalByQuantity(idx,
+                          1))
+                        }}</Message>
+                      <Message severity="warn" v-if="detail.quantity > 1">Cantidad <b>(x{{ detail.quantity }})</b>: {{
+                        formatToCurrency(getSaleSubtotalByQuantity(idx, detail.quantity)) }}</Message>
+                    </div>
+                  </template>
+
+                  <template v-else>
+                    <Message>Unidad (x1): {{ formatToCurrency(getSuggestedSalePrice(idx)) }}</Message>
+                  </template>
+                </Fieldset>
+              </template>
+            </div>
+          </Panel>
+
+          <Button class="w-3/4" label="Agregar detalle" icon="pi pi-plus" @click="addTemporalDetail"
+            :disabled="!hasSelectedOrderType" severity="contrast" />
+
+          <Message v-if="errors.order_details" severity="error" variant="simple" size="large">{{ errors.order_details }}
+          </Message>
+        </div>
       </div>
 
-      <!-- Campo: Ajuste (+/-)-->
-      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-sliders-h"></i>
-          </InputGroupAddon>
-          <FloatLabel variant="in">
-            <InputNumber id="adjustment_amount" v-model="formData.adjustment_amount" prefix="$"
-              :invalid="!!errors.adjustment_amount" />
-            <label for="adjustment_amount">AJUSTE (+/-)</label>
-          </FloatLabel>
-        </InputGroup>
-        <Message v-if="errors.adjustment_amount" severity="error" variant="simple" size="large">{{
-          errors.adjustment_amount }}</Message>
-      </div>
+      <div class="w-full flex flex-wrap gap-4">
+        <h3 class="text-lg flex-[1_2_100%] text-surface-200">Adicionales</h3>
 
-      <!-- Campo: Notas -->
-      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-clipboard"></i>
-          </InputGroupAddon>
-          <FloatLabel variant="in">
-            <Textarea id="notes" v-model="formData.notes" style="resize: none" :invalid="!!errors.notes" />
-            <label for="notes">NOTAS (opcional)</label>
-          </FloatLabel>
+        <!-- Campo: Ajuste (+/-)-->
+        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+          <InputGroup>
+            <InputGroupAddon>
+              <i class="pi pi-sliders-h"></i>
+            </InputGroupAddon>
+            <FloatLabel variant="in">
+              <InputNumber id="adjustment_amount" v-model="formData.adjustment_amount" prefix="$"
+                :invalid="!!errors.adjustment_amount" />
+              <label for="adjustment_amount">AJUSTE (+/-)</label>
+            </FloatLabel>
+          </InputGroup>
+          <Message v-if="errors.adjustment_amount" severity="error" variant="simple" size="large">{{
+            errors.adjustment_amount }}</Message>
+        </div>
 
-        </InputGroup>
-        <Message v-if="errors.notes" severity="error" variant="simple" size="large">{{ errors.notes }}
-        </Message>
+        <!-- Campo: Notas -->
+        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+          <InputGroup>
+            <InputGroupAddon>
+              <i class="pi pi-clipboard"></i>
+            </InputGroupAddon>
+            <FloatLabel variant="in">
+              <Textarea id="notes" v-model="formData.notes" style="resize: none" :invalid="!!errors.notes" />
+              <label for="notes">NOTAS (opcional)</label>
+            </FloatLabel>
+
+          </InputGroup>
+          <Message v-if="errors.notes" severity="error" variant="simple" size="large">{{ errors.notes }}
+          </Message>
+        </div>
       </div>
 
       <Message severity="warn" size="large" icon="pi pi-dollar" v-if="isSaleOrder && getSaleApproximateTotalNet !== 0">
@@ -309,8 +323,8 @@ const handleSubmit = async () => {
   if (validateForm()) {
     const contactComeFromSuggesteds = formData.contact && formData.contact.hasOwnProperty('id')
     const contactKey = (contactComeFromSuggesteds)
-                                    ? 'id_contact'
-                                    : 'new_contact_name'
+      ? 'id_contact'
+      : 'new_contact_name'
     const formDataToSend = {
       [contactKey]: (contactComeFromSuggesteds) ? formData.contact.id : formData.contact,
       id_movement_type: formData.order_type.id,
