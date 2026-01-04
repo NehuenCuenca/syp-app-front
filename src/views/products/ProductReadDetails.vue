@@ -2,104 +2,112 @@
 <!-- Vista de solo lectura de los detalles de un producto -->
 <template>
   <div class="flex items-center flex-col gap-4">
-    <div class="flex justify-between max-w-xl flex-wrap gap-6">
-      <!-- Campo: Nombre del producto -->
-      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-th-large"></i>
-          </InputGroupAddon>
-          <FloatLabel variant="in">
-            <InputText size="large" disabled id="name" v-model="recordData.search_alias" />
-            <label for="name">NOMBRE DE PRODUCTO</label>
-          </FloatLabel>
-        </InputGroup>
+    <div class="flex justify-between max-w-xl flex-wrap gap-10">
+      <div class="w-full flex flex-wrap gap-4">
+        <h3 class="text-lg flex-[1_2_100%] text-surface-200">Identificacion</h3>
+        <!-- Campo: Nombre del producto -->
+        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+          <InputGroup>
+            <InputGroupAddon>
+              <i class="pi pi-th-large"></i>
+            </InputGroupAddon>
+            <FloatLabel variant="in">
+              <InputText size="large" disabled id="name" v-model="recordData.search_alias" />
+              <label for="name">NOMBRE DE PRODUCTO</label>
+            </FloatLabel>
+          </InputGroup>
+        </div>
+
+        <!-- Campo: categoria -->
+        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+          <InputGroup>
+            <InputGroupAddon>
+              <i class="pi pi-tags"></i>
+            </InputGroupAddon>
+            <FloatLabel variant="in">
+              <AutoComplete size="large" disabled id="category" v-model="recordData.category.search_alias"
+                emptySearchMessage="No se encontraron sugerencias." />
+              <label for="category">CATEGORIA</label>
+            </FloatLabel>
+          </InputGroup>
+        </div>
       </div>
 
+      <div class="w-full flex flex-wrap gap-4">
+        <h3 class="text-lg flex-[1_2_100%] text-surface-200">Precios y ganancia</h3>
+        <!-- Campo: Precio de COMPRA-->
+        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+          <InputGroup>
+            <InputGroupAddon>
+              <i class="pi pi-dollar"></i>
+            </InputGroupAddon>
+            <FloatLabel variant="in">
+              <InputNumber size="large" disabled id="buy_price" v-model="recordData.buy_price" prefix="$" :min="0" />
+              <label for="buy_price">PRECIO DE COMPRA</label>
+            </FloatLabel>
+          </InputGroup>
+        </div>
 
-      <!-- Campo: categoria -->
-      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-tags"></i>
-          </InputGroupAddon>
-          <FloatLabel variant="in">
-            <AutoComplete size="large" disabled id="category" v-model="recordData.category.search_alias"
-              emptySearchMessage="No se encontraron sugerencias." />
-            <label for="category">CATEGORIA</label>
-          </FloatLabel>
-        </InputGroup>
+        <!-- Campo: ganancia -->
+        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+          <InputGroup>
+            <InputGroupAddon>
+              <i class="pi pi-percentage"></i>
+            </InputGroupAddon>
+            <FloatLabel variant="in">
+              <InputNumber size="large" disabled id="profit_percentage" v-model="recordData.profit_percentage"
+                suffix="%" :min="1" />
+              <label for="profit_percentage">GANANCIA (%)</label>
+            </FloatLabel>
+          </InputGroup>
+        </div>
+
+        <!-- Campo: precio de venta -->
+        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+
+          <InputGroup>
+            <InputGroupAddon>
+              <i class="pi pi-dollar"></i>
+            </InputGroupAddon>
+            <FloatLabel variant="in">
+              <InputNumber size="large" disabled id="sale_price" v-model="recordData.sale_price" prefix="$" :min="0" />
+              <label for="sale_price">PRECIO DE VENTA</label>
+            </FloatLabel>
+          </InputGroup>
+        </div>
       </div>
 
-      <!-- Campo: Precio de COMPRA-->
-      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-dollar"></i>
-          </InputGroupAddon>
-          <FloatLabel variant="in">
-            <InputNumber size="large" disabled id="buy_price" v-model="recordData.buy_price" prefix="$" :min="0" />
-            <label for="buy_price">PRECIO DE COMPRA</label>
-          </FloatLabel>
-        </InputGroup>
-      </div>
+      <div class="w-full flex flex-wrap gap-4">
+        <h3 class="text-lg flex-[1_2_100%] text-surface-200">Stock</h3>
+        <!-- Campo: stock actual -->
+        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+          <InputGroup>
+            <InputGroupAddon>
+              <i class="pi pi-wave-pulse"></i>
+            </InputGroupAddon>
+            <FloatLabel variant="in">
+              <InputNumber size="large" disabled id="current_stock" v-model="recordData.current_stock" :min="1">
+              </InputNumber>
+              <label for="current_stock">STOCK ACTUAL</label>
+            </FloatLabel>
+          </InputGroup>
+        </div>
 
-      <!-- Campo: ganancia -->
-      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-percentage"></i>
-          </InputGroupAddon>
-          <FloatLabel variant="in">
-            <InputNumber size="large" disabled id="profit_percentage" v-model="recordData.profit_percentage" suffix="%"
-              :min="1" />
-            <label for="profit_percentage">GANANCIA (%)</label>
-          </FloatLabel>
-        </InputGroup>
-      </div>
+        <!-- Campo: Alerta minimo de stock -->
+        <div class="flex flex-col flex-[0_1_250px]">
+          <InputGroup>
+            <InputGroupAddon>
+              <i class="pi pi-exclamation-triangle"></i>
+            </InputGroupAddon>
+            <FloatLabel variant="in">
 
-      <!-- Campo: precio de venta -->
-      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-dollar"></i>
-          </InputGroupAddon>
-          <FloatLabel variant="in">
-            <InputNumber size="large" disabled id="sale_price" v-model="recordData.sale_price" prefix="$" :min="0" />
-            <label for="sale_price">PRECIO DE VENTA</label>
-          </FloatLabel>
-        </InputGroup>
-      </div>
-
-      <!-- Campo: stock actual -->
-      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-wave-pulse"></i>
-          </InputGroupAddon>
-          <FloatLabel variant="in">
-            <InputNumber size="large" disabled id="current_stock" v-model="recordData.current_stock" :min="1">
-            </InputNumber>
-            <label for="current_stock">STOCK ACTUAL</label>
-          </FloatLabel>
-        </InputGroup>
-      </div>
-
-      <!-- Campo: Alerta minimo de stock -->
-      <div class="flex flex-col flex-[0_1_250px]">
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-exclamation-triangle"></i>
-          </InputGroupAddon>
-          <FloatLabel variant="in">
-
-            <InputNumber size="large" disabled id="min_stock_alert" v-model="recordData.min_stock_alert"
-              buttonLayout="horizontal" :step="5" :min="1">
-            </InputNumber>
-            <label for="min_stock_alert">ALERTA DE STOCK BAJO</label>
-          </FloatLabel>
-        </InputGroup>
+              <InputNumber size="large" disabled id="min_stock_alert" v-model="recordData.min_stock_alert"
+                buttonLayout="horizontal" :step="5" :min="1">
+              </InputNumber>
+              <label for="min_stock_alert">ALERTA DE STOCK BAJO</label>
+            </FloatLabel>
+          </InputGroup>
+        </div>
       </div>
 
       <div class="w-full flex justify-around">
