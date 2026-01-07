@@ -95,7 +95,7 @@
                   </InputGroup>
                   <Message v-if="detail.product && !errors[`detail${idx}_quantity`]" size="large" severity="secondary"
                     variant="simple">
-                    En stock: {{ detail.product.current_stock }}</Message>
+                    Stock previo: {{ detail.product.current_stock }}</Message>
                   <Message v-if="errors[`detail${idx}_quantity`]" severity="error" variant="simple" size="large"
                     class="p-error">{{
                       errors[`detail${idx}_quantity`] }}</Message>
@@ -111,6 +111,9 @@
                     </FloatLabel>
                   </InputGroup>
 
+                  <Message v-if="detail.product && isSaleOrder" size="large" severity="secondary" variant="simple">
+                    Marcado con un: {{ detail.product.profit_percentage }}%
+                  </Message>
                   <Message v-if="errors[`detail${idx}_unit_price`]" severity="error" variant="simple" size="large"
                     class="p-error">{{
                       errors[`detail${idx}_unit_price`] }}</Message>
