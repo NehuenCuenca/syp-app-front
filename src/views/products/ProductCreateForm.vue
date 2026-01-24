@@ -214,10 +214,10 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (!formData.category || formData.category.trim() === '') {
+  /* if (!formData.category || formData.category.trim() === '') {
     errors.value.category = 'La categoria es requerida';
     isValid = false;
-  }
+  } */
 
   // Validar precio compra (requerido y mayor a 0)
   if (!formData.buy_price || formData.buy_price <= 0) {
@@ -237,18 +237,25 @@ const validateForm = () => {
     isValid = false;
   }
 
+  // Validar precio venta (que sea mayor al precio de compra)
+  if (formData.sale_price && formData.sale_price <= formData.buy_price) {
+    errors.value.sale_price = 'El precio venta debe ser mayor al precio compra';
+    isValid = false;
+  }
 
+  // Validar stock inicial (requerido y mayor a 0)
   if (!formData.current_stock || formData.current_stock <= 0) {
     errors.value.current_stock = 'El stock inicial debe ser igual o mayor a 1';
     isValid = false;
   }
 
+  // Validar alerta de stock (requerido y mayor a 0)
   if (!formData.min_stock_alert || formData.min_stock_alert <= 0) {
     errors.value.min_stock_alert = 'El alerta de stock minimo debe ser igual o mayor a 1';
     isValid = false;
   }
 
-  // Validar categoria (requerido)
+  // Si no escribe la categoria, se asigna a "Varios"
   if (!formData.category || (formData.category.trim() === '' && !formData.category.hasOwnProperty('name'))) {
     formData.category = 'Varios';
   }
