@@ -70,8 +70,10 @@ export function useCrudApi() {
       error.value = errorMessage;
     } else if (err.message) {
       error.value = err.message;
-    } else {
-      error.value = 'Error de conexión con el servidor';
+    } 
+
+    if(err.code === "ERR_NETWORK") {
+      error.value = `Error de conexión con el servidor. \n Inténtalo de nuevo más tarde`;
     }
     
     console.error('Error en useCrudApi:', err);
