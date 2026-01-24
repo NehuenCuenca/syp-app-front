@@ -61,7 +61,7 @@
                 <InputGroup>
                   <FloatLabel variant="in">
                     <AutoComplete showClear ref="detailProductAutoCompletes" id="detail_product"
-                      v-model="detail.product" dropdown :suggestions="filteredProducts" @complete="searchProduct"
+                      v-model="detail.product" dropdown :suggestions="filteredProducts" @change="(e) => searchProduct(e)"
                       optionLabel="search_alias" optionValue="id" @option-select="(e) => handleOptionSelect(e, idx)"
                       emptySearchMessage="No se encontraron sugerencias." :invalid="!!errors[`detail${idx}_product`]" />
                     <label for="detail_product">PRODUCTO</label>
@@ -304,20 +304,25 @@ const validateForm = () => {
     isValid = false;
   }
 
-  formData.order_details.forEach((detail, index) => {
-    if (!detail.product) {
-      errors.value[`detail${index}_product`] = `El producto es requerido`;
+  for (let idx = 0; idx < formData.order_details.length; idx++) {
+    const detail = formData.order_details[idx];
+
+    if(!detail.product.hasOwnProperty('code')){
+      errors.value[`detail${idx}_product`] = `El producto es requerido`;
       isValid = false;
+      continue
+    } else {
+      if (!detail.quantity || detail.quantity <= 0) {
+        errors.value[`detail${idx}_quantity`] = `La cantidad debe ser mayor a 0`;
+        isValid = false;
+      }
+
+      if (detail.unit_price < 0) {
+        errors.value[`detail${idx}_price`] = `El precio no puede ser negativo`;
+        isValid = false;
+      }
     }
-    if (!detail.quantity || detail.quantity <= 0) {
-      errors.value[`detail${index}_quantity`] = `La cantidad debe ser mayor a 0`;
-      isValid = false;
-    }
-    if (detail.unit_price < 0) {
-      errors.value[`detail${index}_price`] = `El precio no puede ser negativo`;
-      isValid = false;
-    }
-  });
+  }
 
   return isValid;
 };
@@ -373,12 +378,21 @@ const searchContact = (event) => {
 
 const filteredProducts = ref([]);
 const searchProduct = (event) => {
-  const selectProductFromDropdown = event.query && event.query.hasOwnProperty('name')
-  const autoCompleteIsEmpty = !event.query.trim().length
-  if (selectProductFromDropdown || autoCompleteIsEmpty) return
+  if(event.value === null){
+    filteredProducts.value = (isSaleOrder.value) 
+                                ? createFormData.value.products.filter(product => product.current_stock > 0)
+                                : [...createFormData.value.products]
+    return
+  }
+
+  if(event.value && event.value.hasOwnProperty('search_alias')) return
 
   filteredProducts.value = createFormData.value.products.filter((product) => {
-    return product.search_alias.toLowerCase().includes(event.query.toLowerCase());
+    const includesText = product.search_alias.toLowerCase().includes(event.value.toLowerCase())
+    
+    return (isSaleOrder.value)
+      ? includesText && product.current_stock > 0
+      : includesText;
   });
 }
 

@@ -15,7 +15,7 @@
             <FloatLabel variant="in">
               <!-- <Select disabled v-model="formData.order_type" :options="editFormData.order_types" optionLabel="name" showClear @change="handleChangeOrderType" /> -->
               <Select disabled v-model="editFormData.order.movement_type" :options="editFormData.order_types"
-                optionLabel="name" showClear @change="handleChangeOrderType" :invalid="!!errors.movement_type" />
+                optionLabel="name" :invalid="!!errors.movement_type" />
               <label for="movement_type">TIPO DE PEDIDO</label>
             </FloatLabel>
           </InputGroup>
@@ -63,9 +63,10 @@
                 <InputGroup>
                   <FloatLabel variant="in">
                     <AutoComplete showClear dropdown ref="detailProductAutoCompletes" id="detail_product"
-                      v-model="detail.product" :suggestions="filteredProducts" @complete="searchProduct"
+                      v-model="detail.product" :suggestions="filteredProducts" @change="(e) => searchProduct(e)"
                       optionLabel="search_alias" optionValue="id" @option-select="(e) => handleOptionSelect(e, idx)"
-                      emptySearchMessage="No se encontraron sugerencias." :invalid="!!errors[`detail${idx}_product`]" />
+                      emptySearchMessage="No se encontraron sugerencias." :invalid="!!errors[`detail${idx}_product`]"
+                      />
                     <label for="detail_product">PRODUCTO (codigo)</label>
                   </FloatLabel>
                 </InputGroup>
@@ -75,7 +76,7 @@
                     errors[`detail${idx}_product`] }}</Message>
               </div>
 
-              <template v-if="detail.product">
+              <template v-if="detail.product && detail.product.hasOwnProperty('code')">
                 <!-- Campo: DETALLE_CANTIDAD_PRODUCTO -->
                 <div class="flex flex-col flex-[1_2_100%] gap-y-2">
                   <InputGroup>
@@ -304,20 +305,25 @@ const validateForm = () => {
     isValid = false;
   }
 
-  editFormData.value.order.order_details.forEach((detail, index) => {
-    if (!detail.product) {
-      errors.value[`detail${index}_product`] = `El producto es requerido`;
+  for (let idx = 0; idx < editFormData.value.order.order_details.length; idx++) {
+    const detail = editFormData.value.order.order_details[idx];
+
+    if(!detail.product.hasOwnProperty('code')){
+      errors.value[`detail${idx}_product`] = `El producto es requerido`;
       isValid = false;
+      continue
+    } else {
+      if (!detail.quantity || detail.quantity <= 0) {
+        errors.value[`detail${idx}_quantity`] = `La cantidad debe ser mayor a 0`;
+        isValid = false;
+      }
+
+      if (detail.unit_price < 0) {
+        errors.value[`detail${idx}_price`] = `El precio no puede ser negativo`;
+        isValid = false;
+      }
     }
-    if (!detail.quantity || detail.quantity <= 0) {
-      errors.value[`detail${index}_quantity`] = `La cantidad debe ser mayor a 0`;
-      isValid = false;
-    }
-    if (detail.unit_price < 0) {
-      errors.value[`detail${index}_price`] = `El precio no puede ser negativo`;
-      isValid = false;
-    }
-  });
+  }
 
   return isValid;
 };
@@ -380,15 +386,23 @@ const searchContact = (event) => {
 
 const filteredProducts = ref([]);
 const searchProduct = (event) => {
-  const selectProductFromDropdown = event.query && event.query.hasOwnProperty('name')
-  const autoCompleteIsEmpty = !event.query.trim().length
-  if (selectProductFromDropdown || autoCompleteIsEmpty) return
+  if(event.value === null){
+    filteredProducts.value = (isSaleOrder.value) 
+                                ? editFormData.value.products.filter(product => product.current_stock > 0)
+                                : [...editFormData.value.products]
+    return
+  }
+
+  if(event.value && event.value.hasOwnProperty('search_alias')) return
 
   filteredProducts.value = editFormData.value.products.filter((product) => {
-    return product.search_alias.toLowerCase().includes(event.query.toLowerCase());
+    const includesText = product.search_alias.toLowerCase().includes(event.value.toLowerCase())
+    
+    return (isSaleOrder.value)
+      ? includesText && product.current_stock > 0
+      : includesText;
   });
 }
-
 
 const handleChangeOrderType = (e) => {
   if (e.value.name === 'Venta') {
