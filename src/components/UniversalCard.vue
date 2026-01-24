@@ -3,7 +3,7 @@
   :class="{'bg-surface-400': isDeleted}">
   
     <!-- Contenedor del texto primario y menú -->
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-start">
       <div class="flex flex-col justify-between items-start w-4/5">
         <!-- Texto terciario -->
         <p class="text-md md:text-lg font-bold text-surface-600 flex gap-3.5">
