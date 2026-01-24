@@ -232,7 +232,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, useTemplateRef, watch } from 'vue';
+import { computed, nextTick, onMounted, reactive, ref, useTemplateRef, watch } from 'vue';
 import { useCrudApi } from '../../composables/useCrudApi.js'
 import { useToast } from 'primevue';
 
@@ -294,9 +294,14 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (!formData.contact) {
-    errors.value.contact = 'El contacto es requerido';
-    isValid = false;
+  // Validar contacto si el pedido es una compra
+  if ((!formData.contact || !formData.contact.hasOwnProperty('code'))) {
+    if(isSaleOrder.value){
+      formData.contact = createFormData.value.contacts.find(({name}) => name.toUpperCase() === 'OCASIONAL')
+    } else {
+      errors.value.contact = 'El contacto es requerido';
+      isValid = false;
+    }
   }
 
   if (formData.order_details.length === 0) {
@@ -307,7 +312,7 @@ const validateForm = () => {
   for (let idx = 0; idx < formData.order_details.length; idx++) {
     const detail = formData.order_details[idx];
 
-    if(!detail.product.hasOwnProperty('code')){
+    if(!detail.product || !detail.product.hasOwnProperty('code')){
       errors.value[`detail${idx}_product`] = `El producto es requerido`;
       isValid = false;
       continue
@@ -387,13 +392,14 @@ const searchProduct = (event) => {
 
   if(event.value && event.value.hasOwnProperty('search_alias')) return
 
-  filteredProducts.value = createFormData.value.products.filter((product) => {
-    const includesText = product.search_alias.toLowerCase().includes(event.value.toLowerCase())
-    
-    return (isSaleOrder.value)
-      ? includesText && product.current_stock > 0
-      : includesText;
-  });
+  nextTick(() => {
+    filteredProducts.value = createFormData.value.products.filter((product) => {
+      const includesText = product.search_alias.toLowerCase().includes(event.value.toLowerCase())
+      return (isSaleOrder.value)
+        ? includesText && product.current_stock > 0
+        : includesText;
+    });
+  })
 }
 
 
@@ -412,6 +418,7 @@ const handleChangeOrderType = (e) => {
   }
 
   if (formData.order_details.length === 0) return
+
   for (const detail of formData.order_details) {
     if (!!detail.product) {
       detail.unit_price = (changeToSaleOrder) ? detail.product?.sale_price : detail.product?.buy_price

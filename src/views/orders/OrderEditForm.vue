@@ -227,7 +227,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, toRaw, useTemplateRef, watch } from 'vue';
+import { computed, nextTick, onMounted, reactive, ref, toRaw, useTemplateRef, watch } from 'vue';
 import { useCrudApi } from '../../composables/useCrudApi.js'
 import { useToast } from 'primevue';
 
@@ -295,9 +295,14 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (!editFormData.value.order.contact) {
-    errors.value.contact = 'El contacto es requerido';
-    isValid = false;
+  // Validar contacto si el pedido es una compra
+  if ((!editFormData.value.order.contact || !editFormData.value.order.contact.hasOwnProperty('code'))) {
+    if(isSaleOrder.value){
+      editFormData.value.order.contact = editFormData.value.contacts.find(({name}) => name.toUpperCase() === 'OCASIONAL')
+    } else {
+      errors.value.contact = 'El contacto es requerido';
+      isValid = false;
+    }
   }
 
   if (editFormData.value.order.order_details.length === 0) {
@@ -395,13 +400,15 @@ const searchProduct = (event) => {
 
   if(event.value && event.value.hasOwnProperty('search_alias')) return
 
-  filteredProducts.value = editFormData.value.products.filter((product) => {
-    const includesText = product.search_alias.toLowerCase().includes(event.value.toLowerCase())
-    
-    return (isSaleOrder.value)
-      ? includesText && product.current_stock > 0
-      : includesText;
-  });
+  nextTick(() => {
+    filteredProducts.value = editFormData.value.products.filter((product) => {
+      const includesText = product.search_alias.toLowerCase().includes(event.value.toLowerCase())
+      
+      return (isSaleOrder.value)
+        ? includesText && product.current_stock > 0
+        : includesText;
+    });
+  })
 }
 
 const handleChangeOrderType = (e) => {
