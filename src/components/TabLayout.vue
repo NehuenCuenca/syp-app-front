@@ -20,7 +20,7 @@
           <!-- Buscador -->
           <IconField v-if="showSearchInput" class="my-6">
             <InputIcon class="pi pi-search" />
-            <InputText type="search" :placeholder="searchPlaceHolder" v-model.trim="searchValue" @input="handleSearchInput"/>
+            <InputText type="search" :placeholder="searchPlaceHolder" v-model.trim="searchValue" @input="handleSearchInput" class="sm:min-w-[300px]"/>
           </IconField>
         </template>
 
@@ -56,7 +56,7 @@
     </template>
 
     <div v-else-if="!loading && error !== null" class="py-12 px-4 flex flex-col items-center justify-center gap-4 min-h-[150px] w-full">
-      <Message severity="error" style="text-align: center;">{{error}}. <br> Inténtalo de nuevo más tarde.</Message>
+      <Message severity="error" class="text-center sm:max-w-[320px]">{{error}}</Message>
       <Button label="Recargar" severity="contrast" icon="pi pi-refresh" iconPos="bottom" @click="() => this.$router.go()"/>
     </div>
     <div v-else class="rounded-md py-12 px-4 flex flex-col items-center justify-center text-surface-100 text-2xl font-normal min-h-[150px]">
