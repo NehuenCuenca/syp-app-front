@@ -44,7 +44,7 @@
       
 
       <!-- Detalle: pedido -->
-       <div class="flex flex-col flex-[1_2_200px] gap-y-2" v-if="!!recordData.order">
+      <div class="flex flex-col flex-[1_2_200px] gap-y-2" v-if="!!recordData.order">
         <InputGroup>
           <InputGroupAddon>
               <i class="pi pi-receipt"></i>
@@ -52,6 +52,18 @@
           <FloatLabel variant="in">
             <InputText disabled id="order" v-model="recordData.order.search_alias" />
             <label for="order">Pedido</label>
+          </FloatLabel>
+        </InputGroup>
+      </div>
+
+      <div class="flex flex-col flex-[1_2_200px] gap-y-2">
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-calendar"></i>
+          </InputGroupAddon>
+          <FloatLabel variant="in">
+            <InputText disabled id="created_at" v-model="recordData.created_at" style="resize: none" />
+            <label for="created_at">CREADO EN</label>
           </FloatLabel>
         </InputGroup>
       </div>
