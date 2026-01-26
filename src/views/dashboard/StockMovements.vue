@@ -71,7 +71,7 @@ const {
   filters: stockMovementsFilters,
   pagination: stockMovementsPagination,
   fetchData: fetchStockMovements,
-  fetchFilters: fetchStockMovementFilters
+  // fetchFilters: fetchStockMovementFilters
 } = useCrudApi();
 
 const {
@@ -83,7 +83,7 @@ const {
 
 // Cargar filtros al montar
 onMounted(async () => {
-  await fetchStockMovementFilters();
+  // await fetchStockMovementFilters();
   await fetchStockMovements({ ...route.query, page: route.query?.page || 1 });
 });
 
