@@ -40,12 +40,12 @@
           <Column field="quantity" header="Cantidad"></Column>
           <Column field="unit_price" header="Precio unitario">
             <template #body="{ data }">
-              {{ data.formatted_unit_price }}
+              {{ data.unit_price_with_discount_as_currency }}
             </template>
           </Column>
           <Column v-if="isSaleOrder" field="discount_percentage_by_unit" header="Descuento (%)">
             <template #body="{ data }">
-              -{{ data.percentage_applied }}%
+              {{ data.percentage_applied }}%
             </template>
           </Column>
           <Column v-else field="product.profit_percentage" header="Ganancia (%)">
@@ -53,12 +53,12 @@
               {{ data.product.profit_percentage }}%
             </template>
           </Column>
-          <Column field="formatted_line_subtotal" header="Subtotal"></Column>
+          <Column field="line_subtotal_as_currency" header="Subtotal"></Column>
           <ColumnGroup type="footer">
             <Row>
-              <Column :footer="`Bruto: ${recordData.subtotal_currency}`" :colspan="3" footerStyle="text-align:right" />
-              <Column :footer="`Ajuste: ${recordData.adjustment_currency}`" footerStyle="text-align:right" />
-              <Column :footer="`NETO: ${recordData.total_net_currency}`" footerStyle="text-align:right" />
+              <Column :footer="`Bruto: ${recordData.subtotal_as_currency}`" :colspan="3" footerStyle="text-align:right" />
+              <Column :footer="`Ajuste: ${recordData.adjustment_as_currency}`" footerStyle="text-align:right" />
+              <Column :footer="`NETO: ${recordData.total_net_as_currency}`" footerStyle="text-align:right" />
             </Row>
           </ColumnGroup>
         </DataTable>
