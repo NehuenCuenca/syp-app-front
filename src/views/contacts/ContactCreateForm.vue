@@ -134,7 +134,7 @@ const formData = reactive({
   email: '',
   phone: '',
   address: '',
-  contact_type: 'Cliente',
+  contact_type: 'cliente',
 });
 
 // Estado de errores de validación
