@@ -250,14 +250,14 @@ const validateForm = () => {
   }
 
   // Validar stock inicial (requerido y mayor a 0)
-  if (!formData.current_stock || formData.current_stock <= 0) {
-    errors.value.current_stock = 'El stock inicial debe ser igual o mayor a 1';
+  if (formData.current_stock < 0) {
+    errors.value.current_stock = 'El stock inicial debe ser igual o mayor a 0';
     isValid = false;
   }
 
   // Validar alerta de stock (requerido y mayor a 0)
-  if (!formData.min_stock_alert || formData.min_stock_alert <= 0) {
-    errors.value.min_stock_alert = 'El alerta de stock minimo debe ser igual o mayor a 1';
+  if (formData.min_stock_alert < 0) {
+    errors.value.min_stock_alert = 'El alerta de stock minimo debe ser igual o mayor a 0';
     isValid = false;
   }
 
