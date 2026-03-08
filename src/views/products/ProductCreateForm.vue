@@ -28,10 +28,16 @@
               <i class="pi pi-tags"></i>
             </InputGroupAddon>
             <FloatLabel variant="in">
-              <AutoComplete showClear id="category" v-model="formData.category" dropdown :suggestions="categories"
-                @complete="searchCategory" optionLabel="search_alias" optionValue="name"
-                @item-select="(e) => formData.category = e.value.name"
-                emptySearchMessage="No se encontraron sugerencias." :invalid="!!errors.category" />
+                <Select
+                  v-model="formData.category"
+                  :options="categories"
+                  option-label="search_alias"
+                  option-value="name"
+                  class="w-full"
+                  show-clear
+                  filter
+                  label="Categoria"
+                />
               <label for="category">CATEGORIA</label>
             </FloatLabel>
           </InputGroup>
