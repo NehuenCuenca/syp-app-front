@@ -104,7 +104,7 @@
           <InputGroup>
             <FloatLabel variant="in">
               <InputNumber id="current_stock" v-model="formData.current_stock" :invalid="!!errors.current_stock"
-                showButtons buttonLayout="horizontal" :step="5" :min="1">
+                showButtons buttonLayout="horizontal" :step="6" :min="0">
                 <template #incrementbuttonicon>
                   <span class="pi pi-plus" />
                 </template>
