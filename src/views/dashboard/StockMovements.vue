@@ -60,7 +60,7 @@ const toast = useToast();
 const route = useRoute();
 
 const localFilters = ref({
-  id_category: route.query?.id_category || null,
+  category_id: route.query?.category_id || null,
   low_stock: route.query?.low_stock==='true' || false,
 });
 
@@ -188,7 +188,7 @@ const handleDelete = async(modalData) => {
 };
 
 const handleClearFilters = async(newFilters) => { 
-  localFilters.value.id_category = null;
+  localFilters.value.category_id = null;
   localFilters.value.low_stock = false;
 
   await fetchStockMovements(newFilters);
