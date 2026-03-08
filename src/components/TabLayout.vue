@@ -185,7 +185,7 @@ const handleClearFilters = () => {
   if(route.name === 'Contactos'){
     clearedParams = { ...clearedParams, contact_type: null };
   } else if(route.name === 'Productos'){
-    clearedParams = { ...clearedParams, id_category: null, low_stock: false };
+    clearedParams = { ...clearedParams, category_id: null, low_stock: false };
   }
 
   updateQueryParams(clearedParams);
@@ -193,7 +193,7 @@ const handleClearFilters = () => {
 }
 
 const canClearFilters = computed(() => {
-  return !!route.query?.search || !!route.query?.id_category 
+  return !!route.query?.search || !!route.query?.category_id 
   || route.query?.low_stock==='true' || !!route.query?.contact_type;
 });
 
