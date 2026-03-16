@@ -1,102 +1,118 @@
 <!-- ContactUpdateForm.vue -->
 <!-- Formulario para editar un contacto existente -->
 <template>
-  <div class="flex items-center flex-col gap-4">
-    <div class="flex justify-between max-w-xl flex-wrap gap-10">
-      <div class="w-full flex flex-wrap gap-4">
-        <h3 class="text-lg flex-[1_2_100%] text-surface-200">Relevantes</h3>
+  <div class="contact-edit-form ">
+    <!-- Form Content -->
+    <div class="flex flex-col gap-6 p-4">
+   
+      <!-- ==================== SECCIÓN IDENTIFICACIÓN ==================== -->
+      <section class="form-section">
+        <h3 class="section-title">
+          <i class="pi pi-id-card mr-2"></i>
+          Identificación
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Nombre del contacto -->
+          <div class="form-field">
+            <label for="name" class="field-label required">
+              Nombre del Contacto
+            </label>
+            <InputText 
+              id="name" 
+              v-model="formData.name" 
+              :invalid="!!errors.name"
+              placeholder="Ej: Kiosco Almafuerte"
+              class="w-full"
+            />
+            <small v-if="errors.name" class="field-error">
+              {{ errors.name }}
+            </small>
+          </div>
 
-        <!-- Campo: Tipo de contacto -->
-        <div class="flex flex-col flex-[1_2_100%] gap-y-2">
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-users"></i>
-            </InputGroupAddon>
-            <FloatLabel variant="in">
-              <Select v-model="formData.contact_type" :options="contactTypes" showClear
-                :invalid="!!errors.contact_type" />
-              <label for="contact_type">TIPO DE CONTACTO</label>
-            </FloatLabel>
-          </InputGroup>
-          <Message v-if="errors.contact_type" severity="error" variant="simple" size="large" class="p-error">{{
-            errors.contact_type }}</Message>
+          <!-- Categoría -->
+          <div class="form-field">
+            <label for="contact_type" class="field-label required">
+              Tipo de contacto
+            </label>
+            <Select
+              id="contact_type"
+              v-model="formData.contact_type"
+              :options="contactTypes"
+              placeholder="Seleccione un cliente o proveedor"
+              show-clear
+              class="w-full"
+              :invalid="!!errors.contact_type"
+            >
+              <template #value="slotProps">
+                <div v-if="slotProps.value" class="flex items-center gap-2">
+                  <i class="pi pi-users"></i>
+                  <span>{{ slotProps.value }}</span>
+                </div>
+                <span v-else>{{ slotProps.placeholder }}</span>
+              </template>
+            </Select>
+            <small v-if="errors.contact_type" class="field-error">
+              {{ errors.contact_type }}
+            </small>
+          </div>
         </div>
-        
-        <!-- Campo: Nombre negocio -->
-        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-user"></i>
-            </InputGroupAddon>
-            <FloatLabel variant="in">
-              <InputText id="name" v-model="formData.name" :invalid="!!errors.name" />
-              <label for="name">NOMBRE</label>
-            </FloatLabel>
-          </InputGroup>
-          <Message v-if="errors.name" severity="error" variant="simple" size="large" class="p-error">{{ errors.name }}
-          </Message>
+      </section>
+
+      <!-- ==================== SECCIÓN DATOS SECUNDARIOS ==================== -->
+      <section class="form-section">
+        <h3 class="section-title">
+          <i class="pi pi-objects-column mr-2"></i>
+          Datos secundarios
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- telefono del contacto -->
+          <div class="form-field">
+            <label for="phone" class="field-label">
+              Telefono
+            </label>
+            <InputText id="phone" v-model="formData.phone" :invalid="!!errors.phone" />
+            <small v-if="errors.phone" class="field-error">
+              {{ errors.phone }}
+            </small>
+          </div>
+          
+          <!-- email del contacto -->
+          <div class="form-field">
+            <label for="email" class="field-label">
+              Email
+            </label>
+            <InputText id="email" v-model="formData.email" :invalid="!!errors.email" />
+            <small v-if="errors.email" class="field-error">
+              {{ errors.email }}
+            </small>
+          </div>
+
+          <!-- direccion del contacto -->
+          <div class="form-field">
+            <label for="address" class="field-label">
+              Dirección
+            </label>
+            <InputText id="address" v-model="formData.address" :invalid="!!errors.email" />
+            <small v-if="errors.address" class="field-error">
+              {{ errors.address }}
+            </small>
+          </div>
         </div>
-
-        <!-- Campo: Telefono: -->
-        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-phone"></i>
-            </InputGroupAddon>
-            <FloatLabel variant="in">
-              <InputText id="phone" v-model="formData.phone" :invalid="!!errors.phone" />
-              <label for="phone">TELEFONO</label>
-            </FloatLabel>
-          </InputGroup>
-          <Message v-if="errors.phone" severity="error" variant="simple" size="large" class="p-error">{{ errors.phone }}
-          </Message>
-        </div>
-      </div>
-
-      <div class="w-full flex flex-wrap gap-4">
-        <h3 class="text-lg flex-[1_2_100%] text-surface-200">Secundarios</h3>
-
-        <!-- Campo: Email: -->
-        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-at"></i>
-            </InputGroupAddon>
-            <FloatLabel variant="in">
-              <InputText id="email" v-model="formData.email" :invalid="!!errors.email" />
-              <label for="email">EMAIL</label>
-            </FloatLabel>
-          </InputGroup>
-          <Message v-if="errors.email" severity="error" variant="simple" size="large" class="p-error">{{ errors.email }}
-          </Message>
-        </div>
-
-        <!-- Campo: Direccion: -->
-        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-map-marker"></i>
-            </InputGroupAddon>
-            <FloatLabel variant="in">
-              <InputText id="address" v-model="formData.address" :invalid="!!errors.address" />
-              <label for="address">DIRECCION</label>
-            </FloatLabel>
-          </InputGroup>
-          <Message v-if="errors.address" severity="error" variant="simple" size="large" class="p-error">{{
-            errors.address }}</Message>
-        </div>
-      </div>
-
-      <Message severity="error" v-if="error">{{ error }}</Message>
-
-      <!-- Botones de acción -->
-      <div class="w-full flex justify-around">
-        <Button label="Cancelar" severity="secondary" outlined @click="handleCancel" />
-        <Button label="Guardar" icon="pi pi-check" @click="handleSubmit" />
-      </div>
+      </section>
     </div>
 
+    <Message severity="error" v-if="error">{{ error }}</Message>
+
+    <div class="w-full flex justify-around">
+      <Button label="Cancelar" severity="secondary" outlined @click="handleCancel" />
+
+      <Button label="Guardar" icon="pi pi-check" @click="handleSubmit" ref="submitButton" :disabled="loading"/>
+    </div>
   </div>
+
+  
 </template>
 
 <script setup>
@@ -175,9 +191,21 @@ const handleSubmit = async () => {
     const updatedContact = await updateItem(formData.id, formData)
 
     if (!error.value && data.value) {
+      toast.add({
+      severity: 'success',
+      summary: 'Contacto actualizado',
+      detail: 'El contacto se actualizó exitosamente',
+      life: 3000
+    });
       emit('finish', updatedContact);
     } else {
-      console.error('Error al actualizar el contacto:', error.value);
+      console.error('Error al actualiar el contacto:', error.value);
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: error.value || 'No se pudo actualiar el contacto',
+        life: 5000
+      });
       return
     }
   } else {
@@ -191,4 +219,41 @@ const handleCancel = () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+@reference "../../style.css";
+
+.contact-edit-form {
+  @apply w-full;
+}
+
+/* Form Section */
+.form-section {
+  @apply dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6;
+}
+
+.section-title {
+  @apply text-xl font-semibold text-white mb-4 ;
+}
+
+/* Form Field */
+.form-field {
+  @apply flex flex-col gap-2;
+}
+
+.field-label {
+  @apply text-lg font-medium text-gray-300;
+}
+
+.field-label.required::after {
+  content: ' *';
+  @apply text-red-500;
+}
+
+.field-error {
+  @apply text-sm text-red-400;
+}
+
+.field-hint {
+  @apply text-sm text-gray-400;
+}
+</style>
