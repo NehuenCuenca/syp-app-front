@@ -658,31 +658,6 @@ function closeEditModal() {
 }
 
 /**
- * Open view contact modal
- */
-async function openViewModal(contact) {
-  try {
-    // Fetch full contact details
-    const response = await axios.get(`${axios.defaults.baseURL}/contacts/${contact.id}`);
-    if (response.data.success) {
-      modalAction.value = 'read';
-      selectedContact.value = response.data.data;
-      viewModalVisible.value = true;
-    } else {
-      throw new Error(response.data.message || 'Error al obtener el contacto');
-    }
-  } catch (err) {
-    console.error('Error fetching contact details:', err);
-    toast.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'No se pudo obtener los detalles del contacto',
-      life: 5000
-    });
-  }
-}
-
-/**
  * Close view contact modal
  */
 function closeViewModal() {
@@ -696,21 +671,9 @@ function closeViewModal() {
 function handleFinish(data) {
   if (modalAction.value === 'create') {
     closeCreateModal();
-    toast.add({
-      severity: 'success',
-      summary: 'Contacto creado',
-      detail: 'El contacto se creó exitosamente',
-      life: 3000
-    });
     fetchContacts();
   } else if (modalAction.value === 'edit') {
     closeEditModal();
-    toast.add({
-      severity: 'success',
-      summary: 'Contacto actualizado',
-      detail: 'El contacto se actualizó exitosamente',
-      life: 3000
-    });
     fetchContacts();
   } else if (modalAction.value === 'read') {
     closeViewModal();
