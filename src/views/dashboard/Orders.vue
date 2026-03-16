@@ -748,21 +748,9 @@ function closeViewModal() {
 function handleFinish(data) {
   if (modalAction.value === 'create') {
     closeCreateModal();
-    // toast.add({
-    //   severity: 'success',
-    //   summary: 'Pedido creado',
-    //   detail: 'El pedido se creó exitosamente',
-    //   life: 3000
-    // });
     fetchOrders();
   } else if (modalAction.value === 'edit') {
     closeEditModal();
-    // toast.add({
-    //   severity: 'success',
-    //   summary: 'Pedido actualizado',
-    //   detail: 'El pedido se actualizó exitosamente',
-    //   life: 3000
-    // });
     fetchOrders();
   } else if (modalAction.value === 'read') {
     closeViewModal();
