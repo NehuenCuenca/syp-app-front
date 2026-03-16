@@ -233,6 +233,16 @@
                   @click="confirmDelete(data)"
                   v-tooltip.top="'Eliminar'"
                 />
+                <Button
+                  v-if="!!data.last_order"
+                  icon="pi pi-receipt"
+                  severity="secondary"
+                  text
+                  rounded
+                  size="large"
+                  @click="viewContactOrders(data)"
+                  v-tooltip.top="'Ver pedidos'"
+                />
               </template>
 
               <Button
@@ -868,6 +878,27 @@ function getContactTypeSeverity(type) {
 const deletedRowClass = (data) => {
     return [{ '!bg-red-300 !text-primary-contrast': !!data.deleted_at }];
 };
+
+function viewContactOrders(contact) {
+  console.log(contact);
+  // Navega a Orders con filtro
+  router.push({
+    name: 'Pedidos',
+    query: {
+      contact_id: contact.id,
+      page: 1,
+      per_page: 10
+    }
+  });
+  
+  // Toast informativo
+  toast.add({
+    severity: 'info',
+    summary: 'Redirigiendo...',
+    detail: `Mostrando pedidos de ${contact.name}`,
+    life: 3500
+  });
+}
 </script>
 
 <style scoped>
