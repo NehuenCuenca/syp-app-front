@@ -1,153 +1,239 @@
 <!-- ProductCreateForm.vue -->
 <!-- Formulario para crear un nuevo producto -->
 <template>
-  <div class="flex items-center flex-col gap-4">
-    <div class="flex justify-between max-w-xl flex-wrap gap-10">
-      <div class="w-full flex flex-wrap gap-4">
-        <h3 class="text-lg flex-[1_2_100%] text-surface-200">Identificacion</h3>
-        <!-- Campo: Nombre del producto -->
-        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-th-large"></i>
-            </InputGroupAddon>
-            <FloatLabel variant="in">
-              <InputText id="name" v-model="formData.name" :invalid="!!errors.name" />
-              <label for="name">NOMBRE DE PRODUCTO</label>
-            </FloatLabel>
-          </InputGroup>
-          <Message v-if="errors.name" severity="error" variant="simple" size="large" class="block">{{ errors.name }}
-          </Message>
+  <div class="product-create-form ">
+    <!-- Form Content -->
+    <div class="flex flex-col gap-6 p-4">
+      
+      <!-- ==================== SECCIÓN IDENTIFICACIÓN ==================== -->
+      <section class="form-section">
+        <h3 class="section-title">
+          <i class="pi pi-tag mr-2"></i>
+          Identificación
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Nombre del producto -->
+          <div class="form-field">
+            <label for="name" class="field-label required">
+              Nombre del Producto
+            </label>
+            <InputText 
+              id="name" 
+              v-model="formData.name" 
+              :invalid="!!errors.name"
+              placeholder="Ej: Aspirina 500mg x 20 unidades"
+              class="w-full"
+            />
+            <small v-if="errors.name" class="field-error">
+              {{ errors.name }}
+            </small>
+          </div>
+
+          <!-- Categoría -->
+          <div class="form-field">
+            <label for="category" class="field-label">
+              Categoría
+            </label>
+            <Select
+              id="category"
+              v-model="formData.category"
+              :options="categories"
+              option-label="search_alias"
+              option-value="name"
+              placeholder="Seleccione una categoría"
+              show-clear
+              filter
+              class="w-full"
+              :invalid="!!errors.category"
+            >
+              <template #value="slotProps">
+                <div v-if="slotProps.value" class="flex items-center gap-2">
+                  <i class="pi pi-tags"></i>
+                  <span>{{ slotProps.value }}</span>
+                </div>
+                <span v-else>{{ slotProps.placeholder }}</span>
+              </template>
+            </Select>
+            <small v-if="errors.category" class="field-error">
+              {{ errors.category }}
+            </small>
+          </div>
         </div>
+      </section>
 
+      <!-- ==================== SECCIÓN PRECIOS Y GANANCIA ==================== -->
+      <section class="form-section">
+        <h3 class="section-title">
+          <i class="pi pi-dollar mr-2"></i>
+          Precios y Ganancia
+        </h3>
 
-        <!-- Campo: categoria -->
-        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-tags"></i>
-            </InputGroupAddon>
-            <FloatLabel variant="in">
-                <Select
-                  v-model="formData.category"
-                  :options="categories"
-                  option-label="search_alias"
-                  option-value="name"
-                  class="w-full"
-                  show-clear
-                  filter
-                  label="Categoria"
-                />
-              <label for="category">CATEGORIA</label>
-            </FloatLabel>
-          </InputGroup>
-          <Message v-if="errors.category" severity="error" variant="simple" size="large" class="p-error">{{
-            errors.category }}</Message>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Precio de Compra -->
+          <div class="form-field">
+            <label for="buy_price" class="field-label required">
+              Precio de Compra
+            </label>
+            <InputNumber
+              id="buy_price"
+              v-model="formData.buy_price"
+              mode="currency"
+              currency="ARS"
+              locale="es-AR"
+              :min="0"
+              :max-fraction-digits="0"
+              class="w-full"
+              :invalid="!!errors.buy_price"
+              @input="calculateSalePrice"
+            />
+            <small v-if="errors.buy_price" class="field-error">
+              {{ errors.buy_price }}
+            </small>
+            <small v-else class="field-hint">
+              Precio al que compra el producto
+            </small>
+          </div>
+
+          <!-- Ganancia (%) -->
+          <div class="form-field">
+            <label for="profit_percentage" class="field-label required">
+              Ganancia (%)
+            </label>
+            <InputNumber
+              id="profit_percentage"
+              v-model="formData.profit_percentage"
+              suffix="%"
+              :min="0"
+              :max="500"
+              :max-fraction-digits="2"
+              class="w-full"
+              :invalid="!!errors.profit_percentage"
+              @input="calculateSalePrice"
+            />
+            <small v-if="errors.profit_percentage" class="field-error">
+              {{ errors.profit_percentage }}
+            </small>
+            <small v-else class="field-hint">
+              Porcentaje de ganancia sobre el precio de compra
+            </small>
+          </div>
+
+          <!-- Precio de Venta -->
+          <div class="form-field  md:col-span-2">
+            <label for="sale_price" class="field-label required">
+              Precio de Venta
+            </label>
+            <InputNumber
+              id="sale_price"
+              v-model="formData.sale_price"
+              mode="currency"
+              currency="ARS"
+              locale="es-AR"
+              :min="0"
+              :max-fraction-digits="0"
+              class="w-full"
+              :invalid="!!errors.sale_price"
+            />
+            <small v-if="errors.sale_price" class="field-error">
+              {{ errors.sale_price }}
+            </small>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div class="w-full flex flex-wrap gap-4">
-        <h3 class="text-lg flex-[1_2_100%] text-surface-200">Precios y ganancia</h3>
-        <!-- Campo: Precio de COMPRA-->
-        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-dollar"></i>
-            </InputGroupAddon>
-            <FloatLabel variant="in">
-              <InputNumber id="buy_price" v-model="formData.buy_price" prefix="$" :invalid="!!errors.buy_price"
-                :min="0" />
-              <label for="buy_price">PRECIO DE COMPRA</label>
-            </FloatLabel>
-          </InputGroup>
-          <Message v-if="errors.buy_price" severity="error" variant="simple" size="large" class="p-error">{{
-            errors.buy_price }}</Message>
+      <!-- ==================== SECCIÓN STOCK ==================== -->
+      <section class="form-section">
+        <h3 class="section-title">
+          <i class="pi pi-box mr-2"></i>
+          Inventario
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Stock Inicial -->
+          <div class="form-field">
+            <label for="current_stock" class="field-label required">
+              Stock Inicial
+            </label>
+            <InputNumber
+              id="current_stock"
+              v-model="formData.current_stock"
+              show-buttons
+              button-layout="vertical"
+              :step="1"
+              :min="0"
+              :max="999999"
+              :invalid="!!errors.current_stock"
+            >
+              <template #incrementbuttonicon>
+                <i class="pi pi-plus"></i>
+              </template>
+              <template #decrementbuttonicon>
+                <i class="pi pi-minus"></i>
+              </template>
+            </InputNumber>
+            <small v-if="errors.current_stock" class="field-error">
+              {{ errors.current_stock }}
+            </small>
+          </div>
+
+          <!-- Alerta de Stock Bajo -->
+          <div class="form-field">
+            <label for="min_stock_alert" class="field-label required">
+              Alerta de Stock Bajo
+            </label>
+            <InputNumber
+              id="min_stock_alert"
+              v-model="formData.min_stock_alert"
+              show-buttons
+              button-layout="vertical"
+              :step="1"
+              :min="1"
+              :max="1000"
+              :invalid="!!errors.min_stock_alert"
+            >
+              <template #incrementbuttonicon>
+                <i class="pi pi-plus"></i>
+              </template>
+              <template #decrementbuttonicon>
+                <i class="pi pi-minus"></i>
+              </template>
+            </InputNumber>
+            <small v-if="errors.min_stock_alert" class="field-error">
+              {{ errors.min_stock_alert }}
+            </small>
+          </div>
         </div>
+      </section>
 
-        <!-- Campo: ganancia -->
-        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-percentage"></i>
-            </InputGroupAddon>
-            <FloatLabel variant="in">
-              <InputNumber id="profit_percentage" v-model="formData.profit_percentage" suffix="%"
-                :invalid="!!errors.profit_percentage" :min="1" />
-              <label for="profit_percentage">GANANCIA (%)</label>
-            </FloatLabel>
-          </InputGroup>
-          <Message v-if="errors.profit_percentage" severity="error" variant="simple" size="large" class="p-error">{{
-            errors.profit_percentage }}</Message>
+      <!-- ==================== MENSAJES DE ERROR GLOBALES ==================== -->
+      <Message v-if="error" severity="error" :closable="true" @close="error = null">
+        <div class="flex flex-col gap-2">
+          <strong>Error al crear producto</strong>
+          <span>{{ error }}</span>
         </div>
+      </Message>
 
-        <!-- Campo: precio de venta -->
-        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-dollar"></i>
-            </InputGroupAddon>
-            <FloatLabel variant="in">
-              <InputNumber id="sale_price" v-model="formData.sale_price" prefix="$" :invalid="!!errors.sale_price"
-                :min="0" />
-              <label for="sale_price">PRECIO DE VENTA</label>
-            </FloatLabel>
-          </InputGroup>
-          <Message v-if="errors.sale_price" severity="error" variant="simple" size="large" class="p-error">{{
-            errors.sale_price }}</Message>
-        </div>
-      </div>
-
-      <div class="w-full flex flex-wrap gap-4">
-        <h3 class="text-lg flex-[1_2_100%] text-surface-200">Stock</h3>
-        <!-- Campo: stock inicial -->
-        <div class="flex flex-col flex-[1_2_200px] gap-y-2">
-          <InputGroup>
-            <FloatLabel variant="in">
-              <InputNumber id="current_stock" v-model="formData.current_stock" :invalid="!!errors.current_stock"
-                showButtons buttonLayout="horizontal" :step="6" :min="0">
-                <template #incrementbuttonicon>
-                  <span class="pi pi-plus" />
-                </template>
-                <template #decrementbuttonicon>
-                  <span class="pi pi-minus" />
-                </template>
-              </InputNumber>
-              <label for="current_stock">STOCK INICIAL</label>
-            </FloatLabel>
-          </InputGroup>
-          <Message v-if="errors.current_stock" severity="error" variant="simple" size="large" class="p-error">{{
-            errors.current_stock }}</Message>
-        </div>
-
-        <!-- Campo: Alerta minimo de stock -->
-        <div class="flex flex-col flex-[0_1_250px]">
-          <InputGroup>
-            <FloatLabel variant="in">
-              <InputNumber id="min_stock_alert" v-model="formData.min_stock_alert" showButtons buttonLayout="horizontal"
-                :step="5" :min="1" :invalid="!!errors.min_stock_alert">
-                <template #incrementbuttonicon>
-                  <span class="pi pi-plus" />
-                </template>
-                <template #decrementbuttonicon>
-                  <span class="pi pi-minus" />
-                </template>
-              </InputNumber>
-              <label for="min_stock_alert">ALERTA DE STOCK BAJO</label>
-            </FloatLabel>
-          </InputGroup>
-          <Message v-if="errors.min_stock_alert" severity="error" variant="simple" size="large" class="p-error">{{
-            errors.min_stock_alert }}</Message>
-        </div>
-      </div>
-
-      <Message severity="error" v-if="error">{{ error }}</Message>
-
-      <!-- Botones de acción -->
-      <div class="w-full flex justify-around">
-        <Button label="Cancelar" severity="secondary" outlined @click="handleCancel" />
-
-        <Button label="Guardar" icon="pi pi-check" @click="handleSubmit" ref="submitButton" />
+      <!-- ==================== BOTONES DE ACCIÓN ==================== -->
+      <div class="flex justify-end gap-3 pt-4 border-t">
+        <Button
+          label="Cancelar"
+          icon="pi pi-times"
+          severity="secondary"
+          outlined
+          @click="handleCancel"
+        />
+        <Button
+          label="Guardar Producto"
+          icon="pi pi-check"
+          severity="success"
+          @click="handleSubmit"
+          ref="submitButton"
+          :disabled="loading"
+        />
       </div>
     </div>
   </div>
@@ -157,6 +243,13 @@
 import { onMounted, reactive, ref, watch } from 'vue';
 import { useCrudApi } from '../../composables/useCrudApi.js'
 import { useToast } from 'primevue';
+
+// PrimeVue Components
+import InputText from 'primevue/inputtext';
+import InputNumber from 'primevue/inputnumber';
+import Select from 'primevue/select';
+import Button from 'primevue/button';
+import Message from 'primevue/message';
 
 const {
   data,
@@ -183,121 +276,165 @@ onMounted(async () => {
   }
 })
 
-const searchCategory = (event) => {
-  setTimeout(() => {
-    if (!event.query.trim().length) {
-      categories.value = [...filters.value.categories];
-    } else {
-      categories.value = filters.value.categories.filter((category) => {
-        return category.search_alias.toLowerCase().includes(event.query.toLowerCase())
-      });
-    }
-  }, 250);
-}
-
 // Estado del formulario
 const formData = reactive({
   name: '',
+  category: '',
   buy_price: 0,
-  profit_percentage: 10,
+  profit_percentage: 0,
   sale_price: 0,
-  current_stock: 1,
-  min_stock_alert: 10,
-  category: ''
+  current_stock: 10000,
+  min_stock_alert: 5
 });
 
 // Estado de errores de validación
-const errors = ref({});
+const errors = reactive({});
 
-// Validación del formulario
-const validateForm = () => {
-  errors.value = {};
+/**
+ * Calculate sale price based on buy price and profit percentage
+ */
+function calculateSalePrice() {
+  if (formData.buy_price > 0 && formData.profit_percentage >= 0) {
+    formData.sale_price = Math.round(
+      formData.buy_price * (1 + (formData.profit_percentage / 100))
+    );
+  }
+}
+
+/**
+ * Validate form before submission
+ */
+function validateForm() {
+  // Clear previous errors
+  Object.keys(errors).forEach(key => delete errors[key]);
+
   let isValid = true;
 
-  // Validar nombre (requerido)
-  if (!formData.name || formData.name.trim() === '') {
-    errors.value.name = 'El nombre es requerido';
+  // Validate name
+  if (!formData.name || formData.name.trim().length === 0) {
+    errors.name = 'El nombre del producto es obligatorio';
     isValid = false;
   }
 
-  /* if (!formData.category || formData.category.trim() === '') {
-    errors.value.category = 'La categoria es requerida';
-    isValid = false;
-  } */
-
-  // Validar precio compra (requerido y mayor a 0)
-  if (!formData.buy_price || formData.buy_price <= 0) {
-    errors.value.buy_price = 'El precio compra debe ser mayor a $0';
+  // Validate buy_price
+  if (formData.buy_price === null || formData.buy_price < 0) {
+    errors.buy_price = 'El precio de compra debe ser mayor o igual a 0';
     isValid = false;
   }
 
-  // Validar porcentaje de ganancia (requerido y mayor a 1)
-  if (!formData.profit_percentage || formData.profit_percentage < 1) {
-    errors.value.profit_percentage = 'El porcentaje de ganancia debe ser mayor o igual al 1%';
+  // Validate profit_percentage
+  if (formData.profit_percentage === null || formData.profit_percentage < 0) {
+    errors.profit_percentage = 'El porcentaje de ganancia debe ser mayor o igual a 0';
     isValid = false;
   }
 
-  // Validar precio venta(requerido y mayor a 0)
-  if (!formData.sale_price || formData.sale_price <= 0) {
-    errors.value.sale_price = 'El precio venta debe ser mayor a $0';
+  // Validate sale_price
+  if (formData.sale_price === null || formData.sale_price < 0) {
+    errors.sale_price = 'El precio de venta debe ser mayor o igual a 0';
     isValid = false;
   }
 
-  // Validar precio venta (que sea mayor al precio de compra)
-  if (formData.sale_price && formData.sale_price <= formData.buy_price) {
-    errors.value.sale_price = 'El precio venta debe ser mayor al precio compra';
+  // Validate current_stock
+  if (formData.current_stock === null || formData.current_stock < 0) {
+    errors.current_stock = 'El stock inicial debe ser mayor o igual a 0';
     isValid = false;
   }
 
-  // Validar stock inicial (requerido y mayor a 0)
-  if (formData.current_stock < 0) {
-    errors.value.current_stock = 'El stock inicial debe ser igual o mayor a 0';
+  // Validate min_stock_alert
+  if (formData.min_stock_alert === null || formData.min_stock_alert < 1) {
+    errors.min_stock_alert = 'La alerta de stock debe ser mayor o igual a 1';
     isValid = false;
-  }
-
-  // Validar alerta de stock (requerido y mayor a 0)
-  if (formData.min_stock_alert < 0) {
-    errors.value.min_stock_alert = 'El alerta de stock minimo debe ser igual o mayor a 0';
-    isValid = false;
-  }
-
-  // Si no escribe la categoria, se asigna a "Varios"
-  if (!formData.category || (formData.category.trim() === '' && !formData.category.hasOwnProperty('name'))) {
-    formData.category = 'Varios';
   }
 
   return isValid;
-};
-
-// Maneja el envío del formulario
-const handleSubmit = async () => {
-  if (validateForm()) {
-    const productBeforeCreate = {
-      ...formData,
-      category: (formData.category.hasOwnProperty('name')) ? formData.category.name : formData.category
-    }
-    const newProduct = await createItem(productBeforeCreate)
-
-    if (!error.value && data.value) {
-      emit('finish', newProduct);
-    } else {
-      console.error('Error al crear el producto:', error.value);
-      return
-    }
-  } else {
-    toast.add({ severity: 'error', life: 3500, summary: 'Error al validar', detail: 'Revise los campos invalidos.' });
-  }
-};
-
-// Maneja la cancelación
-const handleCancel = () => { emit('close'); };
-
-const calculateSalePrice = () => {
-  formData.sale_price = parseInt((formData.buy_price * (formData.profit_percentage / 100 + 1)).toFixed(0));
 }
 
-watch(() => formData.buy_price, calculateSalePrice);
-watch(() => formData.profit_percentage, calculateSalePrice);
+/**
+ * Handle form submission
+ */
+async function handleSubmit() {
+  if (!validateForm()) {
+    toast.add({
+      severity: 'error',
+      summary: 'Validación fallida',
+      detail: 'Por favor corrija los errores en el formulario',
+      life: 5000
+    });
+    return;
+  }
+
+  const newProduct = await createItem(formData);
+
+  if (!error.value && newProduct) {
+    toast.add({
+      severity: 'success',
+      summary: 'Producto creado',
+      detail: `El producto "${formData.name}" se creó exitosamente`,
+      life: 3000
+    });
+    emit('finish', newProduct);
+  } else {
+    console.error('Error al crear el producto:', error.value);
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: error.value || 'No se pudo crear el producto',
+      life: 5000
+    });
+  }
+}
+
+/**
+ * Handle form cancellation
+ */
+function handleCancel() {
+  emit('close');
+}
+
+// Watch for changes in buy_price and profit_percentage to auto-calculate sale_price
+watch(
+  () => [formData.buy_price, formData.profit_percentage],
+  () => {
+    calculateSalePrice();
+  }
+);
 </script>
 
-<style scoped></style>
+<style scoped>
+@reference "../../style.css";
+
+.product-create-form {
+  @apply w-full;
+}
+
+/* Form Section */
+.form-section {
+  @apply dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6;
+}
+
+.section-title {
+  @apply text-xl font-semibold text-white mb-4 ;
+}
+
+/* Form Field */
+.form-field {
+  @apply flex flex-col gap-2;
+}
+
+.field-label {
+  @apply text-lg font-medium text-gray-300;
+}
+
+.field-label.required::after {
+  content: ' *';
+  @apply text-red-500;
+}
+
+.field-error {
+  @apply text-sm text-red-400;
+}
+
+.field-hint {
+  @apply text-sm text-gray-400;
+}
+</style>
