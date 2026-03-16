@@ -49,6 +49,14 @@
               severity="secondary"
               @click="handleDownloadCatalog"
             />
+            <Button 
+              label="Actualizar Precios" 
+              icon="pi pi-dollar" 
+              severity="secondary"
+              @click="openBulkUpdatePricesDialog"
+              :disabled="selectedProducts.length === 0"
+              v-tooltip.top="selectedProducts.length === 0 ? 'Seleccione productos para actualizar precios' : ''"
+            />
           </div>
         </template>
 
@@ -314,6 +322,13 @@
         </div>
       </div>
     </Dialog>
+
+    <!-- Bulk Update Prices Dialog -->
+    <BulkUpdatePricesDialog
+      v-model:visible="bulkUpdatePricesDialogVisible"
+      :selected-products="selectedProducts"
+      @success="handleBulkUpdateSuccess"
+    />
   </div>
 </template>
 
@@ -342,6 +357,7 @@ import InputIcon from 'primevue/inputicon';
 import ModalCRUDRegister from '@/components/ModalCRUDRegister.vue';
 import ProductCreateForm from '@/views/products/ProductCreateForm.vue';
 import ProductEditForm from '@/views/products/ProductEditForm.vue';
+import BulkUpdatePricesDialog from '@/components/BulkUpdatePricesDialog.vue';
 import { getAxiosConfigForBlobResponse } from '@/helpers/downloads';
 
 // Component map for CRUD operations
@@ -393,6 +409,7 @@ const categories = ref([]);
 const createModalVisible = ref(false);
 const editModalVisible = ref(false);
 const catalogExportDialogVisible = ref(false);
+const bulkUpdatePricesDialogVisible = ref(false);
 
 // Modal action (for ModalCRUDRegister)
 const modalAction = ref('create'); // 'create' | 'edit'
@@ -924,6 +941,35 @@ const deletedRowClass = (data) => {
       life: 5000
     });
   }
+}
+
+/**
+ * Open bulk update prices dialog
+ */
+function openBulkUpdatePricesDialog() {
+  bulkUpdatePricesDialogVisible.value = true;
+}
+
+/**
+ * Handle successful bulk price update
+ */
+function handleBulkUpdateSuccess(updatedProducts) {
+  // Replace updated products in the current products array
+  const updatedProductsMap = new Map(updatedProducts.map(p => [p.id, p]));
+  
+  // Update products array
+  products.value = products.value.map(product => {
+    if (updatedProductsMap.has(product.id)) {
+      return updatedProductsMap.get(product.id);
+    }
+    return product;
+  });
+  
+  // Clear selection
+  selectedProducts.value = [];
+  
+  // Close dialog
+  bulkUpdatePricesDialogVisible.value = false;
 }
 
 </script>
