@@ -228,6 +228,18 @@
           </template>
         </Column>
 
+        <!-- Last buyed at Column -->
+        <Column 
+          field="last_buyed_at" 
+          header="Ultima compra" 
+          style="min-width: 100px"
+        >
+          <template #body="{ data }">
+            <span v-if="!!data.last_buyed_at">{{ data.last_buyed_at }}</span>
+            <span v-else class="text-gray-400">sin compras</span>
+          </template>
+        </Column>
+
         <!-- Actions Column -->
         <Column 
           header="Acciones" 
@@ -716,20 +728,8 @@ function closeCreateModal() {
 function handleFinish(data) {
   if (modalAction.value === 'create') {
     closeCreateModal();
-    toast.add({
-      severity: 'success',
-      summary: 'Producto creado',
-      detail: 'El producto se creó exitosamente',
-      life: 3000
-    });
   } else if (modalAction.value === 'edit') {
     closeEditModal();
-    toast.add({
-      severity: 'success',
-      summary: 'Producto actualizado',
-      detail: 'El producto se actualizó exitosamente',
-      life: 3000
-    });
   }
   
   // Refresh products list
