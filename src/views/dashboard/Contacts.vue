@@ -194,13 +194,16 @@
         <!-- Last Order Column -->
         <Column 
           field="last_order" 
-          header="Última Operación" 
+          header="Último pedido" 
           :sortable="false"
           style="min-width: 180px"
         >
           <template #body="{ data }">
-            <span class="text-sm ">
+            <span v-if="!!data.last_order" class="text-sm ">
               {{ data.last_order }}
+            </span>
+            <span v-else class="text-sm text-gray-400">
+              No tiene pedidos
             </span>
           </template>
         </Column>
