@@ -213,10 +213,21 @@
         <Column 
           header="Acciones" 
           :exportable="false"
+          class="max-w-[200px]"
         >
           <template #body="{ data }">
-            <div class="flex gap-2">
+            <div class="flex justify-end gap-2">
               <template v-if="!data.deleted_at">
+                <Button
+                  v-if="!!data.last_order"
+                  icon="pi pi-receipt"
+                  severity="secondary"
+                  text
+                  rounded
+                  size="large"
+                  @click="viewContactOrders(data)"
+                  v-tooltip.top="'Ver pedidos'"
+                />
                 <Button
                   icon="pi pi-pencil"
                   severity="warning"
@@ -236,16 +247,6 @@
                   size="large"
                   @click="confirmDelete(data)"
                   v-tooltip.top="'Eliminar'"
-                />
-                <Button
-                  v-if="!!data.last_order"
-                  icon="pi pi-receipt"
-                  severity="secondary"
-                  text
-                  rounded
-                  size="large"
-                  @click="viewContactOrders(data)"
-                  v-tooltip.top="'Ver pedidos'"
                 />
               </template>
 
