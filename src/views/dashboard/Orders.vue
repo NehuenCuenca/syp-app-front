@@ -110,7 +110,6 @@
             @date-select="onDateChange"
             @clear-click="onDateClear"
             locale="es-AR"
-            showClear 
           />
         </div>
       </div>
@@ -230,9 +229,10 @@
         <Column 
           header="Acciones" 
           :exportable="false"
+          class="max-w-[150px]"
         >
           <template #body="{ data }">
-            <div class="flex gap-2">
+            <div class="flex justify-end gap-2">
               <Button
                 v-if="data.is_exportable"
                 icon="pi pi-download"
