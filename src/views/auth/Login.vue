@@ -93,7 +93,7 @@ const loginSchema = z.object({
 // Estado reactivo
 const formData = ref({
   email: 'sergioross73@hotmail.com',
-  password: 'Admin123'
+  password: 'admin123'
 });
 
 const errors = ref({
