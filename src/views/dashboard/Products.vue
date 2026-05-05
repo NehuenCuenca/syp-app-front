@@ -180,7 +180,7 @@
           <template #body="{ data }">
             <Tag 
               v-if="data.category" 
-              :value="data.category.name" 
+              :value="data.category.search_alias" 
               severity="secondary"
             />
             <span v-else class="text-gray-400">Sin categoría</span>
