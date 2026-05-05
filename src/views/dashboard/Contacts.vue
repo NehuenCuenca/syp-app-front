@@ -152,7 +152,7 @@
         >
           <template #body="{ data }">
             <div class="flex flex-col">
-              <span class="font-medium">{{ data.name }}</span>
+              <span class="font-medium text-lg">{{ data.name }}</span>
               <span 
                 v-if="data.deleted_at" 
                 class="text-xs text-red-500 mt-1"
