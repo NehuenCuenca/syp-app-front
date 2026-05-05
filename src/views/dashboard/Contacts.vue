@@ -200,10 +200,10 @@
           style="min-width: 180px"
         >
           <template #body="{ data }">
-            <span v-if="!!data.last_order" class="text-sm ">
+            <span v-if="!!data.last_order">
               {{ data.last_order }}
             </span>
-            <span v-else class="text-sm text-gray-400">
+            <span v-else class="text-gray-400">
               No tiene pedidos
             </span>
           </template>
