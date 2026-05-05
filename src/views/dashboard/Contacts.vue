@@ -172,7 +172,8 @@
           <template #body="{ data }">
             <div class="flex items-center gap-2">
               <i class="pi pi-phone text-gray-500"></i>
-              <span>{{ data.phone_number_info || 'Sin teléfono' }}</span>
+              <span v-if="data.phone_number_info">{{ data.phone_number_info}}</span>
+              <span v-else class="text-gray-400">sin telefono</span>
             </div>
           </template>
         </Column>
